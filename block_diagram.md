@@ -1,23 +1,23 @@
-# Block Diagram
+# 系统框图
 
-Status: Draft
+状态：草稿
 
-## System Boundary
+## 系统边界
 
 ```text
-[External Input] -> [Project Boundary] -> [External Output]
+[外部输入] -> [项目边界] -> [外部输出]
 ```
 
-Replace the generic boundary with the real energy flow, signal flow, and modules during Stage 1. Do not select parts merely to complete this document.
+在 Stage 1 中用真实的能量流、信号流和模块替换通用边界。不得仅为补全文档而选择器件。
 
-## Modules
+## 模块
 
-| Module | Responsibility | Inputs | Outputs | Power Domain | Open Risk |
+| 模块 | 职责 | 输入 | 输出 | 电源域 | 未决风险 |
 | --- | --- | --- | --- | --- | --- |
 | TBD | TBD | TBD | TBD | TBD | TBD |
 
-## Cross-module Flows
+## 跨模块流向
 
-- Energy flow: TBD
-- Signal flow: TBD
-- Control and feedback boundaries: TBD
+- 能量流：TBD
+- 信号流：TBD
+- 控制与反馈边界：TBD

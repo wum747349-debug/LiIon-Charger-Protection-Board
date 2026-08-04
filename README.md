@@ -4,39 +4,39 @@ Project Identity: LiIon Charger Protection Board
 Current Project Stage: Bootstrap
 Hardware Revision: TBD
 
-## Purpose
+## 项目目的
 
 建立一块以 USB-C 5V 供电的单节锂电池充电、保护与 3.3V 输出电源板；当前仅完成独立仓库 Bootstrap，不表示硬件设计已经开始。
 
-## Current Status
+## 当前状态
 
-- Framework binding and initialization status: [FRAMEWORK.md](FRAMEWORK.md)
-- Project facts are Draft until confirmed in this repository.
-- No component, EDA, ERC, DRC, manufacturing, bring-up, or test result is implied by Bootstrap.
+- Framework 绑定与初始化状态：[FRAMEWORK.md](FRAMEWORK.md)
+- 项目事实经本仓库确认前均为草稿。
+- Bootstrap 不表示器件、EDA、ERC、DRC、制造、上电调试或测试已有结果。
 
-## Bootstrap Facts
+## 初始化事实
 
-- USB-C 5V input is an intended project boundary.
-- Intended functions include single-cell lithium-ion charging, battery protection, 3.3V output, charge-status indication, and key test points.
-- Component choices, electrical parameters, manufacturing constraints, and acceptance criteria remain TBD for Phase 3B.
-- No firmware is currently required.
+- 项目计划使用 USB-C 5V 输入。
+- 计划功能包括单节锂电池充电、电池保护、3.3V 输出、充电状态指示和关键测试点。
+- 器件选择、详细电气参数、制造约束和验收标准将在对应项目阶段中逐步确认，当前未决项继续保持 TBD。
+- 当前没有 firmware 需求。
 
-## Project Facts
+## 项目事实
 
-- [Requirements baseline](requirements.md)
-- [Block diagram](block_diagram.md)
-- [Design notes](design_notes.md)
-- [Reference index](references.md)
+- [需求基线](requirements.md)
+- [系统框图](block_diagram.md)
+- [设计说明](design_notes.md)
+- [资料索引](references.md)
 
-## Repository Navigation
+## 仓库导航
 
-- [Project runtime rules](PROJECT_RULES.md)
-- [Stage document responsibilities](docs/README.md)
-- [Hardware source and evidence responsibilities](hardware/README.md)
-- [Local reference responsibilities](references/README.md)
-- [Project validator](scripts/validate_project_repository.py)
+- [项目运行规则](PROJECT_RULES.md)
+- [阶段文档职责](docs/README.md)
+- [硬件源文件与证据职责](hardware/README.md)
+- [本地资料职责](references/README.md)
+- [项目验证器](scripts/validate_project_repository.py)
 
-## Migration Provenance
+## 迁移来源
 
 Source Repository: wum747349-debug/Hardware-Practice-Projects
 
@@ -52,10 +52,8 @@ Git History Strategy: Clean Import
 
 Legacy Repository: wum747349-debug/Hardware-Practice-Projects
 
-Legacy Fact Import Commit: TBD
-
 Authority Status: Migration Pilot — Legacy Project remains Current Authority
 
-## Next Step
+## 下一步
 
-STOP — Await human review before Phase 3B.
+等待人工审查后再决定是否进入需求定义阶段。

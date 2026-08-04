@@ -1,29 +1,29 @@
-# Reference Index
+# 资料索引
 
-Status: Draft
+状态：草稿
 
-Critical parameters must be verified against official datasheets, reference manuals, or application notes. Product pages may support availability and ordering research but do not replace official technical evidence. Open-source projects may inform method and structure but are not project facts.
+关键参数必须依据官方数据手册、参考手册或应用笔记核对。商品页只能辅助库存和采购研究，不能替代官方技术依据。开源项目可用于学习方法与结构，但不是本项目事实。
 
-## Official Sources
+## 官方资料
 
-| Item / Module | Document | Source | Version | Purpose | Review Status | Local Path or Link |
+| 器件 / 模块 | 文档 | 来源 | 版本 | 用途 | 阅读状态 | 本地路径或链接 |
 | --- | --- | --- | --- | --- | --- | --- |
-| TBD | TBD | TBD | TBD | TBD | Not reviewed | TBD |
+| TBD | TBD | TBD | TBD | TBD | 未审阅 | TBD |
 
-## Procurement Sources
+## 采购资料
 
-| Item | Source | Purpose | Technical Limitation | Status |
+| 项目 | 来源 | 用途 | 技术限制 | 状态 |
 | --- | --- | --- | --- | --- |
-| TBD | TBD | Availability only | Not an official parameter source | Open |
+| TBD | TBD | 仅核对供货 | 不是官方参数依据 | 未决 |
 
-## Open-source References
+## 开源项目参考
 
-| Project | Source | Learning Purpose | Content Not Reused | Status |
+| 项目 | 来源 | 学习用途 | 不复用内容 | 状态 |
 | --- | --- | --- | --- | --- |
-| TBD | TBD | Structure / method only | Schematic, PCB, BOM, manufacturing files | Open |
+| TBD | TBD | 仅学习结构 / 方法 | 原理图、PCB、BOM、制造文件 | 未决 |
 
-## Missing Evidence
+## 缺失依据
 
-| Topic | Required Source | Decision Blocked | Priority | Status |
+| 主题 | 所需来源 | 受阻决策 | 优先级 | 状态 |
 | --- | --- | --- | --- | --- |
-| TBD | TBD | TBD | TBD | Open |
+| TBD | TBD | TBD | TBD | 未决 |

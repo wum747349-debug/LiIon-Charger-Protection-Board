@@ -1,40 +1,40 @@
-# Design Notes
+# 设计说明
 
-Status: Draft
+状态：草稿
 
-## Board-level Intent
+## 整板设计意图
 
-TBD — record the current architecture intent and constraints. Do not present candidate parts as selected facts.
+TBD — 记录当前架构意图和约束，不得把候选器件写成已确认事实。
 
-## Current Decisions
+## 当前决策
 
-| Decision | Current Position | Basis | Status |
+| 决策 | 当前立场 | 依据 | 状态 |
 | --- | --- | --- | --- |
-| TBD | TBD | TBD | Open |
+| TBD | TBD | TBD | 未决 |
 
-## Power and Interfaces
+## 电源与接口
 
-| Domain / Interface | Source | Destination | Required Boundary | Status |
+| 电源域 / 接口 | 来源 | 去向 | 必要边界 | 状态 |
 | --- | --- | --- | --- | --- |
-| TBD | TBD | TBD | TBD | Open |
+| TBD | TBD | TBD | TBD | 未决 |
 
-## Pin and Connection Planning
+## 引脚与连接规划
 
-Pin maps and project network names are created only when supported by actual project decisions.
+只有实际项目决策形成依据后，才建立引脚映射和项目网络名称。
 
-| Function | Required Direction / Behavior | Candidate Mapping | Basis | Status |
+| 功能 | 必要方向 / 行为 | 候选映射 | 依据 | 状态 |
 | --- | --- | --- | --- | --- |
-| TBD | TBD | TBD | TBD | Open |
+| TBD | TBD | TBD | TBD | 未决 |
 
-## PCB Inputs
+## PCB 输入
 
-- Mechanical constraints: TBD
-- Sensitive or high-risk areas: TBD
-- Power and thermal constraints: TBD
-- Required official layout sources: TBD
+- 机械约束：TBD
+- 敏感或高风险区域：TBD
+- 电源与散热约束：TBD
+- 必需的官方布局资料：TBD
 
-## Open Decisions
+## 未决事项
 
-| ID | Decision Needed | Affected Stage | Resolution Source | Status |
+| ID | 待决事项 | 影响阶段 | 解决依据 | 状态 |
 | --- | --- | --- | --- | --- |
-| DN-001 | TBD | TBD | TBD | Open |
+| DN-001 | TBD | TBD | TBD | 未决 |

@@ -1,17 +1,17 @@
-# Stage Documents
+# 阶段文档
 
-This directory contains Stage-enabled and Conditional project documents. Bootstrap does not pre-create them.
+本目录保存按阶段启用或按项目需要创建的文档。Bootstrap 不预建这些内容。
 
-| Path | Responsibility | Enable When |
+| 路径 | 职责 | 启用时机 |
 | --- | --- | --- |
-| `component_selection_plan.md` | Critical component candidates and decisions | Stage 2 begins |
-| `module_design/*.md` | Module connections, calculations, evidence, risks, layout requirements | A module enters Stage 3 detail design |
-| `schematic_review.md` | Actual schematic review evidence, issues, status, conclusion | Stage 4 begins |
-| `pcb_design_rules.md` | Project rule values, Scope, Priority, configuration status, waiver definitions | Before Stage 5 Layout Preflight |
-| `pcb_review.md` | Layout Preflight, routing issues, user DRC summary, waivers, manufacturing release | Layout Preflight is recorded; maintained through Stages 6–7 |
-| `bringup_log.md` | Assembly, first power-on, measurements, debug history | Stage 8 assembly or bring-up activity begins |
-| `test_report.md` | Test conditions, results, limits, acceptance conclusion | Stage 8 formal testing begins |
-| `revision_history.md` | Hardware revisions, reasons, impact, required revalidation | First hardware revision or material change |
-| `user/` | User-facing setup, wiring, interface, and safety guidance | The project requires user documentation |
+| `component_selection_plan.md` | 关键器件候选与决策 | Stage 2 开始 |
+| `module_design/*.md` | 模块连接、计算、依据、风险和布局要求 | 模块进入 Stage 3 详细设计 |
+| `schematic_review.md` | 实际原理图审查依据、问题、状态和结论 | Stage 4 开始 |
+| `pcb_design_rules.md` | 项目规则值、Scope、Priority、配置状态和豁免定义 | Stage 5 Layout Preflight 前 |
+| `pcb_review.md` | Layout Preflight、布线问题、用户 DRC 摘要、豁免和制造放行 | 记录 Layout Preflight 时启用，在 Stage 6–7 继续维护 |
+| `bringup_log.md` | 装配、首次上电、测量和调试历史 | Stage 8 开始装配或上电调试 |
+| `test_report.md` | 测试条件、结果、限值和验收结论 | Stage 8 开始正式测试 |
+| `revision_history.md` | 硬件版本、变更原因、影响和必要的重新验证 | 确立首个硬件版本或发生重要变更 |
+| `user/` | 面向用户的配置、接线、接口和安全说明 | 项目确需用户文档 |
 
-The current project stage is maintained only in the repository root `README.md`. A file's existence never proves that its stage passed.
+当前项目阶段只在仓库根 `README.md` 中维护。文件存在不表示相应阶段已经通过。

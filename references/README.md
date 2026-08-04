@@ -1,5 +1,5 @@
-# Local References
+# 本地资料
 
-Store only project-relevant local evidence here, and create subdirectories when real content exists. Typical conditional content includes datasheets grouped by module, supplier-search notes, standards, and mechanical documents.
+本目录只保存与项目有关的本地资料，并在真实内容产生后创建子目录。常见的按需内容包括按模块整理的数据手册、供应商检索记录、标准和机械文档。
 
-Official datasheets, reference manuals, and application notes are the primary sources for critical parameters. Supplier pages are procurement aids, not substitutes for official technical evidence. Record each source and its purpose in the root `references.md`.
+官方数据手册、参考手册和应用笔记是关键参数的主要依据。供应商页面只能辅助采购，不能替代官方技术资料。每项资料及其用途应记录在根 `references.md` 中。

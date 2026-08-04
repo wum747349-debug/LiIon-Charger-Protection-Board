@@ -1,11 +1,11 @@
-# Hardware Sources and Evidence
+# 硬件源文件与证据
 
-Create hardware subdirectories only when the corresponding work or evidence exists:
+只有实际工作或证据产生后，才创建对应的硬件子目录：
 
-- `altium_project/`: authoritative `.PrjPcb`, `.SchDoc`, `.PcbDoc`, and necessary project libraries;
-- `outputs/`: traceable schematic PDF, BOM, reports, and manufacturing outputs;
-- `images/`: review, assembly, bring-up, test, and presentation images.
+- `altium_project/`：权威 `.PrjPcb`、`.SchDoc`、`.PcbDoc` 和必要的项目库；
+- `outputs/`：可追溯的原理图 PDF、BOM、报告和制造输出；
+- `images/`：审查、装配、上电调试、测试和展示图片。
 
-`.SchDoc` and `.PcbDoc` are the authoritative EDA implementation sources. A directory, PDF, image, or written design intent does not prove ERC, DRC, rule matching, copper state, or manufacturing release. The user performs actual Altium operations and exports; AI/Codex only analyzes supplied evidence within stated limits.
+`.SchDoc` 和 `.PcbDoc` 是权威 EDA 实现源。目录、PDF、图片或文字设计意图不能证明 ERC、DRC、规则命中、铺铜状态或制造放行。用户负责实际 Altium 操作和导出；AI/Codex 只在明确限制下分析用户提供的证据。
 
-Do not create empty output categories or low-information placeholder files merely to make the tree look complete.
+不得仅为目录完整而创建空输出分类或低信息量占位文件。
