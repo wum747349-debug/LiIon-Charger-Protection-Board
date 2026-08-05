@@ -1,25 +1,20 @@
 # 单节锂电池充电与保护电源板
 
 Project Identity: LiIon Charger Protection Board
-Current Project Stage: Bootstrap
+Current Project Stage: Stage 1 — Requirements Definition
 Hardware Revision: TBD
 
 ## 项目目的
 
-建立一块以 USB-C 5V 供电的单节锂电池充电、保护与 3.3V 输出电源板；当前仅完成独立仓库 Bootstrap，不表示硬件设计已经开始。
+本项目是一块面向 STM32、普通传感器及类似低压实验负载的锂电池实验电源板。第一版以普通 5V USB-C 输入、单节锂离子电池充电、真实 Power Path / Load Sharing、无电池运行、板级功能保护及 3.3V 稳压输出为范围；充电是核心功能，当前没有 firmware 需求。
 
 ## 当前状态
 
-- Framework 绑定与初始化状态：[FRAMEWORK.md](FRAMEWORK.md)
-- 项目事实经本仓库确认前均为草稿。
-- Bootstrap 不表示器件、EDA、ERC、DRC、制造、上电调试或测试已有结果。
-
-## 初始化事实
-
-- 项目计划使用 USB-C 5V 输入。
-- 计划功能包括单节锂电池充电、电池保护、3.3V 输出、充电状态指示和关键测试点。
-- 器件选择、详细电气参数、制造约束和验收标准将在对应项目阶段中逐步确认，当前未决项继续保持 TBD。
-- 当前没有 firmware 需求。
+- Initialization Status: Gate 1.5 Pending
+- Stage 1 Requirements Baseline 已整理，自动 Validator 仅用于检查结构与需求入口完整性。
+- 尚未选择最终充电、Power Path、稳压、保护或 NTC 器件。
+- 尚未开始 EDA、ERC、DRC、制造、焊接、Bring-up 或 Test；文档中的验收项均保持 Planned、Not Verified 或 Open。
+- Standalone 仍处于 Migration Pilot，Legacy Project remains Current Authority。
 
 ## 项目事实
 
@@ -30,6 +25,7 @@ Hardware Revision: TBD
 
 ## 仓库导航
 
+- [Framework 绑定与初始化状态](FRAMEWORK.md)
 - [项目运行规则](PROJECT_RULES.md)
 - [阶段文档职责](docs/README.md)
 - [硬件源文件与证据职责](hardware/README.md)
@@ -56,4 +52,4 @@ Authority Status: Migration Pilot — Legacy Project remains Current Authority
 
 ## 下一步
 
-等待人工审查后再决定是否进入需求定义阶段。
+等待人工 Gate 1.5 事实审查决定。在人工明确批准前不得进入 Stage 2，不得创建 Stage 2 文件，也不得执行 Authority Cutover；Legacy Project 继续作为 Current Authority。
