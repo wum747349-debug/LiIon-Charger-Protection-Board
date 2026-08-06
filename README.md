@@ -10,8 +10,9 @@ Hardware Revision: TBD
 
 ## 当前状态
 
-- Initialization Status: Gate 1.5 Pending
-- Stage 1 Requirements Baseline 已整理，自动 Validator 仅用于检查结构与需求入口完整性。
+- Initialization Status: Initialized
+- Gate 1.5 已获得明确人工 PASS；该决定只批准 Project Initialization 与 Stage 1 Requirements Baseline，不证明硬件设计或验证完成。
+- 自动 Validator 仅用于检查结构与需求入口完整性。
 - 尚未选择最终充电、Power Path、稳压、保护或 NTC 器件。
 - 尚未开始 EDA、ERC、DRC、制造、焊接、Bring-up 或 Test；文档中的验收项均保持 Planned、Not Verified 或 Open。
 - Standalone 仍处于 Migration Pilot，Legacy Project remains Current Authority。
@@ -52,4 +53,4 @@ Authority Status: Migration Pilot — Legacy Project remains Current Authority
 
 ## 下一步
 
-等待人工 Gate 1.5 事实审查决定。在人工明确批准前不得进入 Stage 2，不得创建 Stage 2 文件，也不得执行 Authority Cutover；Legacy Project 继续作为 Current Authority。
+等待独立人工授权进入 Stage 2。在收到该授权前不得创建 Stage 2 文件或开始器件选择，也不得执行 Authority Cutover；Legacy Project 继续作为 Current Authority。
