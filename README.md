@@ -41,9 +41,9 @@ Legacy Project Path: projects/02_LiIon_Charger_Protection_Board
 
 Migration Date: 2026-08-04
 
-Framework Release: development-v0.9
+Initial Migration Framework Snapshot: development-v0.9 @ 4261bdfa3cf6be400be16722c27fca22ea1895ad
 
-Framework Commit: 4261bdfa3cf6be400be16722c27fca22ea1895ad
+Current Framework binding: see `FRAMEWORK.md`.
 
 Git History Strategy: Clean Import
 
