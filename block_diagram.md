@@ -1,6 +1,6 @@
 # 系统框图
 
-状态：Stage 1 Baseline — Gate 1.5 Pending
+状态：Stage 1 Baseline — Gate 1.5 PASS
 
 ## 系统能量流
 
