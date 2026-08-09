@@ -53,4 +53,6 @@ Authority Status: Migration Pilot — Legacy Project remains Current Authority
 
 ## 下一步
 
-等待独立人工授权进入 Stage 2。在收到该授权前不得创建 Stage 2 文件或开始器件选择，也不得执行 Authority Cutover；Legacy Project 继续作为 Current Authority。
+当前仍处于 Stage 1，Stage 2 尚未授权；在获得独立人工授权前，不得创建 Stage 2 文件或开始器件选择。
+
+Repository Authority Cutover 属于独立的 Migration Human Gate，不依赖 Stage 2 授权。在 Authority Cutover 获得明确批准前，Legacy Project 继续作为 Current Authority。
