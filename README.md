@@ -15,7 +15,7 @@ Hardware Revision: TBD
 - 自动 Validator 仅用于检查结构与需求入口完整性。
 - 尚未选择最终充电、Power Path、稳压、保护或 NTC 器件。
 - 尚未开始 EDA、ERC、DRC、制造、焊接、Bring-up 或 Test；文档中的验收项均保持 Planned、Not Verified 或 Open。
-- Standalone 仍处于 Migration Pilot，Legacy Project remains Current Authority。
+- 本 Standalone Repository 是 Only Active Project Authority；Legacy Project 2 仅作为 Frozen Migration Source 保留，用于历史迁移追溯。
 
 ## 项目事实
 
@@ -49,10 +49,12 @@ Git History Strategy: Clean Import
 
 Legacy Repository: wum747349-debug/Hardware-Practice-Projects
 
-Authority Status: Migration Pilot — Legacy Project remains Current Authority
+Authority Status: Standalone Project Repository — Only Active Project Authority
+
+Legacy Project Status: Frozen Migration Source — Historical migration traceability only
 
 ## 下一步
 
 当前仍处于 Stage 1，Stage 2 尚未授权；在获得独立人工授权前，不得创建 Stage 2 文件或开始器件选择。
 
-Repository Authority Cutover 属于独立的 Migration Human Gate，不依赖 Stage 2 授权。在 Authority Cutover 获得明确批准前，Legacy Project 继续作为 Current Authority。
+Repository Authority Cutover 已完成，但不构成 Stage 2 授权。今后的 Project facts、hardware work、evidence 和 Stage progression 只能在本 Standalone Repository 中进行；Legacy Project 仅保留为 Frozen Migration Source，不再继续活动开发或双写。
