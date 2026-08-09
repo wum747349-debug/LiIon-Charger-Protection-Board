@@ -1,6 +1,6 @@
 # 资料索引
 
-状态：Stage 1 Baseline — Gate 1.5 Pending
+状态：Stage 1 Baseline — Gate 1.5 PASS
 
 关键硬件参数必须依据当前型号的官方 datasheet、reference manual、application note 或可追溯的供应商正式资料核对。商品页只能作为采购证据，不能单独证明关键参数。
 

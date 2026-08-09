@@ -1,6 +1,6 @@
 # 设计说明
 
-状态：Stage 1 Baseline — Gate 1.5 Pending
+状态：Stage 1 Baseline — Gate 1.5 PASS
 
 ## 整板架构意图
 
