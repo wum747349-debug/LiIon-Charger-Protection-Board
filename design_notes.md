@@ -1,16 +1,16 @@
 # 设计说明
 
-状态：Stage 1 Baseline — Gate 1.5 PASS
+状态：Stage 2 — Critical Component Selection；Battery Requirements Baseline Amendment 已重新核对 Gate 1.5
 
 ## 整板架构意图
 
 第一版围绕“USB 系统供电优先、剩余能力充电、电池可独立供电、无电池也能运行”建立电源路径。USB-C 仅作普通 5V Sink；Charger / Power Path 负责 CC-CV、输入与充电电流约束、负载优先和充电退让；System Rail 再经 3.3V 稳压与输出保护供给实验负载。
 
-完整的模式、负载和验收边界以 [requirements.md](requirements.md) 为准。架构只锁定 500mA 连续是 Required、1A/100ms 是尚未保证的 Design Target，并暂以 Buck-Boost 作为 Working Assumption；这里不选择具体器件。
+完整的模式、负载和验收边界以 [requirements.md](requirements.md) 为准。500mA 连续是 Required，1A/100ms 仍是尚未保证的 Design Target。Stage 2 当前主选为 BQ25185DLH Charger / Power Path、TPS63802 Buck-Boost、TPS259474LRPW 输出保护、TUSB320 Type-C current-advertisement detection 和 TPD2E2U06 CC ESD；这些是 Primary selection，不是 Final BOM。
 
 ## Power Path 与无电池运行
 
-实现必须把 System Rail 与充电终止判断从外部负载隔离：USB 有效时负载优先且充电退让，无 USB 时切换到合格电池路径；普通充电器、电池与负载的简单并联不符合该意图。无电池和电池功能性欠压时，USB 路径仍需独立维持系统，深度放电启动状态机则留待 Stage 2 依据官方资料核对。
+实现必须把 System Rail 与充电终止判断从外部负载隔离：USB 有效时负载优先且充电退让，无 USB 时切换到合格电池路径；普通充电器、电池与负载的简单并联不符合该意图。BQ25185DLH 是当前 primary，其官方资料确认 Power Path 可在电池 empty/charging 时由 IN 维持 SYS，并在输入受限时优先系统负载、降低充电电流。Rev.A 默认快充目标约 500mA，商品规格允许约 1.0A；ISET、ILIM/VSET、热和状态机计算全部 Deferred to Stage 3。
 
 ## 三层保护意图
 
@@ -22,39 +22,54 @@
 
 覆盖专用单节锂离子 CC-CV、Power Path、输入和充电电流限制、终止控制、外部 NTC，以及功能性电池 UVLO、迟滞与延时。
 
-功能性 UVLO 暂以约 3.1V 关闭电池放电、约 3.3V～3.4V 恢复作为 Working Assumption；最终阈值、精度、迟滞、延时和负载条件必须依据电池证据与系统预算确认。UVLO 只控制电池放电资格，不得关闭有效 USB 的 System Rail 路径。
+Rev.A primary 使用 BQ25185 集成 BUVLO / BATFET 行为：官方资料给出典型 3.0V falling threshold、约 150mV 恢复迟滞，并在低于阈值时断开 BAT-to-SYS，方向上早于商品标称 2.75V cutoff。外部 TPS3700 + battery disconnect 从 primary baseline 移除，仅在 Stage 3 容差/状态机分析或硬件验证表明集成行为不足时作为 fallback。最终全工况行为 Deferred to Stage 3；UVLO 不得关闭有效 USB 的 System Rail 路径。
 
 ### 第三层：3.3V 输出保护
 
-保护架构需要独立控制外部负载资格：稳压器有效输出建立前保持负载关闭，输出欠压/过压时断开负载，持续过流时关闭，硬短路时快速限制或关闭。输出窗口约 3.3V ±5% 仅是 Working Assumption；恢复状态机和最终阈值继续保持 Open，详见 requirements 的 OPEN-007。
+保护架构需要独立控制外部负载资格：稳压器有效输出建立前保持负载关闭，输出欠压/过压时断开负载，持续过流时关闭，硬短路时快速限制或关闭。Fault policy 已冻结为 latch-off / controlled recovery，primary 为 TPS259474LRPW。官方资料确认 `474L` 是 persistent over-current 后 circuit-break 并 latch-off 的变体；TPS259470LRPW 只在外部锁断/控制得到设计和验证时作为 conditional fallback，因为 `470x` 的 persistent-over-current 行为是 active current limiting，不能视为等价替代。ILIM、timer、UV/OV 和 reset Deferred to Stage 3。
 
 ## 外部 NTC 意图与限制
 
-外部 NTC 通过独立 Charger Temperature Input 只控制充电资格，异常不得切断 USB 系统路径。安装、电气绝缘、热缩膜保护、两线连接器选项及温度证据限制统一由 requirements 维护；Stage 1 不选择 NTC 参数或偏置网络。
+外部 NTC 通过 BQ25185 TS/MR 只控制充电资格，异常不得切断 USB 系统路径。目标为约 10kΩ @25℃、β≈3435K，贴近 pouch 表面，充电窗口目标约 0℃～45℃。BQ25185 官方资料与该 NTC 类型直接匹配并在 TS hot/cold fault 时暂停充电；准确 NTC MPN、安装位置、补偿网络和容差分析 Deferred to Stage 3。
+
+## 3.3V Buck-Boost 决策
+
+TPS63802 是 primary，理由是其 1.3V～5.5V 输入范围覆盖 1S 路径，官方资料在 VIN≥2.3V、VOUT=3.3V 时给出 2A output-current capability，并提供 100mA→1A 的典型 transient examples。上述资料支持它进入 primary，但不保证本项目 1A/100ms 目标；电感、电容、FB、纹波、瞬态、电流应力、热和 Layout 全部 Deferred to Stage 3。
+
+TPS63070 是 higher-margin fallback。TPS63001 在 3.3V boost mode 的官方额定仅到约 800mA，因此只在 1A peak Design Target 被明确放宽后作为 conditional fallback。
+
+## USB-C 输入与保护决策
+
+- TUSB320 以 UFP/Sink 角色处理 CC1/CC2，并通过 OUT1/OUT2 检测 Source 的 current advertisement。Default/limited source 使用保守的 BQ25185 input-current limit；检测到 ≥1.5A advertisement 时才允许提升至约 1.1A 档。
+- TUSB320 GPIO 只报告 attach 时的初始 advertisement；当前无 firmware，Stage 3 必须核对该限制、上电默认值和 fail-safe resistor switching。
+- CC ESD primary 为 TPD2E2U06；TPD6S300A 只作为带 short-to-VBUS protection 的 optional robust alternate。
+- VBUS 路径为 `USB-C VBUS → 5V-appropriate TVS/transient protection → BQ25185 IN`；准确 TVS MPN Deferred，不默认叠加 input eFuse。
+- USB-C receptacle 仅定义 5V Sink-only、no PD/no data、电流/接触电阻、制造商 footprint 和机械固定要求；准确 MPN 等板框与 layout 约束明确后再定。
 
 ## 电池包证据边界
 
-商品声明、逐项保护宣传及缺失证据统一记录在 [references.md](references.md)。设计只允许使用“推测为 1S2P、常规 1S 锂离子体系”这一 Working Assumption；商品标称和非当前型号规格书均不得升级为设计事实。
+Rev.A Battery Design Basis 已改为 1S protected Li-Polymer pouch pack、103450、3.7V / 2000mAh / 约 7.4Wh。容量、电流、温度、尺寸、重量和保护类型来自用户提供的商品规格，不是官方电芯制造商 PDF datasheet；包内保护阈值、延时、恢复方式与一致性保持 Not Verified。包内保护只作为最后安全后备。
 
 ## 制造与调试原则
 
 - 第一版优先手工焊接、调试便利性和可测性。
 - 高电流路径需在后续阶段依据真实电流、铜厚、允许压降和温升核对铜宽、过孔与散热。
-- 电池接口需降低极性误接风险；PH2.0 极性在首次接入前必须实测，不能只依赖“A 序”。
+- 电池接口需降低极性误接风险；2.54mm-class 两线连接器的准确 mating series、键位、线序和极性在首次接入前必须实物核对。
+- 软包电池固定、绝缘、引线应力释放、膨胀/公差空间以及防刺穿、防折弯、防挤压和防锐边接触要求以 requirements 为准。
 - 板框、接口位置、层数、铜厚、板厚、表面处理、PCB 厂家和装配方式保持 Open。
 
-## Stage 2 前必须解决或具备的输入
+## Stage 2 决策与剩余输入
 
 | ID | Needed decision / evidence | Why it matters | Current state |
 | --- | --- | --- | --- |
-| DN-001 | 当前电池包正式充电/放电/温度规格和保护行为 | 约束充电、UVLO、热与保护协调 | Open |
-| DN-002 | 最终终止电压、默认/最大充电电流、预充电/终止/再充电要求 | 决定充电方案筛选边界 | Open |
-| DN-003 | 5V 输入预算与各运行模式功率预算 | 决定负载优先、充电退让与热边界 | Open |
-| DN-004 | 外部 NTC 正式温度窗口与故障处理依据 | 决定温度输入与容差要求 | Open |
-| DN-005 | requirements OPEN-005、OPEN-010～OPEN-013 的输出波形、功耗、热与电流余量边界 | 决定稳压、储能和降额目标 | Open |
-| DN-006 | requirements OPEN-006～OPEN-007 的功能性 UVLO 与输出保护状态机 | 决定阈值、迟滞、延时和恢复行为 | Open |
-| DN-007 | 关键模块候选所需的官方 datasheet 集合 | Stage 2 决策必须有官方依据 | Not Verified |
+| DN-001 | 当前电池包充电/放电/温度商品规格和保护行为 | 约束充电、UVLO、热与保护协调 | Design Basis accepted；内部保护行为 Not Verified |
+| DN-002 | 4.20V、默认约 500mA、商品允许约 1.0A | 决定充电方案筛选边界 | Resolved for Stage 2；passive values Deferred to Stage 3 |
+| DN-003 | 5V 输入预算与各运行模式功率预算 | 决定负载优先、充电退让与热边界 | Architecture selected；detailed budget Deferred to Stage 3 |
+| DN-004 | 0℃～45℃、约 10kΩ / 3435K、NTC fault inhibits charge | 决定温度输入与容差要求 | Architecture selected；MPN/network Deferred to Stage 3 |
+| DN-005 | requirements OPEN-005、OPEN-010～OPEN-013 的输出波形、功耗、热与电流余量边界 | 决定稳压、储能和降额目标 | TPS63802 selected；calculations Deferred to Stage 3 |
+| DN-006 | 集成 BUVLO primary 与 output latch-off policy | 决定阈值、迟滞、延时和恢复行为 | Architecture selected；exact behavior Deferred to Stage 3 |
+| DN-007 | 关键候选官方 datasheet 集合 | Stage 2 决策必须有官方依据 | Verified sources indexed in references.md |
 
 ## 当前证据声明
 
-没有选择具体器件，没有 EDA、ERC、DRC、制造、焊接、Bring-up 或 Test 结果。Stage 1 文档只表达需求和架构意图，不能用于批准制造。
+已形成 Stage 2 Primary / Alternate 器件决策，但不是 Final BOM。没有详细外围计算、原理图、PCB、EDA、ERC、DRC、仿真、制造、焊接、Bring-up 或 Test 结果；本文不能用于批准制造，也不能把候选器件描述为已测试。

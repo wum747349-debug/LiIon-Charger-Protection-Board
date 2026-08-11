@@ -1,0 +1,128 @@
+# Stage 2 — Critical Component Selection Plan
+
+Status: Stage 2 documentation closeout candidate — 2026-08-11
+
+本文件记录影响架构、外围、封装、布局、散热和采购的关键器件决策。`Primary` 表示当前主选方向，`Alternate` / `Conditional fallback` 表示备选；均不是 Final BOM，也不表示已经完成 EDA、计算、仿真或硬件验证。
+
+## Selection Summary
+
+| Category | Primary / architecture | Alternate / fallback | Stage 2 status |
+| --- | --- | --- | --- |
+| Battery pack | 1S protected Li-Polymer pouch pack, 103450, 3.7V / 2000mAh | TBD only if requirements are reopened | Design Basis accepted; product-spec evidence only |
+| Charger / Power Path | TI BQ25185DLH | TI BQ24075; Microchip MCP73871 | Primary selected |
+| Functional battery UVLO | BQ25185 integrated BUVLO / BATFET behavior | External TPS3700 + disconnect only if later evidence shows need | Primary architecture selected |
+| 3.3V Buck-Boost | TI TPS63802 | TI TPS63070; TPS63001 only if 1A peak target is relaxed | Primary selected |
+| External battery temperature | External NTC near pouch surface, about 10kΩ @25℃, β about 3435K | Different NTC only with compensation analysis | Architecture selected; MPN deferred |
+| Output protection | TI TPS259474LRPW | TI TPS259470LRPW only with external latch/control qualification | Primary selected; alternate conditional |
+| USB-C CC/current detection | TI TUSB320 in UFP/Sink role | TBD | Primary selected; implementation deferred |
+| CC ESD | TI TPD2E2U06 | TI TPD6S300A for stronger short-to-VBUS robustness | Primary selected; robust option optional |
+| USB VBUS protection | 5V-appropriate TVS/transient protection before BQ25185 IN | Exact MPN TBD | Architecture selected; MPN deferred |
+| USB-C receptacle | Sink-only, power-only receptacle meeting electrical/mechanical requirements | Exact MPN TBD | Characteristics defined; MPN deferred |
+| Battery connector | 2.54mm-class, 2-wire red/black interface | Exact series TBD | Physical verification required |
+
+## 1. Charger / Power Path
+
+### Primary — TI BQ25185DLH
+
+- **Selection rationale:** 集成单节电池线性充电、Power Path、SYS load priority、输入电流管理/DPPM、外部 TS/NTC、BATFET、无电池/低电池时由输入维持 SYS，以及 battery BUVLO；与 1S 4.20V、默认约 500mA 的 Rev.A 方向匹配，外围和状态机复杂度低于分立 Power Path。
+- **Key verified parameters:** 官方 datasheet 支持 1-cell 应用；典型充电调节范围 3.6V～4.4V，包含 4.2V 设置；典型充电电流范围 5mA～1000mA；可选输入限流包含约 100mA、500mA、1050mA；Power Path 在 battery empty/charging 时可由 IN 维持 SYS，并在输入受限时优先系统负载、降低充电电流；TS 以 10kΩ @25℃、β(25/85)=3435K 为直接目标；集成 BUVLO 在 VBAT falling 典型 3.0V、恢复迟滞典型约 150mV，低于阈值时断开 BAT-to-SYS。
+- **Risks:** 线性充电器的最坏工况功耗/温升尚未预算；2mm × 2mm WSON/thermal pad 对手工焊接和散热布局有挑战；固定 BUVLO 与商品标称 2.75V cutoff 的协调、恢复状态、无电池启动负载及漏电边界仍需设计分析和实测。
+- **Pending verification:** 确认当前订购后缀、封装可制造性和采购状态；核对所有 TS open/short/disconnected 情形与 USB-valid SYS continuity；核对 100/500/1050mA input-limit switching 的允许实现和上电默认状态。
+- **Deferred to Stage 3:** ISET、ILIM/VSET、输入/输出/电池电容、TS 网络、CE/状态引脚、热预算、启动/终止/再充电、详细 BUVLO 工况与布局计算。
+
+### Alternates
+
+- **BQ24075:** 官方资料确认 1-cell Li-ion/Li-Polymer、4.2V、最高 1.5A、Power Path、输入 DPM 和 thermistor monitoring。作为成熟 fallback 保留；相对 BQ25185 封装更大、外围/输入策略不同，且本项目仍需单独实现/核对功能性 UVLO 配合。
+- **MCP73871:** 官方资料确认 1-cell、integrated system load sharing / power-path management、可同时供系统和充电、温度监控。作为跨厂商 fallback 保留；输入选择、热行为、状态机和外围与 BQ25185 不同，切换会触发完整的 Stage 2/3 重新核对。
+
+## 2. Functional Battery UVLO
+
+- **Primary:** 使用 BQ25185 集成 BUVLO / BATFET 行为。官方 datasheet 明确低于 BUVLO 时 BAT-to-SYS 断开，典型 falling threshold 3.0V、典型恢复迟滞约 150mV，并有约 60µs deglitch；该点早于商品标称 2.75V 放电截止，符合“内部保护只作最后后备”的方向。
+- **Fallback:** TPS3700 + external battery disconnect 从 Rev.A primary baseline 移除。只有 Stage 3 容差/状态机分析或后续硬件验证证明集成阈值、恢复、漏电或 USB/Battery 隔离不足时才重新启用。
+- **Pending / Stage 3:** 核对最坏阈值容差、负载压降、恢复条件、深放电启动、USB 插拔转换和 battery-only quiescent current；本阶段不设计外部 UVLO 电路。
+
+## 3. 3.3V Buck-Boost
+
+### Primary — TI TPS63802
+
+- **Selection rationale:** 对 1S 电池跨越 3.3V 的输入范围提供真正 Buck-Boost；相比 TPS63001 对当前 1A/100ms Design Target 有更明确的电流余量。
+- **Key verified parameters:** 官方 datasheet 给出 1.3V～5.5V 输入、启动需高于 1.8V、1.8V～5.2V 可调输出；在 VIN ≥2.3V、VOUT=3.3V 时标称 2A output-current capability；官方典型曲线包含 100mA→1A 的 buck、buck-boost 与 boost transient examples。
+- **Risks:** 官方额定和典型波形不等于本项目在全部输入、温度、容差和 PCB 条件下已经保证 1A/100ms；小型 DFN、0.47µH power stage 和高 di/dt 布局需要严格实现。
+- **Pending verification:** 采购/封装、最坏 battery/System Rail 输入范围、500mA 连续效率/热和 1A pulse 波形边界。
+- **Deferred to Stage 3:** 电感、输入/输出电容、FB divider、MODE/EN/PG、纹波、瞬态、饱和/RMS 电流、开关应力、热与 Layout 计算。
+
+### Alternates
+
+- **TPS63070:** 官方资料确认 2V～16V 输入、2.5V～9V 输出、3.6A switch current 和最高约 2A output-current capability（依工况）；作为更高面积/静态功耗但更高裕量的 fallback。
+- **TPS63001:** 官方资料给出 3.3V boost mode 在 VIN>2.4V 时最高约 800mA，而 step-down mode 可到 1.2A。它不能作为当前 1A peak target 的等价替代；仅在该目标被明确放宽并重新核对 requirements 后保留为 conditional fallback。
+
+## 4. External Battery Temperature Sensing
+
+- **Primary architecture:** 外部 NTC 紧贴 pouch 电池代表性表面位置，目标约 10kΩ @25℃、β≈3435K；充电窗口目标约 0℃～45℃。
+- **Verified fit:** BQ25185 官方 TS 功能按 10kΩ @25℃、β(25/85)=3435K 配置；TS hot/cold fault 会暂停充电与 safety timer，TS fault 时 trickle charge 也被禁止。
+- **Risk / pending:** 商品温度范围不是官方电芯 datasheet；NTC 表面温度不等于内部温度；必须确保 open/short/disconnected/abnormal 均禁止充电且不切断有效 USB 的 SYS 路径。
+- **Deferred to Stage 3:** NTC MPN、容差、封装、粘贴/绝缘方式、补偿电阻网络与温度窗口容差分析。
+
+## 5. 3.3V Output Protection
+
+### Primary — TI TPS259474LRPW
+
+- **Selection rationale:** 项目 fault policy 是 latch-off / controlled recovery。官方 datasheet 将 TPS259474x 定义为 circuit-breaker variant：超过 ILIM 的持续过流在可调 blanking interval 后关断；`L` variant 在该 fault 后保持 latched off，符合“不允许无限热自动重启”。
+- **Key verified parameters:** TPS25947 family 的工作输入范围 2.7V～23V、集成 back-to-back FET、reverse-current blocking、可调 ILIM/ITIMER/UVLO/OVLO；RPW 为 10-pin VQFN-HR。
+- **Risks:** 该器件能力远高于 3.3V/500mA 应用，低端 ILIM 容差、短路响应、SOA、压降和 reset method 必须核对；小封装焊接与热路径仍是风险。
+- **Pending / Deferred to Stage 3:** ILIM、ITIMER、UV/OV、dVdt、reset/enable、PG、故障注入工况、热与 Layout。
+
+### Conditional fallback — TI TPS259470LRPW
+
+官方资料把 TPS259470x 定义为 active-current-limit variant，而不是 TPS259474x 的 circuit-breaker variant；`L` suffix 的 thermal/fault latch behavior 不能把 persistent over-current current limiting 自动变成等价 circuit-break latch-off。只有加入并验证外部 FLT/EN 锁断与受控 reset 方案后才可作为 fallback，不能直接替代 primary。
+
+## 6. USB-C Input and CC Current Detection
+
+- **Architecture:** USB Type-C、5V Sink-only、no PD、no data；CC1/CC2 必须正确处理，不假设任意 source 可供 2A/3A。
+- **Primary controller — TUSB320:** 官方 datasheet 支持固定 UFP mode，在 CC1/CC2 呈现 Rd，并在 attach 后通过 GPIO OUT1/OUT2 或 I2C 报告 Source 的 Default / 1.5A / 3A advertisement。
+- **Control intent:** Default/limited source 使用保守 BQ25185 input-current limit；检测到 ≥1.5A advertisement 时，才允许 input limit 提升至 BQ25185 的约 1.1A 档。advertisement 只是 source capability indication，不是实际供电保证。
+- **Risk / pending:** GPIO mode 只反映 attach 时的初始 advertisement；Source 后续改变 Rp 时不会自动更新 GPIO。当前项目无 firmware，因此 Stage 3 必须评估该限制、上电默认、detachment 和 resistor/switch fail-safe behavior。
+- **Deferred to Stage 3:** OUT1/OUT2 decoding、GPIO/resistor switching、默认档位、attach/detach、时序和 fault handling。
+
+## 7. USB-C CC Protection
+
+- **Primary — TPD2E2U06:** 官方资料确认双通道、5.5V working voltage、1.5pF typical line capacitance，并提供 IEC 61000-4-2 ESD 保护；适合作为 CC1/CC2 的基本 ESD 方案。它不是 short-to-VBUS OVP protector。
+- **Optional robust alternate — TPD6S300A:** 官方资料提供 CC/SBU 等通道的 24V short-to-VBUS protection 与多通道 IEC ESD；仅在接口误短接鲁棒性、空间和成本评估支持时采用，不是 Rev.A 强制项。
+- **Deferred to Stage 3 / layout:** 器件摆放、回流/接地、CC trace stub 与是否升级为 TPD6S300A。
+
+## 8. USB VBUS Protection
+
+- **Selected architecture:** `USB-C VBUS → 5V-appropriate TVS/transient protection → BQ25185 IN`。
+- **Decision:** Stage 2 不增加另一颗 input eFuse；目前 BQ25185 官方资料未显示本项目必须叠加 eFuse 的明确理由。
+- **Deferred:** 精确 TVS MPN、VRWM、clamping、surge/ESD target、connector-to-TVS placement 与回流路径在 Stage 3 / layout-related evaluation 确定。
+
+## 9. Connectors
+
+### USB-C receptacle
+
+- 必须为 receptacle，满足 5V Sink-only、无 PD/无数据的 CC1/CC2 和 VBUS/GND 引脚需求。
+- 必须有可验证的制造商 drawing、recommended footprint、额定电流、接触电阻、耐久性和机械固定脚；优先兼顾手工焊接/返修与板边固定。
+- Exact MPN Deferred，直到板框、板厚、装配高度、外壳开口和 Layout 约束明确。
+
+### Battery connector
+
+- 当前接口为 2.54mm-class、2-wire、red/black。
+- 准确 series、mating housing/header、键位、极性、线规和载流能力均为 Pending physical verification；首次电池连接前必须逐项核对并测量极性。
+- 不使用 PH2.0 作为当前 Project fact。
+
+## Stage 2 Remaining Open Items
+
+1. 核对 BQ25185DLH、TPS63802、TPS259474LRPW、TUSB320 和 TPD2E2U06 的可采购后缀、封装与手工装配风险。
+2. 记录准确 USB-C receptacle、battery connector 和 VBUS TVS 的机械/布局输入；允许 MPN 按已记录计划后置。
+3. 在进入 Stage 3 前确认 1A/100ms Design Target 的测试波形边界，并接受 TUSB320 GPIO 仅初始检测的系统限制或调整架构。
+4. 保持 battery product-spec evidence、connector polarity 和 pack internal protection behavior 的 Not Verified 边界。
+
+## Explicit Stage 3 Deferred Work
+
+- BQ25185 ISET / ILIM-VSET / capacitors / TS / state-machine / thermal / layout calculations。
+- TPS63802 inductor / capacitors / FB / ripple / transient / current-stress / thermal calculations。
+- NTC exact MPN、compensation network 和 tolerance analysis。
+- TPS259474L ILIM / ITIMER / UV-OV / dVdt / reset implementation。
+- TUSB320 GPIO/resistor switching、fail-safe default 与 attach/detach timing。
+- USB VBUS TVS exact MPN 和所有 connector/footprint finalization。
+- 任何 schematic capture、BOM draft、EDA、ERC、DRC、simulation、manufacturing、bring-up 或 test activity。

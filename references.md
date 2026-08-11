@@ -1,6 +1,6 @@
 # 资料索引
 
-状态：Stage 1 Baseline — Gate 1.5 PASS
+状态：Stage 1 Baseline — Gate 1.5 PASS；Battery Requirements Baseline Amendment — 2026-08-11
 
 关键硬件参数必须依据当前型号的官方 datasheet、reference manual、application note 或可追溯的供应商正式资料核对。商品页只能作为采购证据，不能单独证明关键参数。
 
@@ -8,17 +8,16 @@
 
 | Evidence item | 商品标称内容 | Allowed use | Evidence limit | Status |
 | --- | --- | --- | --- | --- |
-| 当前采购电池包商品信息 | 18650-2P、并联、3.7V、4000mAh | 记录采购身份与待核对声明 | Procurement Evidence / 商品标称；容量与结构未证明 | Not Verified |
-| 当前采购电池包商品信息 | 两节 18650、自带保护板、最大放电电流 3A | 建立正式规格和受控实测的核对清单 | 不能证明持续 3A、保护功能、阈值、延时或恢复方式 | Not Verified |
-| 当前采购电池包商品信息 | PH2.0-2P、A 序、红黑线、约 10cm | 形成接口与首次接入检查项 | 不能证明实际极性、连接器型号或载流能力；首次接入前必须实测 | Not Verified |
+| 用户提供的所选电池商品规格 | 1S protected Li-Polymer pouch pack；103450；3.7V；2000mAh；约 7.4Wh | Rev.A Battery Design Basis 与采购身份 | 不是官方电芯制造商 PDF datasheet；容量测试条件与内部电芯身份未验证 | Accepted Design Basis / Not Independently Verified |
+| 用户提供的所选电池商品规格 | 4.20V 充电；0.5C（约 1.0A）充电；1C（约 2.0A）放电；2.75V 放电截止 | Stage 2 候选筛选和后续 Stage 3 预算输入 | 商品规格证据；未独立验证测试条件、容差、持续/峰值定义 | Accepted Design Basis / Not Independently Verified |
+| 用户提供的所选电池商品规格 | 充电 0℃～45℃；放电 -20℃～60℃ | 外部 NTC 目标窗口与后续热设计输入 | 商品规格证据；不是官方电芯制造商温度规格 | Accepted Design Basis / Not Independently Verified |
+| 用户提供的所选电池商品规格 | 约 50 × 34 × 10mm；约 34g；2.54mm-class 两线红/黑连接器 | 机械包络、接口和首次接入检查项 | 准确 mating series、极性、线规和载流能力必须实物核对 | Accepted Design Basis / Physical Verification Pending |
 | 当前采购电池包宣传图 | 声称“过充保护” | Procurement Evidence / 商品宣传转录 | 不是官方技术事实；功能、阈值、延时、恢复方式与一致性均未验证 | Not Verified |
 | 当前采购电池包宣传图 | 声称“过放保护” | Procurement Evidence / 商品宣传转录 | 不是官方技术事实；功能、阈值、延时、恢复方式与一致性均未验证 | Not Verified |
 | 当前采购电池包宣传图 | 声称“过流保护” | Procurement Evidence / 商品宣传转录 | 不是官方技术事实；功能、阈值、延时、恢复方式与一致性均未验证 | Not Verified |
 | 当前采购电池包宣传图 | 声称“短路保护” | Procurement Evidence / 商品宣传转录 | 不是官方技术事实；功能、阈值、延时、恢复方式与一致性均未验证 | Not Verified |
 
-允许的 Working Assumption 仅为：该电池包推测为 1S2P，属于常规 1S 锂离子体系。该假设仍需正式资料或受控核验支持。
-
-上述四种保护类型仅从明确的 Legacy Migration Source 采购记录转录到当前索引；Legacy 内容不作为当前电池包的官方参数或已验证功能依据。
+上述四种保护类型来自用户提供的当前商品规格，仅作为商品宣称记录；包内保护仍只作为最后安全后备，不作为正常功能控制点。
 
 ## 非当前型号参考规格书
 
@@ -26,37 +25,56 @@
 | --- | --- | --- | --- | --- |
 | FLY18650-3350mAh 规格书 | 非当前采购电池包型号 | 仅作为“合格规格书应包含哪些参数”的格式和字段参考 | 不得把其中容量、电压、电流、温度、寿命或其他参数用于当前电池包 | Reference Only |
 
+## Stage 2 官方半导体资料
+
+以下均为制造商官方资料，访问日期为 2026-08-11。Verified 表示本文所记录的对应功能或参数已在匹配型号的官方资料中核对，不表示 Project 电路或硬件已经验证。
+
+| Function | Manufacturer / device | Official source | Project use | Status |
+| --- | --- | --- | --- | --- |
+| Charger / Power Path / integrated BUVLO / TS | TI BQ25185DLH | [BQ25185 datasheet, SLUSF65A, Rev. A](https://www.ti.com/lit/ds/symlink/bq25185.pdf) | Primary；核对 1-cell、Power Path、SYS priority/batteryless behavior、4.2V、charge/input current settings、TS 与 BUVLO | Verified for Stage 2 selection |
+| Charger alternate | TI BQ24075 | [BQ2407x datasheet, Rev. N](https://www.ti.com/lit/ds/symlink/bq24075.pdf) | Alternate；核对 1-cell、4.2V、Power Path、1.5A class 与 thermistor monitoring | Verified for Stage 2 alternate |
+| Charger alternate | Microchip MCP73871 | [MCP73871 product page and official datasheet DS20002090F](https://www.microchip.com/en-us/product/MCP73871) | Alternate；核对 1-cell、system load sharing / power-path 与 temperature monitoring | Verified for Stage 2 alternate |
+| 3.3V Buck-Boost | TI TPS63802 | [TPS63802 datasheet, SLVSEU9D, Rev. D](https://www.ti.com/lit/ds/symlink/tps63802.pdf) | Primary；核对输入/输出范围、3.3V current capability、typical 1A transient examples | Verified for Stage 2 selection |
+| Buck-Boost alternate | TI TPS63070 | [TPS63070 datasheet, SLVSC58B, Rev. B](https://www.ti.com/lit/ds/symlink/tps63070.pdf) | Higher-margin fallback | Verified for Stage 2 alternate |
+| Buck-Boost conditional fallback | TI TPS63001 | [TPS6300x datasheet, SLVS520C, Rev. C](https://www.ti.com/lit/ds/symlink/tps63001.pdf) | 仅在 1A peak target 放宽后；3.3V boost-mode capability 不与 TPS63802 等价 | Verified limitation |
+| Output protection | TI TPS259474LRPW / TPS259470LRPW | [TPS25947 datasheet, SLVSFC9C, Rev. C](https://www.ti.com/lit/ds/symlink/tps25947.pdf) | `474L` primary circuit-break/latch-off；`470L` conditional active-current-limit fallback | Verified; alternate caveat recorded |
+| USB-C CC/current detection | TI TUSB320 | [TUSB320 datasheet, SLLSEN9F, Rev. F](https://www.ti.com/lit/ds/symlink/tusb320.pdf) | UFP/Sink Rd 与 Source current-advertisement detection；GPIO initial-only limitation | Verified for Stage 2 selection |
+| CC ESD | TI TPD2E2U06 | [TPD2E2U06 datasheet, SLLSEG9C, Rev. C](https://www.ti.com/lit/ds/symlink/tpd2e2u06.pdf) | Primary dual-channel CC ESD | Verified for Stage 2 selection |
+| Robust Type-C protection | TI TPD6S300A | [TPD6S300A datasheet, SLVSEL8](https://www.ti.com/lit/ds/symlink/tpd6s300a.pdf) | Optional short-to-VBUS / multi-channel ESD robustness | Verified for optional alternate |
+
+商品页、分销商页、论坛、教程和开源项目未用于证明上述关键参数。官方 datasheet 中的 typical application / typical curve 也不等同于本 Project 已计算或已验证。
+
 ## Stage 2 所需官方 datasheet
 
-当前没有选定器件；下表定义后续候选必须取得的资料类别，不构成器件选择。
+本表定义 Stage 2 候选必须取得的资料类别；Battery amendment 完成时尚不构成器件选择。
 
 | Function | Required official source | Parameters / behavior to verify | Status |
 | --- | --- | --- | --- |
-| USB-C Sink 与输入保护 | 候选方案官方 datasheet / Type-C 官方规范中适用章节 | CC1/CC2、Sink-only、输入额定、故障与浪涌边界 | Open |
-| 单节锂离子 Charger / Power Path | 候选 IC 官方 datasheet、reference design、application note | CC-CV、输入/充电限流、负载优先、终止隔离、无电池/Instant-On、深放电启动、NTC 故障行为 | Open |
-| 3.3V Buck-Boost | 候选 IC 官方 datasheet、设计工具或 application note | 输入范围、500mA 连续、1A/100ms 目标、纹波、瞬态跌落/过冲、静态/关断功耗、启动、限流、短路、热边界、电感饱和/RMS 电流与开关峰值/RMS 电流余量、布局要求 | Open |
-| Functional battery UVLO | 候选监控/开关方案官方 datasheet | 阈值、迟滞、延时、反向路径、USB 与电池路径隔离 | Open |
-| 3.3V 输出监控与保护 | 候选方案官方 datasheet | UV/OV、启动禁止、过流/短路、重试/锁断/复位与热行为 | Open |
-| External NTC network | 电池包正式温度要求、NTC 与充电方案官方 datasheet | 允许温度窗、阻值、Beta、容差、封装、偏置及开短路行为 | Open |
+| USB-C Sink 与输入保护 | TUSB320 / TPD2E2U06 / TPD6S300A 官方 datasheet；Type-C 适用要求 | CC1/CC2、Sink-only、advertisement detection、ESD、short-to-VBUS option | Primary verified；VBUS TVS MPN Deferred |
+| 单节锂离子 Charger / Power Path | BQ25185 官方 datasheet；BQ24075 / MCP73871 official alternate sources | CC-CV、输入/充电限流、负载优先、终止隔离、无电池、深放电启动、NTC 故障行为 | Primary / alternates verified for Stage 2 |
+| 3.3V Buck-Boost | TPS63802 / TPS63070 / TPS63001 官方 datasheet | 输入范围、500mA 连续、1A/100ms 目标、纹波、瞬态、功耗、热、电感/开关电流与布局 | Primary / alternate limits verified；calculations Deferred |
+| Functional battery UVLO | BQ25185 官方 datasheet | 阈值、迟滞、延时、USB 与电池路径隔离 | Integrated primary verified；full behavior Deferred |
+| 3.3V 输出监控与保护 | TPS25947 官方 datasheet | UV/OV、启动禁止、过流/短路、锁断/复位与热行为 | `TPS259474L` primary verified；exact network Deferred |
+| External NTC network | 电池商品温度规格与 BQ25185 官方 datasheet | 允许温度窗、阻值、Beta、容差、封装、偏置及开短路行为 | Architecture verified；MPN/network Deferred |
 | 连接器与高电流互连 | 制造商正式图纸和额定规格 | 极性/键位、接触电阻、额定电流、线规与温升 | Open |
 
 ## 当前缺失的电池包正式参数
 
 | Missing parameter / evidence | Why required | Resolution plan | Status |
 | --- | --- | --- | --- |
-| 可追溯的电池包与内部电芯型号 | 确认化学体系与规格适用性 | 向供应商取得正式型号、规格书或批次证据 | Open |
-| 标称/最小容量及测试条件 | 功率预算与续航估算 | 取得正式规格；后续按批准条件受控实测 | Open |
-| 最大持续/峰值放电电流及热条件 | 500mA 连续与 1A 瞬态边界 | 取得正式规格，不能用商品“3A”直接定版 | Open |
-| 充电终止电压、标准/最大充电电流 | 充电安全和寿命 | 取得当前型号正式充电规格 | Open |
+| 可追溯的内部电芯型号与批次 | 确认化学体系与规格适用性 | 向供应商取得正式型号、规格书或批次证据 | Open |
+| 标称/最小容量及测试条件 | 功率预算与续航估算 | 商品标称 2000mAh；取得正式测试条件并在后续按批准条件受控实测 | Partially Resolved |
+| 最大持续/峰值放电电流及热条件 | 500mA 连续与 1A 瞬态边界 | 商品标称 1C / 约 2.0A；取得正式定义并完成热预算 | Partially Resolved |
+| 充电终止电压、标准/最大充电电流 | 充电安全和寿命 | 商品标称 4.20V、0.5C / 约 1.0A；保持证据边界并继续取得正式资料 | Partially Resolved |
 | 预充电、终止、再充电要求 | 深放电启动与终止控制 | 取得当前型号正式规格并与候选方案核对 | Open |
-| 充电/放电允许温度范围 | 确定外部 NTC 温度窗 | 取得当前型号正式温度规格；0℃～45℃仅为 Working Assumption | Open |
+| 充电/放电允许温度范围 | 确定外部 NTC 温度窗 | 商品标称充电 0℃～45℃、放电 -20℃～60℃；继续取得正式资料 | Partially Resolved |
 | 包内保护类型、阈值、延时和恢复方式 | 三层保护协调与异常恢复 | 取得保护板规格或可追溯供应商说明；必要时制定受控验证 | Open |
 | 循环寿命与条件 | 明确使用和维护边界 | 取得正式寿命规格 | Open |
-| PH2.0 实际系列、极性、线规和载流能力 | 防反接与互连热安全 | 查连接器/线材官方规格，并在首次接入前实测极性 | Open |
+| 2.54mm-class 两线连接器的准确系列、极性、线规和载流能力 | 防反接与互连热安全 | 实物核对 mating series/键位/极性，再查连接器和线材官方规格 | Open |
 | 包内是否存在温度检测及其位置 | 避免误解外部 NTC 的保护覆盖 | 取得结构或保护板正式资料 | Open |
 
 ## 证据结论限制
 
-- 当前资料不能证明容量、持续 3A、充电参数、保护阈值与恢复方式、温度范围、循环寿命、电芯身份、连接器载流能力或内部温度检测。
+- 当前商品规格可作为 Rev.A Design Basis，但不能独立证明容量/电流/温度测试条件、保护阈值与恢复方式、循环寿命、电芯身份、连接器载流能力或内部温度检测。
 - 商品资料、非当前型号规格书和 Framework 文档均不能证明本项目的 EDA 实现或测试状态。
-- Stage 2 只有在获得对应候选的官方资料后才能形成器件决策；当前没有最终器件或 BOM 结论。
+- Stage 2 已依据官方制造商资料形成 Primary / Alternate 决策；这些结论不是 Final BOM，未完成的外围、容差、热、Layout 与状态机工作明确 Deferred to Stage 3。

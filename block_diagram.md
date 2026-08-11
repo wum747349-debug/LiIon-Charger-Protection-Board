@@ -50,7 +50,7 @@ External NTC 异常 ----------------------> 禁止充电，不关闭 USB 系统�
 | USB-C 与 CC | 外部普通 5V Type-C Source | 经识别与保护的输入 | Sink-only，无 PD、无数据，不假设 2A/3A 恒可用 |
 | 输入保护与能力限制 | USB-C 5V、CC 识别结果 | 受控输入能力 | 保护细节和阈值待后续官方资料决定 |
 | Charger / Power Path / System Rail | 受控 USB 输入、电池；独立 Charger Temperature Input 接收外部 NTC | System Rail、受控充电、电池路径 | 负载优先、充电退让、终止隔离、无电池运行 |
-| Battery Pack | 包内电芯与未知保护板 | 双向充放电能量 | 推测 1S2P 仅为 Working Assumption；包内参数未证明 |
+| Battery Pack | 1S 103450 protected Li-Polymer pouch pack | 双向充放电能量 | 3.7V / 2000mAh 商品规格作为 Design Basis；内部电芯身份及保护阈值/延时/恢复行为未验证 |
 | Functional Battery UVLO | 电池状态 | 电池放电资格 | 不控制有效 USB 的系统供电路径 |
 | 3.3V regulator | System Rail | 3.3V | 500mA 连续为需求；1A/100ms 为 Design Target |
 | 输出监控与保护 | 3.3V 状态、负载故障 | 启动许可、负载断开、限流或关闭 | UV/OV 断开负载、启动前关闭负载、持续过流关闭、硬短路快速限制或关闭；恢复策略仍为 Open Question |
