@@ -114,6 +114,7 @@ FRAMEWORK_RUNTIME_DEPENDENCY = re.compile(
     r"(?i)^\s*(?:[-*]\s*)?(?:Framework|Monorepo)\s+Runtime\s+(?:Path|Dependency)\s*:\s*(.*?)\s*$"
 )
 NO_RUNTIME_DEPENDENCY = {"", "none", "n/a", "not required", "无", "不需要"}
+DEVELOPMENT_RELEASE = re.compile(r"development-v(?:0\.9|\d+\.\d+\.\d+)")
 FORMAL_RELEASE = re.compile(r"hardware-project-framework-v\d+\.\d+\.\d+(?:-rc\d+)?")
 FULL_SHA = re.compile(r"[0-9a-fA-F]{40}")
 
@@ -213,11 +214,11 @@ def parse_binding(validator: Validator) -> None:
     status = validator.binding["Initialization Status"]
 
     validator.check(bool(repository) and not ABSOLUTE_LOCAL_PATH.search(repository), "FRAMEWORK.md", "Framework Repository must be a repository identity, not a local path")
-    validator.check(release == "development-v0.9" or FORMAL_RELEASE.fullmatch(release) is not None, "FRAMEWORK.md", "Framework Release must be development-v0.9 or a versioned Framework release")
+    validator.check(DEVELOPMENT_RELEASE.fullmatch(release) is not None or FORMAL_RELEASE.fullmatch(release) is not None, "FRAMEWORK.md", "Framework Release must be development-v0.9, development-vX.Y.Z, or a versioned published Framework release")
     validator.check(FULL_SHA.fullmatch(commit) is not None, "FRAMEWORK.md", "Framework Commit must be a full 40-character Git SHA")
     validator.check(structure_version == "1", "FRAMEWORK.md", "Project Structure Version must be 1")
     validator.check(model == "Standalone Project", "FRAMEWORK.md", "Repository Model must be Standalone Project")
-    validator.check(initialization_release == "development-v0.9" or FORMAL_RELEASE.fullmatch(initialization_release) is not None, "FRAMEWORK.md", "Initialization Framework Release must be development-v0.9 or a versioned Framework release")
+    validator.check(DEVELOPMENT_RELEASE.fullmatch(initialization_release) is not None or FORMAL_RELEASE.fullmatch(initialization_release) is not None, "FRAMEWORK.md", "Initialization Framework Release must be development-v0.9, development-vX.Y.Z, or a versioned published Framework release")
     validator.check(status in {"Bootstrap Draft", "Gate 1.5 Pending", "Initialized", "Development Bootstrap"}, "FRAMEWORK.md", "invalid Initialization Status")
 
 
@@ -352,7 +353,7 @@ def check_runtime_contract(validator: Validator) -> None:
     if rules.is_file():
         text = rules.read_text(encoding="utf-8")
         validator.check(len(re.findall(r"^\d+\. ", text, flags=re.MULTILINE)) == 10, "PROJECT_RULES.md", "Project Runtime Rules must contain the ten Contract rules")
-        for phrase in ("facts come only from this repository", "Framework version", "explicit migration", ".SchDoc", ".PcbDoc", "current Project stage only", "Stage Skill"):
+        for phrase in ("facts come only from this repository", "Framework version", "Pinned Framework Evaluation", "Compatible Framework Sync", "Framework Contract Migration", ".SchDoc", ".PcbDoc", "current Project stage only", "Stage Skill"):
             validator.check(phrase in text, "PROJECT_RULES.md", f"missing Project Runtime Rule coverage: {phrase}")
 
 
