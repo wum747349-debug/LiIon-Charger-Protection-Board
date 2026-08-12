@@ -1,6 +1,6 @@
 # Stage 2 — Critical Component Selection Plan
 
-Status: Stage 2 documentation closeout candidate — 2026-08-11
+Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry authorized
 
 本文件记录影响架构、外围、封装、布局、散热和采购的关键器件决策。`Primary` 表示当前主选方向，`Alternate` / `Conditional fallback` 表示备选；均不是 Final BOM，也不表示已经完成 EDA、计算、仿真或硬件验证。
 
@@ -17,7 +17,7 @@ Status: Stage 2 documentation closeout candidate — 2026-08-11
 | USB-C CC/current detection | TI TUSB320 in UFP/Sink role | TBD | Primary selected; implementation deferred |
 | CC ESD | TI TPD2E2U06 | TI TPD6S300A for stronger short-to-VBUS robustness | Primary selected; robust option optional |
 | USB VBUS protection | 5V-appropriate TVS/transient protection before BQ25185 IN | Exact MPN TBD | Architecture selected; MPN deferred |
-| USB-C receptacle | Sink-only, power-only receptacle meeting electrical/mechanical requirements | Exact MPN TBD | Characteristics defined; MPN deferred |
+| USB-C receptacle | TYPE-C-31-M-12 | Reopen selection only if Stage 3 mechanical/footprint review finds a conflict | Primary selected; exact receptacle resolved for Stage 2 |
 | Battery connector | 2.54mm-class, 2-wire red/black interface | Exact series TBD | Physical verification required |
 
 ## 1. Charger / Power Path
@@ -80,9 +80,10 @@ Status: Stage 2 documentation closeout candidate — 2026-08-11
 
 - **Architecture:** USB Type-C、5V Sink-only、no PD、no data；CC1/CC2 必须正确处理，不假设任意 source 可供 2A/3A。
 - **Primary controller — TUSB320:** 官方 datasheet 支持固定 UFP mode，在 CC1/CC2 呈现 Rd，并在 attach 后通过 GPIO OUT1/OUT2 或 I2C 报告 Source 的 Default / 1.5A / 3A advertisement。
-- **Control intent:** Default/limited source 使用保守 BQ25185 input-current limit；检测到 ≥1.5A advertisement 时，才允许 input limit 提升至 BQ25185 的约 1.1A 档。advertisement 只是 source capability indication，不是实际供电保证。
-- **Risk / pending:** GPIO mode 只反映 attach 时的初始 advertisement；Source 后续改变 Rp 时不会自动更新 GPIO。当前项目无 firmware，因此 Stage 3 必须评估该限制、上电默认、detachment 和 resistor/switch fail-safe behavior。
-- **Deferred to Stage 3:** OUT1/OUT2 decoding、GPIO/resistor switching、默认档位、attach/detach、时序和 fault handling。
+- **Native USB-C / C-to-C policy:** `Default` advertisement 使用保守的 BQ25185 input-current setting，基线约 500mA；只有 attach 时合格检测到 `1.5A` 或 `3A` advertisement，才允许提升至 BQ25185 的约 1.05A～1.1A input-current-limit 档。3A Source 仅表示能力声明，本 Project 不吸取 3A，仍受 BQ25185 input limit 约束。
+- **Legacy USB-A / A-to-C policy:** Rev.A 不实现 BC1.2 或 proprietary charger detection，不承诺利用 legacy charger 标签标称的 1.5A / 2A / 3A capability，并按 Type-C Default / conservative input policy 处理；不增加 legacy charger-detection IC。
+- **Accepted Rev.A limitation:** TUSB320 GPIO mode 以 attach 时检测到的 Source current advertisement 为基础；当前无 firmware，不动态跟踪 Source 后续 Rp capability change。绑定 datasheet 支持在 GPIO mode 解码 attach 结果，且可用保守硬件默认实现合理 fail-safe，因此该限制不阻断 Stage 2 closeout。
+- **Mandatory Stage 3 verification:** 设计并核对 power-up default、attach、detach、OUT1 / OUT2 decoding、resistor / switch control 和 fail-safe behavior。任何 unknown、invalid 或 unqualified state 必须回到 conservative input-current behavior，不得默认进入高电流档。
 
 ## 7. USB-C CC Protection
 
@@ -100,9 +101,9 @@ Status: Stage 2 documentation closeout candidate — 2026-08-11
 
 ### USB-C receptacle
 
-- 必须为 receptacle，满足 5V Sink-only、无 PD/无数据的 CC1/CC2 和 VBUS/GND 引脚需求。
-- 必须有可验证的制造商 drawing、recommended footprint、额定电流、接触电阻、耐久性和机械固定脚；优先兼顾手工焊接/返修与板边固定。
-- Exact MPN Deferred，直到板框、板厚、装配高度、外壳开口和 Layout 约束明确。
+- **Primary — TYPE-C-31-M-12:** Rev.A exact receptacle 已为 Stage 2 解决。正式 drawing/spec 显示 USB Type-C 16-pin receptacle，提供独立 CC1 / CC2、VBUS / GND、D+ / D−、SBU1 / SBU2、recommended PCB layout 与机械固定结构；其额定能力满足当前最大约 1.1A input-current architecture。该结论是 selection/document review，不是连接器或 PCB 实物测试结果。
+- **PCB thickness baseline:** 1.6 mm FR-4 记录为 `Rev.A preliminary PCB thickness baseline`。已核对 drawing 未发现与 1.6 mm 的明确机械冲突；它不是 Final fabrication stackup，层数、铜厚、表面处理、厂家和最终机械公差仍在后续阶段确定。
+- Stage 3 仍须完成 symbol/pin mapping、recommended footprint 转录核对、板边/外壳配合和装配/返修风险审查；不得把 drawing review 写成 manufacturability verified。
 
 ### Battery connector
 
@@ -110,12 +111,17 @@ Status: Stage 2 documentation closeout candidate — 2026-08-11
 - 准确 series、mating housing/header、键位、极性、线规和载流能力均为 Pending physical verification；首次电池连接前必须逐项核对并测量极性。
 - 不使用 PH2.0 作为当前 Project fact。
 
-## Stage 2 Remaining Open Items
+## Stage 2 Closeout Disposition
 
-1. 核对 BQ25185DLH、TPS63802、TPS259474LRPW、TUSB320 和 TPD2E2U06 的可采购后缀、封装与手工装配风险。
-2. 记录准确 USB-C receptacle、battery connector 和 VBUS TVS 的机械/布局输入；允许 MPN 按已记录计划后置。
-3. 在进入 Stage 3 前确认 1A/100ms Design Target 的测试波形边界，并接受 TUSB320 GPIO 仅初始检测的系统限制或调整架构。
-4. 保持 battery product-spec evidence、connector polarity 和 pack internal protection behavior 的 Not Verified 边界。
+- TYPE-C-31-M-12 exact receptacle：**Resolved for Stage 2**。
+- Battery connector exact series / polarity / wire gauge：**Physical Verification Pending**；首次连接前必须实物核对，不得推断。
+- VBUS TVS exact MPN：**Deferred to Stage 3**。
+- BQ25185、TPS63802、TPS259474、NTC 与 TUSB320 的详细外围、参数、状态机、热、瞬态和 fail-safe 实现：**Deferred to Stage 3**。
+- 1A / 100ms output target 的 waveform、droop、overshoot、repetition 与 recovery definition：继续是 **Design Target**，作为 Stage 3 design/test-definition input，未验证。
+- Battery product-spec evidence、pack internal protection thresholds/recovery 与 battery connector polarity：保持 **Not Verified / Physical Verification Pending**。
+- 小型 leadless package 的 assembly / rework 风险：保留为后续制造设计输入；没有 manufacturability verified 结论。
+
+Stage 2 closeout 仅表示关键架构器件及方向已经足以进入模块级详细设计；不表示 Final BOM、EDA、thermal verification、procurement verification 或 hardware validation 完成。
 
 ## Explicit Stage 3 Deferred Work
 
@@ -123,6 +129,6 @@ Status: Stage 2 documentation closeout candidate — 2026-08-11
 - TPS63802 inductor / capacitors / FB / ripple / transient / current-stress / thermal calculations。
 - NTC exact MPN、compensation network 和 tolerance analysis。
 - TPS259474L ILIM / ITIMER / UV-OV / dVdt / reset implementation。
-- TUSB320 GPIO/resistor switching、fail-safe default 与 attach/detach timing。
-- USB VBUS TVS exact MPN 和所有 connector/footprint finalization。
+- TUSB320 power-up default、attach/detach、OUT1/OUT2 decoding、GPIO/resistor switching 与 conservative fail-safe behavior。
+- USB VBUS TVS exact MPN、battery connector physical verification 和 TYPE-C-31-M-12 symbol/footprint/mechanical finalization。
 - 任何 schematic capture、BOM draft、EDA、ERC、DRC、simulation、manufacturing、bring-up 或 test activity。

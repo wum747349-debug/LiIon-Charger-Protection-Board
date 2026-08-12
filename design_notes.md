@@ -1,12 +1,12 @@
 # 设计说明
 
-状态：Stage 2 — Critical Component Selection；Battery Requirements Baseline Amendment 已重新核对 Gate 1.5
+状态：Stage 2 — Critical Component Selection closeout PASS；Stage 3 entry authorized
 
 ## 整板架构意图
 
 第一版围绕“USB 系统供电优先、剩余能力充电、电池可独立供电、无电池也能运行”建立电源路径。USB-C 仅作普通 5V Sink；Charger / Power Path 负责 CC-CV、输入与充电电流约束、负载优先和充电退让；System Rail 再经 3.3V 稳压与输出保护供给实验负载。
 
-完整的模式、负载和验收边界以 [requirements.md](requirements.md) 为准。500mA 连续是 Required，1A/100ms 仍是尚未保证的 Design Target。Stage 2 当前主选为 BQ25185DLH Charger / Power Path、TPS63802 Buck-Boost、TPS259474LRPW 输出保护、TUSB320 Type-C current-advertisement detection 和 TPD2E2U06 CC ESD；这些是 Primary selection，不是 Final BOM。
+完整的模式、负载和验收边界以 [requirements.md](requirements.md) 为准。500mA 连续是 Required，1A/100ms 仍是尚未保证的 Design Target。Stage 2 主选为 BQ25185DLH Charger / Power Path、TPS63802 Buck-Boost、TPS259474LRPW 输出保护、TUSB320 Type-C current-advertisement detection、TPD2E2U06 CC ESD 和 TYPE-C-31-M-12 receptacle；这些是 Primary selection，不是 Final BOM。
 
 ## Power Path 与无电池运行
 
@@ -40,11 +40,14 @@ TPS63070 是 higher-margin fallback。TPS63001 在 3.3V boost mode 的官方额�
 
 ## USB-C 输入与保护决策
 
-- TUSB320 以 UFP/Sink 角色处理 CC1/CC2，并通过 OUT1/OUT2 检测 Source 的 current advertisement。Default/limited source 使用保守的 BQ25185 input-current limit；检测到 ≥1.5A advertisement 时才允许提升至约 1.1A 档。
-- TUSB320 GPIO 只报告 attach 时的初始 advertisement；当前无 firmware，Stage 3 必须核对该限制、上电默认值和 fail-safe resistor switching。
+- Rev.A 为 5V Sink-only、no USB-PD、no data。TUSB320 以 UFP/Sink 角色处理 CC1/CC2，并通过 OUT1/OUT2 检测 Source current advertisement。
+- Native USB-C / C-to-C 的 `Default` advertisement 使用保守 BQ25185 input-current setting，基线约 500mA；attach 时合格检测到 `1.5A` / `3A` 才允许提升至约 1.05A～1.1A input-current-limit 档。3A Source 不表示本 Project 会吸取 3A。
+- Legacy USB-A charger + A-to-C cable 按 Type-C Default / conservative policy 处理。Rev.A 不实现 BC1.2 / proprietary charger detection，不承诺利用标签标称的 1.5A / 2A / 3A capability，也不增加 legacy charger-detection IC。
+- 接受 TUSB320 GPIO mode 仅基于 attach 时检测结果且无 firmware 动态跟踪后续 Rp capability change 的 Rev.A 限制。Stage 3 必须设计并核对 power-up default、attach、detach、OUT1/OUT2 decoding、resistor/switch control 与 fail-safe；unknown / invalid / unqualified state 一律回到 conservative input-current behavior。
 - CC ESD primary 为 TPD2E2U06；TPD6S300A 只作为带 short-to-VBUS protection 的 optional robust alternate。
 - VBUS 路径为 `USB-C VBUS → 5V-appropriate TVS/transient protection → BQ25185 IN`；准确 TVS MPN Deferred，不默认叠加 input eFuse。
-- USB-C receptacle 仅定义 5V Sink-only、no PD/no data、电流/接触电阻、制造商 footprint 和机械固定要求；准确 MPN 等板框与 layout 约束明确后再定。
+- USB-C receptacle primary 为 TYPE-C-31-M-12。正式 drawing/spec 显示 16-pin、独立 CC1/CC2、VBUS/GND、D+/D−、SBU1/SBU2、recommended PCB layout 与机械固定结构，并满足当前最大约 1.1A input-current architecture；未进行连接器或 PCB 实物测试。
+- 1.6 mm FR-4 是 `Rev.A preliminary PCB thickness baseline`；drawing 未显示明确冲突，但它不是 Final fabrication stackup。层数、铜厚、表面处理、厂家和最终机械公差后续确定。
 
 ## 电池包证据边界
 
@@ -56,7 +59,7 @@ Rev.A Battery Design Basis 已改为 1S protected Li-Polymer pouch pack、103450
 - 高电流路径需在后续阶段依据真实电流、铜厚、允许压降和温升核对铜宽、过孔与散热。
 - 电池接口需降低极性误接风险；2.54mm-class 两线连接器的准确 mating series、键位、线序和极性在首次接入前必须实物核对。
 - 软包电池固定、绝缘、引线应力释放、膨胀/公差空间以及防刺穿、防折弯、防挤压和防锐边接触要求以 requirements 为准。
-- 板框、接口位置、层数、铜厚、板厚、表面处理、PCB 厂家和装配方式保持 Open。
+- 板框、接口位置、层数、铜厚、表面处理、PCB 厂家和装配方式保持 Open；板厚仅有 1.6 mm FR-4 preliminary baseline。
 
 ## Stage 2 决策与剩余输入
 
@@ -69,7 +72,9 @@ Rev.A Battery Design Basis 已改为 1S protected Li-Polymer pouch pack、103450
 | DN-005 | requirements OPEN-005、OPEN-010～OPEN-013 的输出波形、功耗、热与电流余量边界 | 决定稳压、储能和降额目标 | TPS63802 selected；calculations Deferred to Stage 3 |
 | DN-006 | 集成 BUVLO primary 与 output latch-off policy | 决定阈值、迟滞、延时和恢复行为 | Architecture selected；exact behavior Deferred to Stage 3 |
 | DN-007 | 关键候选官方 datasheet 集合 | Stage 2 决策必须有官方依据 | Verified sources indexed in references.md |
+| DN-008 | TYPE-C-31-M-12 formal drawing/spec 与 1.6 mm preliminary baseline | 决定 receptacle 和机械输入是否足以进入 Stage 3 | Receptacle resolved for Stage 2；无明确板厚冲突；footprint/mechanical finalization Deferred |
+| DN-009 | USB source compatibility 与 TUSB320 initial-only limitation | 决定输入限流控制及故障安全边界 | Policy frozen；Stage 3 hardware decoding/fail-safe verification required |
 
 ## 当前证据声明
 
-已形成 Stage 2 Primary / Alternate 器件决策，但不是 Final BOM。没有详细外围计算、原理图、PCB、EDA、ERC、DRC、仿真、制造、焊接、Bring-up 或 Test 结果；本文不能用于批准制造，也不能把候选器件描述为已测试。
+Stage 2 closeout PASS 仅表示关键架构器件及方向足以进入模块级详细设计，不是 Final BOM。没有详细外围计算、原理图、PCB、EDA、ERC、DRC、仿真、thermal/procurement/manufacturing verification、焊接、Bring-up 或 Test 结果；本文不能用于批准制造，也不能把候选器件描述为已测试。

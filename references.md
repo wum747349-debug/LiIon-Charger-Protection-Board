@@ -1,6 +1,6 @@
 # 资料索引
 
-状态：Stage 1 Baseline — Gate 1.5 PASS；Battery Requirements Baseline Amendment — 2026-08-11
+状态：Stage 2 evidence closeout PASS — 2026-08-12；Stage 3 entry authorized
 
 关键硬件参数必须依据当前型号的官方 datasheet、reference manual、application note 或可追溯的供应商正式资料核对。商品页只能作为采购证据，不能单独证明关键参数。
 
@@ -42,6 +42,13 @@
 | CC ESD | TI TPD2E2U06 | [TPD2E2U06 datasheet, SLLSEG9C, Rev. C](https://www.ti.com/lit/ds/symlink/tpd2e2u06.pdf) | Primary dual-channel CC ESD | Verified for Stage 2 selection |
 | Robust Type-C protection | TI TPD6S300A | [TPD6S300A datasheet, SLVSEL8](https://www.ti.com/lit/ds/symlink/tpd6s300a.pdf) | Optional short-to-VBUS / multi-channel ESD robustness | Verified for optional alternate |
 
+## TYPE-C-31-M-12 正式 drawing/spec 证据
+
+| Evidence item | Verified project-relevant facts | Allowed use | Evidence boundary | Status |
+| --- | --- | --- | --- | --- |
+| User-provided [TYPE-C-31-M-12 formal drawing/spec](references/C165948_USB连接器_TYPE-C-31-M-12_规格书_WJ310728%20%281%29.PDF)；HRO Electronics Co., Ltd.，Part No. TYPE-C-31-M-12，drawing date 2020-12-08 | USB Type-C 16-pin receptacle；独立 CC1 / CC2；VBUS / GND；D+ / D−；SBU1 / SBU2；recommended PCB layout；机械固定结构；drawing 标称 5A current rating | Rev.A receptacle Stage 2 Primary selection；确认当前最大约 1.1A input-current architecture 的 connector capability；Stage 3 footprint/mechanical input | Repository 已归档用户提供的 PDF；drawing review 不证明采购批次、焊接、PCB、机械配合或硬件测试通过 | Verified for Stage 2 selection / Locally archived |
+| 同一 TYPE-C-31-M-12 formal drawing/spec | drawing 未规定强制 PCB thickness，未发现与 1.6 mm FR-4 的明确机械冲突 | 允许将 1.6 mm FR-4 记录为 Rev.A preliminary PCB thickness baseline | 不是 Final fabrication stackup；层数、铜厚、表面处理、厂家与最终公差未定 | No explicit conflict found / Stage 3 finalization required |
+
 商品页、分销商页、论坛、教程和开源项目未用于证明上述关键参数。官方 datasheet 中的 typical application / typical curve 也不等同于本 Project 已计算或已验证。
 
 ## Stage 2 所需官方 datasheet
@@ -56,7 +63,8 @@
 | Functional battery UVLO | BQ25185 官方 datasheet | 阈值、迟滞、延时、USB 与电池路径隔离 | Integrated primary verified；full behavior Deferred |
 | 3.3V 输出监控与保护 | TPS25947 官方 datasheet | UV/OV、启动禁止、过流/短路、锁断/复位与热行为 | `TPS259474L` primary verified；exact network Deferred |
 | External NTC network | 电池商品温度规格与 BQ25185 官方 datasheet | 允许温度窗、阻值、Beta、容差、封装、偏置及开短路行为 | Architecture verified；MPN/network Deferred |
-| 连接器与高电流互连 | 制造商正式图纸和额定规格 | 极性/键位、接触电阻、额定电流、线规与温升 | Open |
+| USB-C receptacle | TYPE-C-31-M-12 formal drawing/spec | 引脚、recommended PCB layout、机械固定、额定能力与板厚冲突检查 | Primary verified for Stage 2；footprint/mechanical finalization Deferred |
+| Battery connector 与高电流互连 | 制造商正式图纸、实物和额定规格 | 极性/键位、接触电阻、额定电流、线规与温升 | Physical Verification Pending |
 
 ## 当前缺失的电池包正式参数
 
@@ -77,4 +85,4 @@
 
 - 当前商品规格可作为 Rev.A Design Basis，但不能独立证明容量/电流/温度测试条件、保护阈值与恢复方式、循环寿命、电芯身份、连接器载流能力或内部温度检测。
 - 商品资料、非当前型号规格书和 Framework 文档均不能证明本项目的 EDA 实现或测试状态。
-- Stage 2 已依据官方制造商资料形成 Primary / Alternate 决策；这些结论不是 Final BOM，未完成的外围、容差、热、Layout 与状态机工作明确 Deferred to Stage 3。
+- Stage 2 已依据官方制造商资料及用户提供的 TYPE-C-31-M-12 formal drawing/spec 完成 Primary / Alternate 决策；这些结论不是 Final BOM，未完成的外围、容差、热、Layout、footprint 与状态机工作明确 Deferred to Stage 3。
