@@ -9,41 +9,42 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 | Category | Primary / architecture | Alternate / fallback | Stage 2 status |
 | --- | --- | --- | --- |
 | Battery pack | 1S protected Li-Polymer pouch pack, 103450, 3.7V / 2000mAh | TBD only if requirements are reopened | Design Basis accepted; product-spec evidence only |
-| Charger / Power Path | TI BQ25185DLH | TI BQ24075; Microchip MCP73871 | Primary selected |
-| Functional battery UVLO | BQ25185 integrated BUVLO / BATFET behavior | External TPS3700 + disconnect only if later evidence shows need | Primary architecture selected |
-| 3.3V Buck-Boost | TI TPS63802 | TI TPS63070; TPS63001 only if 1A peak target is relaxed | Primary selected |
+| Charger / Power Path | TI BQ25185DLHR (LCSC C19725033) | BQ24075RGTR + external functional UVLO / battery disconnect; MCP73871T-2CCI/ML secondary fallback | Primary selected; current availability Limited |
+| Functional battery UVLO | BQ25185 integrated BUVLO / BATFET behavior | TPS3700 + external disconnect with BQ24075 architecture-level Alternate | Primary architecture selected |
+| 3.3V Buck-Boost | TI TPS63802DLAR (LCSC C2845237) | TI TPS63070; TPS63001 only if 1A peak target is relaxed | Primary selected |
 | External battery temperature | External NTC near pouch surface, about 10kΩ @25℃, β about 3435K | Different NTC only with compensation analysis | Architecture selected; MPN deferred |
-| Output protection | TI TPS259474LRPW | TI TPS259470LRPW only with external latch/control qualification | Primary selected; alternate conditional |
-| USB-C CC/current detection | TI TUSB320 in UFP/Sink role | TBD | Primary selected; implementation deferred |
-| CC ESD | TI TPD2E2U06 | TI TPD6S300A for stronger short-to-VBUS robustness | Primary selected; robust option optional |
+| Output protection | TI TPS259474LRPWR (LCSC C2864845) | TPS259470LRPWR only with external latch/control qualification; not equivalent | Primary orderable MPN normalized |
+| USB-C CC/current detection | TI TUSB320LAIRWBR (LCSC C132554) in UFP/Sink role | TBD | Exact Primary selected; implementation deferred |
+| CC ESD | STMicroelectronics USBLC6-2SC6 (LCSC C7519) | TI TPD6S300A for stronger short-to-VBUS robustness | Primary functionally replaced; Stage 3 pinout/topology/layout review required |
 | USB VBUS protection | 5V-appropriate TVS/transient protection before BQ25185 IN | Exact MPN TBD | Architecture selected; MPN deferred |
 | USB-C receptacle | TYPE-C-31-M-12 | Reopen selection only if Stage 3 mechanical/footprint review finds a conflict | Primary selected; exact receptacle resolved for Stage 2 |
 | Battery connector | 2.54mm-class, 2-wire red/black interface | Exact series TBD | Physical verification required |
 
 ## 1. Charger / Power Path
 
-### Primary — TI BQ25185DLH
+### Primary — TI BQ25185DLHR (LCSC C19725033)
 
-- **Selection rationale:** 集成单节电池线性充电、Power Path、SYS load priority、输入电流管理/DPPM、外部 TS/NTC、BATFET、无电池/低电池时由输入维持 SYS，以及 battery BUVLO；与 1S 4.20V、默认约 500mA 的 Rev.A 方向匹配，外围和状态机复杂度低于分立 Power Path。
+- **Selection rationale:** BQ25185 仍最符合当前 Rev.A architecture；它集成单节电池线性 Charger、Power Path、SYS load priority、输入电流管理/DPPM、外部 TS/NTC、BATFET、无电池/低电池时由输入维持 SYS，以及 battery BUVLO，与 1S 4.20V、默认约 500mA 的 Rev.A 方向匹配，外围和状态机复杂度低于分立 Power Path。
 - **Key verified parameters:** 官方 datasheet 支持 1-cell 应用；典型充电调节范围 3.6V～4.4V，包含 4.2V 设置；典型充电电流范围 5mA～1000mA；可选输入限流包含约 100mA、500mA、1050mA；Power Path 在 battery empty/charging 时可由 IN 维持 SYS，并在输入受限时优先系统负载、降低充电电流；TS 以 10kΩ @25℃、β(25/85)=3435K 为直接目标；集成 BUVLO 在 VBAT falling 典型 3.0V、恢复迟滞典型约 150mV，低于阈值时断开 BAT-to-SYS。
 - **Risks:** 线性充电器的最坏工况功耗/温升尚未预算；2mm × 2mm WSON/thermal pad 对手工焊接和散热布局有挑战；固定 BUVLO 与商品标称 2.75V cutoff 的协调、恢复状态、无电池启动负载及漏电边界仍需设计分析和实测。
-- **Pending verification:** 确认当前订购后缀、封装可制造性和采购状态；核对所有 TS open/short/disconnected 情形与 USB-valid SYS continuity；核对 100/500/1050mA input-limit switching 的允许实现和上电默认状态。
+- **Procurement evidence:** LCSC 将 BQ25185DLHR 对应到 C19725033。当前 availability 仅按 point-in-time evidence 记录为 `Limited`，不把具体库存数量固化为长期 Project Fact；真正采购前必须重新检查 availability。
+- **Pending verification:** 确认封装可制造性；核对所有 TS open/short/disconnected 情形与 USB-valid SYS continuity；核对 100/500/1050mA input-limit switching 的允许实现和上电默认状态。
 - **Deferred to Stage 3:** ISET、ILIM/VSET、输入/输出/电池电容、TS 网络、CE/状态引脚、热预算、启动/终止/再充电、详细 BUVLO 工况与布局计算。
 
 ### Alternates
 
-- **BQ24075:** 官方资料确认 1-cell Li-ion/Li-Polymer、4.2V、最高 1.5A、Power Path、输入 DPM 和 thermistor monitoring。作为成熟 fallback 保留；相对 BQ25185 封装更大、外围/输入策略不同，且本项目仍需单独实现/核对功能性 UVLO 配合。
-- **MCP73871:** 官方资料确认 1-cell、integrated system load sharing / power-path management、可同时供系统和充电、温度监控。作为跨厂商 fallback 保留；输入选择、热行为、状态机和外围与 BQ25185 不同，切换会触发完整的 Stage 2/3 重新核对。
+- **BQ24075RGTR + external functional UVLO / battery disconnect:** architecture-level Alternate，外部 UVLO 沿用 TPS3700 + external disconnect 思路。BQ24075 不是 BQ25185 的 drop-in replacement；切换必须重新核对 functional battery UVLO、hysteresis、battery disconnect、USB / battery transition、deep-discharge startup、quiescent current、thermal behavior 与 charger control。
+- **MCP73871T-2CCI/ML:** secondary / cross-vendor fallback。官方资料确认 1-cell、integrated system load sharing / power-path management、可同时供系统和充电、温度监控；输入选择、热行为、状态机和外围与 BQ25185 不同。
 
 ## 2. Functional Battery UVLO
 
 - **Primary:** 使用 BQ25185 集成 BUVLO / BATFET 行为。官方 datasheet 明确低于 BUVLO 时 BAT-to-SYS 断开，典型 falling threshold 3.0V、典型恢复迟滞约 150mV，并有约 60µs deglitch；该点早于商品标称 2.75V 放电截止，符合“内部保护只作最后后备”的方向。
-- **Fallback:** TPS3700 + external battery disconnect 从 Rev.A primary baseline 移除。只有 Stage 3 容差/状态机分析或后续硬件验证证明集成阈值、恢复、漏电或 USB/Battery 隔离不足时才重新启用。
+- **Alternate architecture:** BQ24075RGTR + TPS3700 + external battery disconnect。该方案不与 BQ25185 pin-compatible 或 drop-in equivalent；只有切换 Alternate 或后续证据证明集成方案不足时才进入详细设计。
 - **Pending / Stage 3:** 核对最坏阈值容差、负载压降、恢复条件、深放电启动、USB 插拔转换和 battery-only quiescent current；本阶段不设计外部 UVLO 电路。
 
 ## 3. 3.3V Buck-Boost
 
-### Primary — TI TPS63802
+### Primary — TI TPS63802DLAR (LCSC C2845237)
 
 - **Selection rationale:** 对 1S 电池跨越 3.3V 的输入范围提供真正 Buck-Boost；相比 TPS63001 对当前 1A/100ms Design Target 有更明确的电流余量。
 - **Key verified parameters:** 官方 datasheet 给出 1.3V～5.5V 输入、启动需高于 1.8V、1.8V～5.2V 可调输出；在 VIN ≥2.3V、VOUT=3.3V 时标称 2A output-current capability；官方典型曲线包含 100mA→1A 的 buck、buck-boost 与 boost transient examples。
@@ -65,31 +66,34 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 
 ## 5. 3.3V Output Protection
 
-### Primary — TI TPS259474LRPW
+### Primary — TI TPS259474LRPWR (LCSC C2864845)
+
+`TPS259474LRPW` 到 `TPS259474LRPWR` 是 orderable MPN normalization，不是功能性器件替换。
 
 - **Selection rationale:** 项目 fault policy 是 latch-off / controlled recovery。官方 datasheet 将 TPS259474x 定义为 circuit-breaker variant：超过 ILIM 的持续过流在可调 blanking interval 后关断；`L` variant 在该 fault 后保持 latched off，符合“不允许无限热自动重启”。
 - **Key verified parameters:** TPS25947 family 的工作输入范围 2.7V～23V、集成 back-to-back FET、reverse-current blocking、可调 ILIM/ITIMER/UVLO/OVLO；RPW 为 10-pin VQFN-HR。
 - **Risks:** 该器件能力远高于 3.3V/500mA 应用，低端 ILIM 容差、短路响应、SOA、压降和 reset method 必须核对；小封装焊接与热路径仍是风险。
 - **Pending / Deferred to Stage 3:** ILIM、ITIMER、UV/OV、dVdt、reset/enable、PG、故障注入工况、热与 Layout。
 
-### Conditional fallback — TI TPS259470LRPW
+### Conditional fallback — TI TPS259470LRPWR
 
-官方资料把 TPS259470x 定义为 active-current-limit variant，而不是 TPS259474x 的 circuit-breaker variant；`L` suffix 的 thermal/fault latch behavior 不能把 persistent over-current current limiting 自动变成等价 circuit-break latch-off。只有加入并验证外部 FLT/EN 锁断与受控 reset 方案后才可作为 fallback，不能直接替代 primary。
+官方资料把 TPS259470x 定义为 active-current-limit variant，而不是 TPS259474x 的 circuit-breaker variant；`L` suffix 的 thermal/fault latch behavior 不能把 persistent over-current current limiting 自动变成等价 circuit-break latch-off。它不是等价 Primary / Alternate；只有加入并验证外部 FLT/EN 锁断与受控 reset 方案后才可作为 conditional fallback，不能直接替代 primary。
 
 ## 6. USB-C Input and CC Current Detection
 
 - **Architecture:** USB Type-C、5V Sink-only、no PD、no data；CC1/CC2 必须正确处理，不假设任意 source 可供 2A/3A。
-- **Primary controller — TUSB320:** 官方 datasheet 支持固定 UFP mode，在 CC1/CC2 呈现 Rd，并在 attach 后通过 GPIO OUT1/OUT2 或 I2C 报告 Source 的 Default / 1.5A / 3A advertisement。
+- **Primary controller — TUSB320LAIRWBR (LCSC C132554):** 官方 datasheet 支持固定 UFP mode，在 CC1/CC2 呈现 Rd，并在 attach 后通过 GPIO OUT1/OUT2 或 I2C 报告 Source 的 Default / 1.5A / 3A advertisement。
 - **Native USB-C / C-to-C policy:** `Default` advertisement 使用保守的 BQ25185 input-current setting，基线约 500mA；只有 attach 时合格检测到 `1.5A` 或 `3A` advertisement，才允许提升至 BQ25185 的约 1.05A～1.1A input-current-limit 档。3A Source 仅表示能力声明，本 Project 不吸取 3A，仍受 BQ25185 input limit 约束。
 - **Legacy USB-A / A-to-C policy:** Rev.A 不实现 BC1.2 或 proprietary charger detection，不承诺利用 legacy charger 标签标称的 1.5A / 2A / 3A capability，并按 Type-C Default / conservative input policy 处理；不增加 legacy charger-detection IC。
 - **Accepted Rev.A limitation:** TUSB320 GPIO mode 以 attach 时检测到的 Source current advertisement 为基础；当前无 firmware，不动态跟踪 Source 后续 Rp capability change。绑定 datasheet 支持在 GPIO mode 解码 attach 结果，且可用保守硬件默认实现合理 fail-safe，因此该限制不阻断 Stage 2 closeout。
-- **Mandatory Stage 3 verification:** 设计并核对 power-up default、attach、detach、OUT1 / OUT2 decoding、resistor / switch control 和 fail-safe behavior。任何 unknown、invalid 或 unqualified state 必须回到 conservative input-current behavior，不得默认进入高电流档。
+- **Mandatory Stage 3 verification:** 设计并核对 power-up default、EN / PORT configuration、attach、detach、OUT1 / OUT2 decoding、resistor / switch control 和 fail-safe behavior。任何 unknown、invalid 或 unqualified state 必须回到 conservative input-current behavior，不得默认进入高电流档。本轮没有完成或声称 schematic verification。
 
 ## 7. USB-C CC Protection
 
-- **Primary — TPD2E2U06:** 官方资料确认双通道、5.5V working voltage、1.5pF typical line capacitance，并提供 IEC 61000-4-2 ESD 保护；适合作为 CC1/CC2 的基本 ESD 方案。它不是 short-to-VBUS OVP protector。
+- **Primary — STMicroelectronics USBLC6-2SC6 (LCSC C7519):** Rev.A CC1 / CC2 不承担 USB2.0 high-speed data；ST 官方资料确认该器件提供双线基础 ESD protection，且其 JLC/LCSC procurement availability 明显更现实，因此替换 TPD2E2U06 作为当前 Primary。USBLC6-2SC6 不是 CC short-to-VBUS OVP protector。
+- **Replacement boundary:** 这是功能替换，不是 pin-to-pin replacement。pinout、package、connection topology、grounding 与 layout 必须在 Stage 3 schematic / layout 中依据 ST 官方 datasheet 重新核对。
 - **Optional robust alternate — TPD6S300A:** 官方资料提供 CC/SBU 等通道的 24V short-to-VBUS protection 与多通道 IEC ESD；仅在接口误短接鲁棒性、空间和成本评估支持时采用，不是 Rev.A 强制项。
-- **Deferred to Stage 3 / layout:** 器件摆放、回流/接地、CC trace stub 与是否升级为 TPD6S300A。
+- **Deferred to Stage 3 / layout:** USBLC6-2SC6 的 pin mapping、连接拓扑、器件摆放、回流/接地、CC trace stub 与是否升级为 TPD6S300A。
 
 ## 8. USB VBUS Protection
 

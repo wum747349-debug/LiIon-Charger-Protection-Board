@@ -6,11 +6,11 @@
 
 第一版围绕“USB 系统供电优先、剩余能力充电、电池可独立供电、无电池也能运行”建立电源路径。USB-C 仅作普通 5V Sink；Charger / Power Path 负责 CC-CV、输入与充电电流约束、负载优先和充电退让；System Rail 再经 3.3V 稳压与输出保护供给实验负载。
 
-完整的模式、负载和验收边界以 [requirements.md](requirements.md) 为准。500mA 连续是 Required，1A/100ms 仍是尚未保证的 Design Target。Stage 2 主选为 BQ25185DLH Charger / Power Path、TPS63802 Buck-Boost、TPS259474LRPW 输出保护、TUSB320 Type-C current-advertisement detection、TPD2E2U06 CC ESD 和 TYPE-C-31-M-12 receptacle；这些是 Primary selection，不是 Final BOM。
+完整的模式、负载和验收边界以 [requirements.md](requirements.md) 为准。500mA 连续是 Required，1A/100ms 仍是尚未保证的 Design Target。Rev.A selection baseline 为 BQ25185DLHR Charger / Power Path、TPS63802DLAR Buck-Boost、TPS259474LRPWR 输出保护、TUSB320LAIRWBR Type-C current-advertisement detection、USBLC6-2SC6 CC ESD 和 TYPE-C-31-M-12 receptacle；这些是 Primary selection，不是 Final BOM。
 
 ## Power Path 与无电池运行
 
-实现必须把 System Rail 与充电终止判断从外部负载隔离：USB 有效时负载优先且充电退让，无 USB 时切换到合格电池路径；普通充电器、电池与负载的简单并联不符合该意图。BQ25185DLH 是当前 primary，其官方资料确认 Power Path 可在电池 empty/charging 时由 IN 维持 SYS，并在输入受限时优先系统负载、降低充电电流。Rev.A 默认快充目标约 500mA，商品规格允许约 1.0A；ISET、ILIM/VSET、热和状态机计算全部 Deferred to Stage 3。
+实现必须把 System Rail 与充电终止判断从外部负载隔离：USB 有效时负载优先且充电退让，无 USB 时切换到合格电池路径；普通充电器、电池与负载的简单并联不符合该意图。BQ25185DLHR（LCSC C19725033）仍是当前 primary，最符合 Rev.A architecture，并同时承担 Charger / Power Path / BATFET / BUVLO 等职责。其官方资料确认 Power Path 可在电池 empty/charging 时由 IN 维持 SYS，并在输入受限时优先系统负载、降低充电电流。当前采购 availability 是 point-in-time evidence，仅记录为 `Limited`；真正采购前必须重新检查，不把具体库存数量固化为 Project Fact。Rev.A 默认快充目标约 500mA，商品规格允许约 1.0A；ISET、ILIM/VSET、热和状态机计算全部 Deferred to Stage 3。
 
 ## 三层保护意图
 
@@ -22,11 +22,11 @@
 
 覆盖专用单节锂离子 CC-CV、Power Path、输入和充电电流限制、终止控制、外部 NTC，以及功能性电池 UVLO、迟滞与延时。
 
-Rev.A primary 使用 BQ25185 集成 BUVLO / BATFET 行为：官方资料给出典型 3.0V falling threshold、约 150mV 恢复迟滞，并在低于阈值时断开 BAT-to-SYS，方向上早于商品标称 2.75V cutoff。外部 TPS3700 + battery disconnect 从 primary baseline 移除，仅在 Stage 3 容差/状态机分析或硬件验证表明集成行为不足时作为 fallback。最终全工况行为 Deferred to Stage 3；UVLO 不得关闭有效 USB 的 System Rail 路径。
+Rev.A primary 使用 BQ25185 集成 BUVLO / BATFET 行为：官方资料给出典型 3.0V falling threshold、约 150mV 恢复迟滞，并在低于阈值时断开 BAT-to-SYS，方向上早于商品标称 2.75V cutoff。architecture-level Alternate 为 BQ24075RGTR + TPS3700 + external battery disconnect；它不是 BQ25185 的 drop-in replacement。切换时必须重新核对 functional battery UVLO、hysteresis、battery disconnect、USB / battery transition、deep-discharge startup、quiescent current、thermal behavior 与 charger control。最终全工况行为 Deferred to Stage 3；UVLO 不得关闭有效 USB 的 System Rail 路径。MCP73871T-2CCI/ML 仅保留为 secondary / cross-vendor fallback。
 
 ### 第三层：3.3V 输出保护
 
-保护架构需要独立控制外部负载资格：稳压器有效输出建立前保持负载关闭，输出欠压/过压时断开负载，持续过流时关闭，硬短路时快速限制或关闭。Fault policy 已冻结为 latch-off / controlled recovery，primary 为 TPS259474LRPW。官方资料确认 `474L` 是 persistent over-current 后 circuit-break 并 latch-off 的变体；TPS259470LRPW 只在外部锁断/控制得到设计和验证时作为 conditional fallback，因为 `470x` 的 persistent-over-current 行为是 active current limiting，不能视为等价替代。ILIM、timer、UV/OV 和 reset Deferred to Stage 3。
+保护架构需要独立控制外部负载资格：稳压器有效输出建立前保持负载关闭，输出欠压/过压时断开负载，持续过流时关闭，硬短路时快速限制或关闭。Fault policy 已冻结为 latch-off / controlled recovery，primary 的 orderable MPN 规范为 TPS259474LRPWR（LCSC C2864845）；这是 orderable MPN normalization，不是功能性器件替换。官方资料确认 `474L` 是 persistent over-current 后 circuit-break 并 latch-off 的变体；TPS259470LRPWR 只在外部锁断/控制得到设计和验证时作为 conditional fallback，因为 `470x` 的 persistent-over-current 行为是 active current limiting，不能视为等价 Primary / Alternate。ILIM、timer、UV/OV 和 reset Deferred to Stage 3。
 
 ## 外部 NTC 意图与限制
 
@@ -34,17 +34,17 @@ Rev.A primary 使用 BQ25185 集成 BUVLO / BATFET 行为：官方资料给出�
 
 ## 3.3V Buck-Boost 决策
 
-TPS63802 是 primary，理由是其 1.3V～5.5V 输入范围覆盖 1S 路径，官方资料在 VIN≥2.3V、VOUT=3.3V 时给出 2A output-current capability，并提供 100mA→1A 的典型 transient examples。上述资料支持它进入 primary，但不保证本项目 1A/100ms 目标；电感、电容、FB、纹波、瞬态、电流应力、热和 Layout 全部 Deferred to Stage 3。
+TPS63802DLAR（LCSC C2845237）是 primary，理由是其 1.3V～5.5V 输入范围覆盖 1S 路径，官方资料在 VIN≥2.3V、VOUT=3.3V 时给出 2A output-current capability，并提供 100mA→1A 的典型 transient examples。上述资料支持它进入 primary，但不保证本项目 1A/100ms 目标；电感、电容、FB、纹波、瞬态、电流应力、热和 Layout 全部 Deferred to Stage 3。
 
 TPS63070 是 higher-margin fallback。TPS63001 在 3.3V boost mode 的官方额定仅到约 800mA，因此只在 1A peak Design Target 被明确放宽后作为 conditional fallback。
 
 ## USB-C 输入与保护决策
 
-- Rev.A 为 5V Sink-only、no USB-PD、no data。TUSB320 以 UFP/Sink 角色处理 CC1/CC2，并通过 OUT1/OUT2 检测 Source current advertisement。
+- Rev.A 为 5V Sink-only、no USB-PD、no data。TUSB320LAIRWBR（LCSC C132554）是精确 Primary，以 UFP/Sink 角色处理 CC1/CC2，并通过 GPIO OUT1/OUT2 检测 Source current advertisement。
 - Native USB-C / C-to-C 的 `Default` advertisement 使用保守 BQ25185 input-current setting，基线约 500mA；attach 时合格检测到 `1.5A` / `3A` 才允许提升至约 1.05A～1.1A input-current-limit 档。3A Source 不表示本 Project 会吸取 3A。
 - Legacy USB-A charger + A-to-C cable 按 Type-C Default / conservative policy 处理。Rev.A 不实现 BC1.2 / proprietary charger detection，不承诺利用标签标称的 1.5A / 2A / 3A capability，也不增加 legacy charger-detection IC。
-- 接受 TUSB320 GPIO mode 仅基于 attach 时检测结果且无 firmware 动态跟踪后续 Rp capability change 的 Rev.A 限制。Stage 3 必须设计并核对 power-up default、attach、detach、OUT1/OUT2 decoding、resistor/switch control 与 fail-safe；unknown / invalid / unqualified state 一律回到 conservative input-current behavior。
-- CC ESD primary 为 TPD2E2U06；TPD6S300A 只作为带 short-to-VBUS protection 的 optional robust alternate。
+- 接受 TUSB320 GPIO mode 仅基于 attach 时检测结果且无 firmware 动态跟踪后续 Rp capability change 的 Rev.A 限制。Stage 3 必须设计并核对 power-up default、EN / PORT configuration、attach、detach、OUT1/OUT2 decoding、resistor/switch control 与 fail-safe；unknown / invalid / unqualified state 一律回到 conservative input-current behavior。本轮不声称已经完成 schematic verification。
+- CC ESD primary 改为 STMicroelectronics USBLC6-2SC6（LCSC C7519），因为 Rev.A CC1 / CC2 不承载 USB2.0 high-speed data，基础 ESD protection 需求与更现实的 JLC/LCSC procurement availability 更匹配。它是功能替换，不是 TPD2E2U06 的 pin-to-pin replacement；pinout、package、connection topology、grounding 与 layout 必须在 Stage 3 依据 ST 官方 datasheet 重新核对。USBLC6-2SC6 不是 CC short-to-VBUS OVP protector；TPD6S300A 只在需要更强 short-to-VBUS robustness 时作为 optional robust alternate。
 - VBUS 路径为 `USB-C VBUS → 5V-appropriate TVS/transient protection → BQ25185 IN`；准确 TVS MPN Deferred，不默认叠加 input eFuse。
 - USB-C receptacle primary 为 TYPE-C-31-M-12。正式 drawing/spec 显示 16-pin、独立 CC1/CC2、VBUS/GND、D+/D−、SBU1/SBU2、recommended PCB layout 与机械固定结构，并满足当前最大约 1.1A input-current architecture；未进行连接器或 PCB 实物测试。
 - 1.6 mm FR-4 是 `Rev.A preliminary PCB thickness baseline`；drawing 未显示明确冲突，但它不是 Final fabrication stackup。层数、铜厚、表面处理、厂家和最终机械公差后续确定。
