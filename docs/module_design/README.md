@@ -1,16 +1,20 @@
-# Stage 3 — Module Design Entry
+# Stage 3 — Module Design Records
 
-Status: Entry baseline only — module design and schematic capture not started
+Status: Stage 3 active — M2/M3 module records synchronized; cross-module integration pending
 
-本目录按绑定 Framework 的 Stage 3 structure contract 启用。后续模块文档将在实际开展 charger / Power Path、USB-C input control、3.3V Buck-Boost、output protection、external NTC 和接口设计时分别记录连接、参数计算、依据、风险与布局要求。
+## Current progress
 
-当前输入边界：
+| Module | Current status | Record |
+| --- | --- | --- |
+| M1 — USB-C Input / CC / Current Capability Control | NOT STARTED; next hardware design task | Pending |
+| M2 — BQ25185 Charger / Power Path | COMPLETE FOR STAGE-3 MODULE INTEGRATION | [m2_charger_power_path.md](m2_charger_power_path.md) |
+| M3 — Battery + External NTC | SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION | [m3_battery_external_ntc.md](m3_battery_external_ntc.md) |
+| M4 — 3.3V Buck-Boost | NOT STARTED | Pending |
+| M5 — 3.3V Output Protection | NOT STARTED | Pending |
+| M6 — Remaining interfaces / support | NOT STARTED | Pending |
 
-- Stage 2 Critical Component Selection closeout PASS，Stage 3 已获用户授权。
-- TYPE-C-31-M-12 是 Rev.A USB-C receptacle Primary；1.6 mm FR-4 仅为 preliminary PCB thickness baseline。
-- USB 输入策略为 5V Sink-only、no PD、no data；legacy USB-A 不实现 BC1.2 / proprietary detection。
-- TUSB320 的 initial-only advertisement limitation 已接受；unknown / invalid / unqualified state 必须采用 conservative input-current behavior。
-- BQ25185、TPS63802、TPS259474、NTC、VBUS TVS 及 1A / 100ms waveform definition 的详细工作均由后续 Stage 3 模块设计完成。
-- Battery connector series / polarity / wire gauge 保持 Physical Verification Pending；battery product-spec 与 pack internal protection behavior 保持 Not Verified 边界。
+用户已在 Altium Designer 中手工 capture 当前 M2/M3 schematic draft。后续顺序为 M1，再完成 M4/M5/M6，最后执行 Stage 3 Cross-Module Integration Check；本记录不启动这些未完成模块。
 
-本文件不包含已完成的电路、外围定值、原理图、Final BOM、EDA、ERC、DRC、simulation、thermal/procurement/manufacturing verification、bring-up 或 test 证据。
+## Evidence boundary
+
+`.SchDoc` 仍是 authoritative implementation source。当前进度属于 user-reported / screenshot-reviewed Stage 3 schematic capture progress；仓库中没有与当前版本对应的完整 schematic PDF、完整 BOM 或 ERC evidence，因此不声称实际 `.SchDoc` pin mapping fully verified、schematic complete、ERC PASS、footprint verified、PCB/hardware verified 或 temperature trip experimentally verified。Stage 3 remains active and is not complete；Stage 4 has not started。

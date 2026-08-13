@@ -1,6 +1,6 @@
 # 设计说明
 
-状态：Stage 2 — Critical Component Selection closeout PASS；Stage 3 entry authorized
+状态：Stage 2 — Critical Component Selection closeout PASS；Stage 3 active，M2/M3 module design synchronized
 
 ## 整板架构意图
 
@@ -10,7 +10,7 @@
 
 ## Power Path 与无电池运行
 
-实现必须把 System Rail 与充电终止判断从外部负载隔离：USB 有效时负载优先且充电退让，无 USB 时切换到合格电池路径；普通充电器、电池与负载的简单并联不符合该意图。BQ25185DLHR（LCSC C19725033）仍是当前 primary，最符合 Rev.A architecture，并同时承担 Charger / Power Path / BATFET / BUVLO 等职责。其官方资料确认 Power Path 可在电池 empty/charging 时由 IN 维持 SYS，并在输入受限时优先系统负载、降低充电电流。当前采购 availability 是 point-in-time evidence，仅记录为 `Limited`；真正采购前必须重新检查，不把具体库存数量固化为 Project Fact。Rev.A 默认快充目标约 500mA，商品规格允许约 1.0A；ISET、ILIM/VSET、热和状态机计算全部 Deferred to Stage 3。
+实现必须把 System Rail 与充电终止判断从外部负载隔离：USB 有效时负载优先且充电退让，无 USB 时切换到合格电池路径；普通充电器、电池与负载的简单并联不符合该意图。BQ25185DLHR（LCSC C19725033）仍是当前 primary，并承担 Charger / Power Path / BATFET / BUVLO 等职责。当前 M2 记录采用 `R1=600Ω / 1%` 设定约 500mA fast charge；IN/SYS/BAT 去耦分别为 2.2uF/25V、10uF/25V、1uF。ILIM/VSET 使用 13.0kΩ 与 4.99kΩ 两段网络及 Q1 bypass：Q1 OFF 约 18kΩ 为 conservative state，Q1 ON 为 13kΩ high-current state，必须等待 M1 完成 USB source capability qualification。Q1/Q2 exact MPN、M1 control/default sequencing、热和实际 EDA/ERC verification 保持 OPEN。
 
 ## 三层保护意图
 
@@ -30,7 +30,9 @@ Rev.A primary 使用 BQ25185 集成 BUVLO / BATFET 行为：官方资料给出�
 
 ## 外部 NTC 意图与限制
 
-外部 NTC 通过 BQ25185 TS/MR 只控制充电资格，异常不得切断 USB 系统路径。目标为约 10kΩ @25℃、β≈3435K，贴近 pouch 表面，充电窗口目标约 0℃～45℃。BQ25185 官方资料与该 NTC 类型直接匹配并在 TS hot/cold fault 时暂停充电；准确 NTC MPN、安装位置、补偿网络和容差分析 Deferred to Stage 3。
+Battery Design Basis 仍为商品规格充电温度约 0℃～45℃。Rev.A 外部 NTC baseline 为容易采购的 wired/epoxy `10kΩ @25℃`、`β≈3435K`、`±1% preferred`，贴近并电气绝缘于 pouch 代表性表面；exact MPN 与最终安装方法保持 OPEN。`NTC_TS` 经 `R8=2.7kΩ / 1%` 接外部 NTC，R8 主要缓解 NTC short 将复用的 TS/MR 直接硬拉近 GND 所带来的 push-button / long-low / factory-mode interaction，不作为精密校准声明。
+
+M3 增加 `TLV7041DBVR` open-drain comparator 作为高温 charging interlock：3V3 经 90.9kΩ/10kΩ divider 产生 nominal 约 0.327V `VHOT_REF`，与 `NTC_TS` 比较；OUT 与 `CHG_ENABLE_CMD` 经约 4.7kΩ 汇合于 `CHG_GATE`。温度合格且 command 为 HIGH 时 Q2 才能拉低 CE#；低 `NTC_TS` fault 时 comparator 拉低 `CHG_GATE`，R5 将 CE# 拉高。当前 nominal conservative hardware window 约 4℃～39℃，是工程实现而非新的 manufacturer specification，也不是 verified exact trip range；电阻/comparator/NTC 容差、pouch thermal lag 与实际 trip test 均待后续验证。温度故障只撤销 charging qualification，不关闭有效 USB-to-SYS Power Path；3V3 supply/startup 依赖 M4，command/default sequencing 依赖 M1。
 
 ## 3.3V Buck-Boost 决策
 
@@ -77,4 +79,4 @@ Rev.A Battery Design Basis 已改为 1S protected Li-Polymer pouch pack、103450
 
 ## 当前证据声明
 
-Stage 2 closeout PASS 仅表示关键架构器件及方向足以进入模块级详细设计，不是 Final BOM。没有详细外围计算、原理图、PCB、EDA、ERC、DRC、仿真、thermal/procurement/manufacturing verification、焊接、Bring-up 或 Test 结果；本文不能用于批准制造，也不能把候选器件描述为已测试。
+Stage 2 closeout PASS 仅表示关键架构器件及方向足以进入模块级详细设计，不是 Final BOM。用户已手工 capture 当前 M2/M3 schematic draft；`.SchDoc` 仍是 authoritative implementation source，且当前没有完整 schematic PDF/BOM/ERC evidence，因此不声称实际 pin mapping fully verified、schematic complete、ERC PASS、footprint/PCB/hardware verified 或 temperature trip experimentally verified。本文不能用于批准制造。

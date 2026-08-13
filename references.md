@@ -1,6 +1,6 @@
 # 资料索引
 
-状态：Stage 2 evidence closeout PASS — 2026-08-12；Stage 3 entry authorized
+状态：Stage 2 evidence closeout PASS — 2026-08-12；Stage 3 active，M2/M3 evidence index synchronized
 
 关键硬件参数必须依据当前型号的官方 datasheet、reference manual、application note 或可追溯的供应商正式资料核对。商品页只能作为采购证据，不能单独证明关键参数。
 
@@ -32,6 +32,7 @@
 | Function | Manufacturer / device | Official source | Project use | Status |
 | --- | --- | --- | --- | --- |
 | Charger / Power Path / integrated BUVLO / TS | TI BQ25185DLHR | [BQ25185 datasheet, SLUSF65A, Rev. A](https://www.ti.com/lit/ds/symlink/bq25185.pdf) | Primary；核对 1-cell、Power Path、SYS priority/batteryless behavior、BATFET、4.2V、charge/input current settings、TS 与 BUVLO | Verified for Stage 2 selection; orderable MPN verified |
+| High-temperature charge interlock | TI TLV7041DBVR | [TLV7041 datasheet, SLVSE13J, Rev. J](https://www.ti.com/lit/ds/symlink/tlv7041.pdf) | Stage 3 auxiliary support component；核对普通 TLV7041DBVR pinout、open-drain OUT、input/supply/POR behavior；不得与 TLV7041S/L pinout 混淆 | Official technical source indexed; Project circuit/hardware not verified |
 | Charger architecture-level alternate | TI BQ24075RGTR | [BQ2407x datasheet, Rev. N](https://www.ti.com/lit/ds/symlink/bq24075.pdf) | 与 TPS3700 + external disconnect 配合；不是 BQ25185 drop-in replacement | Verified for alternate; full architecture requalification required |
 | Charger secondary fallback | Microchip MCP73871T-2CCI/ML | [MCP73871 product page and official datasheet DS20002090F](https://www.microchip.com/en-us/product/MCP73871) | Cross-vendor fallback；核对 1-cell、system load sharing / power-path 与 temperature monitoring | Verified for secondary fallback |
 | 3.3V Buck-Boost | TI TPS63802DLAR | [TPS63802 datasheet, SLVSEU9D, Rev. D](https://www.ti.com/lit/ds/symlink/tps63802.pdf) | Primary；核对输入/输出范围、3.3V current capability、typical 1A transient examples | Verified for Stage 2 selection; orderable MPN verified |
@@ -62,6 +63,8 @@
 | 同一 TYPE-C-31-M-12 formal drawing/spec | drawing 未规定强制 PCB thickness，未发现与 1.6 mm FR-4 的明确机械冲突 | 允许将 1.6 mm FR-4 记录为 Rev.A preliminary PCB thickness baseline | 不是 Final fabrication stackup；层数、铜厚、表面处理、厂家与最终公差未定 | No explicit conflict found / Stage 3 finalization required |
 
 商品页、分销商页、论坛、教程和开源项目未用于证明上述关键参数。官方 datasheet 中的 typical application / typical curve 也不等同于本 Project 已计算或已验证。
+
+External NTC exact MPN 尚未冻结。采购前需取得匹配 orderable MPN 的 manufacturer official evidence，确认 `10kΩ @25℃`、`B≈3435K`、目标容差、工作温度、wired/epoxy construction 与适合 pouch surface attachment 的机械/绝缘条件；LCSC/marketplace 资料只能支持采购身份与 availability，不能替代技术资格证据。
 
 ## Stage 2 所需官方 datasheet
 

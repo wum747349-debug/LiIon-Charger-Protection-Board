@@ -15,8 +15,8 @@ Hardware Revision: TBD
 - 自动 Validator 仅用于检查结构与需求入口完整性。
 - Stage 2 — Critical Component Selection 已完成；关键器件及架构方向足以进入模块级详细设计，但这些是 selection baseline，不是 Final BOM。
 - 当前 Rev.A primary baseline 包括 BQ25185DLHR、TPS63802DLAR、TPS259474LRPWR、TUSB320LAIRWBR、USBLC6-2SC6 和 TYPE-C-31-M-12；NTC、VBUS TVS、battery connector 与普通无源器件的准确选型/实物边界按计划 Deferred to Stage 3。该 selection baseline 不是 Final BOM。
-- Stage 3 — Schematic Module Design and Capture 已获用户授权；当前只建立 Stage 3 入口和设计输入，尚未完成 module circuit、parameter calculation 或 schematic capture。
-- 尚未开始 EDA、ERC、DRC、制造、焊接、Bring-up 或 Test；文档中的验收项均保持 Planned、Not Verified 或 Open。
+- Stage 3 — Schematic Module Design and Capture 仍在进行。M2 Charger / Power Path 已达到 `COMPLETE FOR STAGE-3 MODULE INTEGRATION`，M3 Battery + External NTC 已基本完成当前 schematic capture / integration 所需设计记录；用户已在 Altium Designer 中手工 capture 当前 M2/M3 schematic draft。
+- M1、M4、M5、M6 与 Cross-Module Integration 尚未完成；当前没有完整 schematic PDF / BOM 或 ERC evidence，未声称实际 `.SchDoc` pin mapping 已完全核对、ERC PASS、schematic complete、PCB 或硬件已验证，Stage 3 尚未完成。
 - 本 Standalone Repository 是 Only Active Project Authority；Legacy Project 2 仅作为 Frozen Migration Source 保留，用于历史迁移追溯。
 
 ## 项目事实
@@ -59,6 +59,6 @@ Legacy Project Status: Frozen Migration Source — Historical migration traceabi
 
 ## 下一步
 
-当前处于 Stage 3。Stage 2 Critical Component Selection 已完成且 Stage 3 已获用户授权；下一步是 module-level circuit design、parameter calculation 和 schematic capture。原理图、BOM draft、EDA、ERC、PCB 与硬件验证均尚未完成。
+当前处于 Stage 3。M2/M3 已进入模块集成边界，下一项硬件设计任务是 `M1 — USB-C Input / CC / Current Capability Control`；之后仍需 M4/M5/M6 与 Cross-Module Integration。完整 schematic PDF / BOM、ERC、PCB 与硬件验证均尚未完成。
 
 Repository Authority Cutover 已完成。今后的 Project facts、hardware work、evidence 和 Stage progression 只能在本 Standalone Repository 中进行；Legacy Project 仅保留为 Frozen Migration Source，不再继续活动开发或双写。

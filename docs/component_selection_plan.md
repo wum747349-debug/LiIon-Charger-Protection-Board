@@ -12,7 +12,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 | Charger / Power Path | TI BQ25185DLHR (LCSC C19725033) | BQ24075RGTR + external functional UVLO / battery disconnect; MCP73871T-2CCI/ML secondary fallback | Primary selected; current availability Limited |
 | Functional battery UVLO | BQ25185 integrated BUVLO / BATFET behavior | TPS3700 + external disconnect with BQ24075 architecture-level Alternate | Primary architecture selected |
 | 3.3V Buck-Boost | TI TPS63802DLAR (LCSC C2845237) | TI TPS63070; TPS63001 only if 1A peak target is relaxed | Primary selected |
-| External battery temperature | External NTC near pouch surface, about 10kΩ @25℃, β about 3435K | Different NTC only with compensation analysis | Architecture selected; MPN deferred |
+| External battery temperature | External wired/epoxy NTC near pouch surface, 10kΩ @25℃, β≈3435K, ±1% preferred; TLV7041DBVR auxiliary hot interlock | Different NTC only with network/tolerance analysis | Stage 3 network defined; exact NTC MPN and verification open |
 | Output protection | TI TPS259474LRPWR (LCSC C2864845) | TPS259470LRPWR only with external latch/control qualification; not equivalent | Primary orderable MPN normalized |
 | USB-C CC/current detection | TI TUSB320LAIRWBR (LCSC C132554) in UFP/Sink role | TBD | Exact Primary selected; implementation deferred |
 | CC ESD | STMicroelectronics USBLC6-2SC6 (LCSC C7519) | TI TPD6S300A for stronger short-to-VBUS robustness | Primary functionally replaced; Stage 3 pinout/topology/layout review required |
@@ -62,7 +62,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 - **Primary architecture:** 外部 NTC 紧贴 pouch 电池代表性表面位置，目标约 10kΩ @25℃、β≈3435K；充电窗口目标约 0℃～45℃。
 - **Verified fit:** BQ25185 官方 TS 功能按 10kΩ @25℃、β(25/85)=3435K 配置；TS hot/cold fault 会暂停充电与 safety timer，TS fault 时 trickle charge 也被禁止。
 - **Risk / pending:** 商品温度范围不是官方电芯 datasheet；NTC 表面温度不等于内部温度；必须确保 open/short/disconnected/abnormal 均禁止充电且不切断有效 USB 的 SYS 路径。
-- **Deferred to Stage 3:** NTC MPN、容差、封装、粘贴/绝缘方式、补偿电阻网络与温度窗口容差分析。
+- **Stage 3 status sync:** 当前 `NTC_TS` 使用 2.7kΩ series mitigation，并由 TLV7041DBVR auxiliary open-drain comparator 增加 high-temperature charge interlock；nominal conservative implementation 约 4℃～39℃，不改变 0℃～45℃ Battery Design Basis，也不表示 exact trip verified。NTC exact MPN、安装方式、容差分析与实测仍 OPEN。
 
 ## 5. 3.3V Output Protection
 
