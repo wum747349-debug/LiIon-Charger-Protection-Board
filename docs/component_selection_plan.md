@@ -15,10 +15,11 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 | External battery temperature | External wired/epoxy NTC near pouch surface, 10kΩ @25℃, β≈3435K, ±1% preferred; TLV7041DBVR auxiliary hot interlock | Different NTC only with network/tolerance analysis | Stage 3 network defined; exact NTC MPN and verification open |
 | Output protection | TI TPS259474LRPWR (LCSC C2864845) | TPS259470LRPWR only with external latch/control qualification; not equivalent | Primary orderable MPN normalized |
 | USB-C CC/current detection | TI TUSB320LAIRWBR (LCSC C132554) in UFP/Sink role | TBD | Exact Primary selected; implementation deferred |
-| CC ESD | STMicroelectronics USBLC6-2SC6 (LCSC C7519) | TI TPD6S300A for stronger short-to-VBUS robustness | Primary functionally replaced; Stage 3 pinout/topology/layout review required |
-| USB VBUS protection | 5V-appropriate TVS/transient protection before BQ25185 IN | Exact MPN TBD | Architecture selected; MPN deferred |
+| CC ESD | Nexperia PESD5V0U2BT,215 | TI TPD6S300A only if stronger short-to-VBUS robustness is later required; USBLC6-2SC6 retained as superseded historical selection | Current Primary selected; Stage 3 connection recorded; symbol-pin/footprint/layout verification open |
+| USB VBUS protection | Current `SMF5.0A` TVS topology on `VBUS_PROT` | Exact manufacturer/orderable MPN TBD | Topology captured; procurement identity and protection qualification deferred |
 | USB-C receptacle | TYPE-C-31-M-12 | Reopen selection only if Stage 3 mechanical/footprint review finds a conflict | Primary selected; exact receptacle resolved for Stage 2 |
 | Battery connector | 2.54mm-class, 2-wire red/black interface | Exact series TBD | Physical verification required |
+| M2 small-signal MOSFETs | Nexperia 2N7002BK,215 for Q1/Q2 | Reopen only if logic-drive or procurement verification finds a conflict | Stage 3 exact MPN baseline recorded; symbol-pin/footprint mapping open |
 
 ## 1. Charger / Power Path
 
@@ -29,7 +30,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 - **Risks:** 线性充电器的最坏工况功耗/温升尚未预算；2mm × 2mm WSON/thermal pad 对手工焊接和散热布局有挑战；固定 BUVLO 与商品标称 2.75V cutoff 的协调、恢复状态、无电池启动负载及漏电边界仍需设计分析和实测。
 - **Procurement evidence:** LCSC 将 BQ25185DLHR 对应到 C19725033。当前 availability 仅按 point-in-time evidence 记录为 `Limited`，不把具体库存数量固化为长期 Project Fact；真正采购前必须重新检查 availability。
 - **Pending verification:** 确认封装可制造性；核对所有 TS open/short/disconnected 情形与 USB-valid SYS continuity；核对 100/500/1050mA input-limit switching 的允许实现和上电默认状态。
-- **Deferred to Stage 3:** ISET、ILIM/VSET、输入/输出/电池电容、TS 网络、CE/状态引脚、热预算、启动/终止/再充电、详细 BUVLO 工况与布局计算。
+- **Stage 3 status sync:** M2 已记录 ISET、ILIM/VSET、输入/输出/电池电容、CE# 与状态测试点连接；Q1/Q2 exact MPN baseline 为 `2N7002BK,215`。热预算、完整状态机/工况、实际 symbol-pin/footprint mapping、ERC 与布局核对仍 OPEN。
 
 ### Alternates
 
@@ -86,26 +87,30 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 - **Native USB-C / C-to-C policy:** `Default` advertisement 使用保守的 BQ25185 input-current setting，基线约 500mA；只有 attach 时合格检测到 `1.5A` 或 `3A` advertisement，才允许提升至 BQ25185 的约 1.05A～1.1A input-current-limit 档。3A Source 仅表示能力声明，本 Project 不吸取 3A，仍受 BQ25185 input limit 约束。
 - **Legacy USB-A / A-to-C policy:** Rev.A 不实现 BC1.2 或 proprietary charger detection，不承诺利用 legacy charger 标签标称的 1.5A / 2A / 3A capability，并按 Type-C Default / conservative input policy 处理；不增加 legacy charger-detection IC。
 - **Accepted Rev.A limitation:** TUSB320 GPIO mode 以 attach 时检测到的 Source current advertisement 为基础；当前无 firmware，不动态跟踪 Source 后续 Rp capability change。绑定 datasheet 支持在 GPIO mode 解码 attach 结果，且可用保守硬件默认实现合理 fail-safe，因此该限制不阻断 Stage 2 closeout。
-- **Mandatory Stage 3 verification:** 设计并核对 power-up default、EN / PORT configuration、attach、detach、OUT1 / OUT2 decoding、resistor / switch control 和 fail-safe behavior。任何 unknown、invalid 或 unqualified state 必须回到 conservative input-current behavior，不得默认进入高电流档。本轮没有完成或声称 schematic verification。
+- **Stage 3 M1 implementation:** Current schematic-capture record uses `PORT → GND` for fixed UFP/Sink, `ADDR → NC` for GPIO mode, `EN_N → GND`, and `VBUS_PROT → 900kΩ → VBUS_DET`. CC1/CC2 connect to the receptacle CC lines. OUT1/OUT2 are open-drain and each has an approximately 100kΩ pull-up to `VDD_CC`; TUSB320 has 100nF local decoupling.
+- **GPIO decode:** TI's truth table is `OUT1/OUT2 = H/H` unattached, `H/L` attached Default Current, `L/H` attached 1.5A, and `L/L` attached 3A. `SN74LVC2G132DCUR` implements `ILIM_HIGH_CMD = NOT(CC_OUT1)` and `CHG_ENABLE_CMD = NAND(CC_OUT1, CC_OUT2)`.
+- **Fail-safe policy:** Unattached disables charging and selects conservative ILIM; attached Default Current enables charging with the conservative approximately 500mA input-current-limit state; attached 1.5A or 3A enables charging and selects the approximately 1.1A input-current-limit state. A 3A advertisement is source capability information and does not mean the Project sinks 3A. Unknown, invalid, unpowered or unqualified behavior must not be promoted to the high-current state.
+- **Status boundary:** M1 is `SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION` based on user-reported Altium capture and documented review corrections. Actual symbol-pin/footprint mapping, complete `.SchDoc` verification and ERC evidence remain open.
 
 ## 7. USB-C CC Protection
 
-- **Primary — STMicroelectronics USBLC6-2SC6 (LCSC C7519):** Rev.A CC1 / CC2 不承担 USB2.0 high-speed data；ST 官方资料确认该器件提供双线基础 ESD protection，且其 JLC/LCSC procurement availability 明显更现实，因此替换 TPD2E2U06 作为当前 Primary。USBLC6-2SC6 不是 CC short-to-VBUS OVP protector。
-- **Replacement boundary:** 这是功能替换，不是 pin-to-pin replacement。pinout、package、connection topology、grounding 与 layout 必须在 Stage 3 schematic / layout 中依据 ST 官方 datasheet 重新核对。
+- **Primary — Nexperia PESD5V0U2BT,215:** Nexperia official documentation identifies it as a two-line bidirectional ESD protection device in SOT23. The current schematic connection record is pin 1 → CC1, pin 2 → CC2, pin 3 → GND, with no VBUS connection.
+- **Replacement boundary:** `USBLC6-2SC6 → PESD5V0U2BT,215` is a real component-selection change, not a pin-to-pin substitution claim. USBLC6-2SC6 is retained only as a superseded historical selection/procurement record and is no longer current Primary. The actual symbol-pin mapping, footprint mapping, placement, return path and layout must still be verified against Nexperia official documentation and the EDA libraries.
 - **Optional robust alternate — TPD6S300A:** 官方资料提供 CC/SBU 等通道的 24V short-to-VBUS protection 与多通道 IEC ESD；仅在接口误短接鲁棒性、空间和成本评估支持时采用，不是 Rev.A 强制项。
-- **Deferred to Stage 3 / layout:** USBLC6-2SC6 的 pin mapping、连接拓扑、器件摆放、回流/接地、CC trace stub 与是否升级为 TPD6S300A。
+- **Open / layout:** PESD5V0U2BT symbol-pin/footprint mapping、器件摆放、GND 回流、CC trace stub 与是否升级为更强 short-to-VBUS protection。
 
 ## 8. USB VBUS Protection
 
-- **Selected architecture:** `USB-C VBUS → 5V-appropriate TVS/transient protection → BQ25185 IN`。
+- **Current topology:** TYPE-C-31-M-12 的全部 VBUS contacts 并到 `VBUS_PROT`；`VBUS_PROT` 上采用当前 `SMF5.0A` TVS topology，并继续送往 BQ25185 IN 与 M1 的辅助供电/检测支路。
 - **Decision:** Stage 2 不增加另一颗 input eFuse；目前 BQ25185 官方资料未显示本项目必须叠加 eFuse 的明确理由。
-- **Deferred:** 精确 TVS MPN、VRWM、clamping、surge/ESD target、connector-to-TVS placement 与回流路径在 Stage 3 / layout-related evaluation 确定。
+- **Evidence boundary:** `SMF5.0A` 当前仅是 schematic topology/value identity；在取得 manufacturer/orderable evidence 前，不升级为新的精确采购事实。准确制造商/orderable MPN、VRWM、clamping、surge/ESD target、connector-to-TVS placement 与回流路径仍 OPEN。
 
 ## 9. Connectors
 
 ### USB-C receptacle
 
 - **Primary — TYPE-C-31-M-12:** Rev.A exact receptacle 已为 Stage 2 解决。正式 drawing/spec 显示 USB Type-C 16-pin receptacle，提供独立 CC1 / CC2、VBUS / GND、D+ / D−、SBU1 / SBU2、recommended PCB layout 与机械固定结构；其额定能力满足当前最大约 1.1A input-current architecture。该结论是 selection/document review，不是连接器或 PCB 实物测试结果。
+- **Stage 3 connection record:** 全部 VBUS contacts 并到 `VBUS_PROT`，全部 GND contacts 并到 GND；D+/D−/SBU 无功能需求并保持 unused / NC。Connector shield / EH 的最终接地策略仍 OPEN。
 - **PCB thickness baseline:** 1.6 mm FR-4 记录为 `Rev.A preliminary PCB thickness baseline`。已核对 drawing 未发现与 1.6 mm 的明确机械冲突；它不是 Final fabrication stackup，层数、铜厚、表面处理、厂家和最终机械公差仍在后续阶段确定。
 - Stage 3 仍须完成 symbol/pin mapping、recommended footprint 转录核对、板边/外壳配合和装配/返修风险审查；不得把 drawing review 写成 manufacturability verified。
 
@@ -119,8 +124,9 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 
 - TYPE-C-31-M-12 exact receptacle：**Resolved for Stage 2**。
 - Battery connector exact series / polarity / wire gauge：**Physical Verification Pending**；首次连接前必须实物核对，不得推断。
-- VBUS TVS exact MPN：**Deferred to Stage 3**。
-- BQ25185、TPS63802、TPS259474、NTC 与 TUSB320 的详细外围、参数、状态机、热、瞬态和 fail-safe 实现：**Deferred to Stage 3**。
+- VBUS TVS 当前 `SMF5.0A` topology 已记录；exact manufacturer/orderable MPN：**OPEN / Deferred**。
+- M1 TUSB320 / logic decode 已达到 `SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION`；symbol-pin/footprint mapping、connector shield/EH、布局与 ERC evidence 仍 OPEN。
+- BQ25185、TPS63802、TPS259474 与 NTC 的剩余外围、状态机、热、瞬态和 fail-safe integration：继续 **Deferred to Stage 3**。
 - 1A / 100ms output target 的 waveform、droop、overshoot、repetition 与 recovery definition：继续是 **Design Target**，作为 Stage 3 design/test-definition input，未验证。
 - Battery product-spec evidence、pack internal protection thresholds/recovery 与 battery connector polarity：保持 **Not Verified / Physical Verification Pending**。
 - 小型 leadless package 的 assembly / rework 风险：保留为后续制造设计输入；没有 manufacturability verified 结论。
@@ -133,6 +139,6 @@ Stage 2 closeout 仅表示关键架构器件及方向已经足以进入模块级
 - TPS63802 inductor / capacitors / FB / ripple / transient / current-stress / thermal calculations。
 - NTC exact MPN、compensation network 和 tolerance analysis。
 - TPS259474L ILIM / ITIMER / UV-OV / dVdt / reset implementation。
-- TUSB320 power-up default、attach/detach、OUT1/OUT2 decoding、GPIO/resistor switching 与 conservative fail-safe behavior。
-- USB VBUS TVS exact MPN、battery connector physical verification 和 TYPE-C-31-M-12 symbol/footprint/mechanical finalization。
-- 任何 schematic capture、BOM draft、EDA、ERC、DRC、simulation、manufacturing、bring-up 或 test activity。
+- TUSB320 / PESD / TYPE-C-31-M-12 / SN74LVC2G132 / BAT54 / 2N7002BK 的实际 symbol-pin 与 footprint mapping verification；M1 capture 的完整 EDA/ERC evidence。
+- USB-C connector shield/EH 最终接地策略、`SMF5.0A` exact manufacturer/orderable MPN、battery connector physical verification 和 TYPE-C-31-M-12 footprint/mechanical finalization。
+- M4/M5/M6 capture、Cross-Module Integration、完整 schematic PDF / BOM、真实 ERC evidence，以及后续 DRC、simulation、manufacturing、bring-up 或 test activity。

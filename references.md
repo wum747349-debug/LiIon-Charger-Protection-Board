@@ -1,6 +1,6 @@
 # 资料索引
 
-状态：Stage 2 evidence closeout PASS — 2026-08-12；Stage 3 active，M2/M3 evidence index synchronized
+状态：Stage 2 evidence closeout PASS — 2026-08-12；Stage 3 active，M1/M2/M3 evidence index synchronized
 
 关键硬件参数必须依据当前型号的官方 datasheet、reference manual、application note 或可追溯的供应商正式资料核对。商品页只能作为采购证据，不能单独证明关键参数。
 
@@ -25,9 +25,9 @@
 | --- | --- | --- | --- | --- |
 | FLY18650-3350mAh 规格书 | 非当前采购电池包型号 | 仅作为“合格规格书应包含哪些参数”的格式和字段参考 | 不得把其中容量、电压、电流、温度、寿命或其他参数用于当前电池包 | Reference Only |
 
-## Stage 2 官方半导体资料
+## Stage 2 / Stage 3 官方半导体资料
 
-以下均为制造商官方资料，访问日期为 2026-08-11。Verified 表示本文所记录的对应功能或参数已在匹配型号的官方资料中核对，不表示 Project 电路或硬件已经验证。
+以下均为制造商官方资料。Stage 2 source set 访问日期为 2026-08-11；M1/M2 Stage 3 新增/替换资料访问日期为 2026-08-14。Verified 表示本文所记录的对应功能或参数已在匹配型号的官方资料中核对，不表示 Project 电路或硬件已经验证。
 
 | Function | Manufacturer / device | Official source | Project use | Status |
 | --- | --- | --- | --- | --- |
@@ -40,7 +40,11 @@
 | Buck-Boost conditional fallback | TI TPS63001 | [TPS6300x datasheet, SLVS520C, Rev. C](https://www.ti.com/lit/ds/symlink/tps63001.pdf) | 仅在 1A peak target 放宽后；3.3V boost-mode capability 不与 TPS63802 等价 | Verified limitation |
 | Output protection | TI TPS259474LRPWR / TPS259470LRPWR | [TPS25947 datasheet, SLVSFC9C, Rev. C](https://www.ti.com/lit/ds/symlink/tps25947.pdf) | `474L` primary circuit-break/latch-off；`470L` conditional active-current-limit fallback only with external latch/control | Primary orderable MPN verified; alternate is not equivalent |
 | USB-C CC/current detection | TI TUSB320LAIRWBR | [TUSB320LAI / TUSB320HAI datasheet, Rev. D](https://www.ti.com/lit/ds/symlink/tusb320lai.pdf) | UFP/Sink Rd 与 Source current-advertisement detection；GPIO initial-only limitation | Verified for Stage 2 selection; exact orderable MPN verified |
-| CC ESD | STMicroelectronics USBLC6-2SC6 | [USBLC6-2 datasheet, DS4260, Rev. 7](https://www.st.com/resource/en/datasheet/usblc6-2.pdf) | Primary dual-line CC ESD；不是 CC short-to-VBUS OVP；功能替换而非 pin-to-pin replacement | Verified for selection; Stage 3 pinout/topology/layout review required |
+| CC ESD | Nexperia PESD5V0U2BT,215 | [PESD5V0U2BT product datasheet](https://assets.nexperia.com/documents/data-sheet/PESD5V0U2BT.pdf) | Current Primary；双线 bidirectional ESD device；M1 current record pin 1 → CC1、pin 2 → CC2、pin 3 → GND、no VBUS | Official device/pin identity verified; Project symbol-pin/footprint/layout not verified |
+| M1 logic decode | TI SN74LVC2G132DCUR | [SN74LVC2G132 datasheet, SCES547D, Rev. D](https://www.ti.com/lit/ds/symlink/sn74lvc2g132.pdf) | Dual 2-input NAND with Schmitt-trigger inputs；实现 `NOT(CC_OUT1)` 与 `NAND(CC_OUT1, CC_OUT2)` | Official function/orderable MPN indexed; Project mapping not verified |
+| M1 VDD_CC isolation diode | Nexperia BAT54,215 | [BAT54 product datasheet](https://assets.nexperia.com/documents/data-sheet/BAT54.pdf) | Current record pin 1/anode → VBUS_PROT、pin 2 NC、pin 3/cathode → VDD_CC | Official pin identity verified; Project symbol-pin/footprint not verified |
+| M2 small-signal MOSFET | Nexperia 2N7002BK,215 | [2N7002BK product datasheet](https://assets.nexperia.com/documents/data-sheet/2N7002BK.pdf) | Q1/Q2 exact MPN baseline；official pin identity 1 G、2 S、3 D | Official device/pin identity verified; Project symbol-pin/footprint not verified |
+| Superseded CC ESD selection | STMicroelectronics USBLC6-2SC6 | [USBLC6-2 datasheet, DS4260, Rev. 7](https://www.st.com/resource/en/datasheet/usblc6-2.pdf) | Historical former Primary only；不再描述为 current Primary | Superseded by PESD5V0U2BT,215 |
 | Robust Type-C protection | TI TPD6S300A | [TPD6S300A datasheet, SLVSEL8](https://www.ti.com/lit/ds/symlink/tpd6s300a.pdf) | Optional short-to-VBUS / multi-channel ESD robustness | Verified for optional alternate |
 
 ## JLCPCB / LCSC point-in-time procurement evidence
@@ -53,7 +57,7 @@
 | 3.3V Buck-Boost | TPS63802DLAR | C2845237 | VSON-10 (2mm × 3mm) | Available at evidence check | Verified point-in-time mapping; recheck before purchase |
 | Output protection | TPS259474LRPWR | C2864845 | VQFN-10-HR (2mm × 2mm) | Available at evidence check | Verified point-in-time mapping; recheck before purchase |
 | USB-C CC controller | TUSB320LAIRWBR | C132554 | X2-QFN-12 (1.6mm × 1.6mm) | Available at evidence check | Verified point-in-time mapping; recheck before purchase |
-| USB-C CC ESD | USBLC6-2SC6 | C7519 | SOT-23-6L | Available at evidence check | Verified point-in-time mapping; recheck before purchase |
+| USB-C CC ESD (superseded historical selection) | USBLC6-2SC6 | C7519 | SOT-23-6L | Historical point-in-time evidence only | Procurement mapping retained for history; not current Primary |
 
 ## TYPE-C-31-M-12 正式 drawing/spec 证据
 
@@ -72,7 +76,7 @@ External NTC exact MPN 尚未冻结。采购前需取得匹配 orderable MPN 的
 
 | Function | Required official source | Parameters / behavior to verify | Status |
 | --- | --- | --- | --- |
-| USB-C Sink 与输入保护 | TUSB320LAIRWBR / USBLC6-2SC6 / TPD6S300A 官方 datasheet；Type-C 适用要求 | CC1/CC2、Sink-only、advertisement detection、ESD、short-to-VBUS option | Primary verified；USBLC6 pinout/topology/layout 与 VBUS TVS MPN Deferred |
+| USB-C Sink 与输入保护 | TUSB320LAIRWBR / PESD5V0U2BT,215 / TPD6S300A 官方 datasheet；Type-C 适用要求 | CC1/CC2、Sink-only、advertisement detection、ESD、short-to-VBUS option | Current Primary sources indexed；actual mapping/layout 与 VBUS TVS exact MPN OPEN |
 | 单节锂离子 Charger / Power Path | BQ25185 官方 datasheet；BQ24075 / MCP73871 official alternate sources | CC-CV、输入/充电限流、负载优先、终止隔离、无电池、深放电启动、NTC 故障行为 | Primary / alternates verified for Stage 2 |
 | 3.3V Buck-Boost | TPS63802 / TPS63070 / TPS63001 官方 datasheet | 输入范围、500mA 连续、1A/100ms 目标、纹波、瞬态、功耗、热、电感/开关电流与布局 | Primary / alternate limits verified；calculations Deferred |
 | Functional battery UVLO | BQ25185 官方 datasheet | 阈值、迟滞、延时、USB 与电池路径隔离 | Integrated primary verified；full behavior Deferred |
@@ -100,4 +104,5 @@ External NTC exact MPN 尚未冻结。采购前需取得匹配 orderable MPN 的
 
 - 当前商品规格可作为 Rev.A Design Basis，但不能独立证明容量/电流/温度测试条件、保护阈值与恢复方式、循环寿命、电芯身份、连接器载流能力或内部温度检测。
 - 商品资料、非当前型号规格书和 Framework 文档均不能证明本项目的 EDA 实现或测试状态。
-- Stage 2 已依据官方制造商资料及用户提供的 TYPE-C-31-M-12 formal drawing/spec 完成 Primary / Alternate 决策；这些结论不是 Final BOM，未完成的外围、容差、热、Layout、footprint 与状态机工作明确 Deferred to Stage 3。
+- Stage 2 已依据官方制造商资料及用户提供的 TYPE-C-31-M-12 formal drawing/spec 完成当时的 Primary / Alternate 决策；Stage 3 已将真实 selection change `USBLC6-2SC6 → PESD5V0U2BT,215` 及 M1/M2 support-device sources 同步到本索引，不回退或重新开启 Stage 2。
+- M1 当前连接与 decode 记录不等于实际 `.SchDoc`、symbol-pin、footprint 或 ERC evidence；`SMF5.0A` 只有 topology/value identity，exact manufacturer/orderable MPN 尚未冻结。

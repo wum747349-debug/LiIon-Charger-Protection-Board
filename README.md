@@ -14,9 +14,9 @@ Hardware Revision: TBD
 - Battery Requirements Baseline Amendment 已按绑定 Framework 重新执行 Gate 1.5 一致性核对并通过；该结论不证明硬件设计或验证完成。
 - 自动 Validator 仅用于检查结构与需求入口完整性。
 - Stage 2 — Critical Component Selection 已完成；关键器件及架构方向足以进入模块级详细设计，但这些是 selection baseline，不是 Final BOM。
-- 当前 Rev.A primary baseline 包括 BQ25185DLHR、TPS63802DLAR、TPS259474LRPWR、TUSB320LAIRWBR、USBLC6-2SC6 和 TYPE-C-31-M-12；NTC、VBUS TVS、battery connector 与普通无源器件的准确选型/实物边界按计划 Deferred to Stage 3。该 selection baseline 不是 Final BOM。
-- Stage 3 — Schematic Module Design and Capture 仍在进行。M2 Charger / Power Path 已达到 `COMPLETE FOR STAGE-3 MODULE INTEGRATION`，M3 Battery + External NTC 已基本完成当前 schematic capture / integration 所需设计记录；用户已在 Altium Designer 中手工 capture 当前 M2/M3 schematic draft。
-- M1、M4、M5、M6 与 Cross-Module Integration 尚未完成；当前没有完整 schematic PDF / BOM 或 ERC evidence，未声称实际 `.SchDoc` pin mapping 已完全核对、ERC PASS、schematic complete、PCB 或硬件已验证，Stage 3 尚未完成。
+- 当前 Rev.A primary baseline 包括 BQ25185DLHR、TPS63802DLAR、TPS259474LRPWR、TUSB320LAIRWBR、PESD5V0U2BT,215 和 TYPE-C-31-M-12；M2 Q1/Q2 exact MPN baseline 为 2N7002BK,215。NTC、`SMF5.0A` TVS exact manufacturer/orderable MPN、battery connector 与普通无源器件的准确选型/实物边界仍按计划 OPEN / Deferred。该 selection baseline 不是 Final BOM。
+- Stage 3 — Schematic Module Design and Capture 仍在进行。M1 USB-C Input / CC / Current Capability Control 已达到 `SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION`，M2 已达到 `COMPLETE FOR STAGE-3 MODULE INTEGRATION`，M3 已基本完成当前 schematic capture / integration 所需设计记录；用户已在 Altium Designer 中手工 capture 当前 M1/M2/M3 schematic draft。
+- M4、M5、M6 与 Cross-Module Integration 尚未完成；M3 `TLV7041` 的 M4 `3V3` startup 与 `CHG_ENABLE_CMD` sequencing、connector shield/EH、TVS procurement identity 及关键 symbol-pin/footprint mapping 仍 OPEN。当前没有完整 schematic PDF / BOM 或 ERC evidence，未声称实际 `.SchDoc` pin mapping 已完全核对、ERC PASS、schematic complete、PCB 或硬件已验证，Stage 3 尚未完成。
 - 本 Standalone Repository 是 Only Active Project Authority；Legacy Project 2 仅作为 Frozen Migration Source 保留，用于历史迁移追溯。
 
 ## 项目事实
@@ -59,6 +59,6 @@ Legacy Project Status: Frozen Migration Source — Historical migration traceabi
 
 ## 下一步
 
-当前处于 Stage 3。M2/M3 已进入模块集成边界，下一项硬件设计任务是 `M1 — USB-C Input / CC / Current Capability Control`；之后仍需 M4/M5/M6 与 Cross-Module Integration。完整 schematic PDF / BOM、ERC、PCB 与硬件验证均尚未完成。
+当前处于 Stage 3。M1/M2/M3 已进入模块集成边界；下一步是完成 M4/M5/M6，并处理包括 `3V3 startup` / `CHG_ENABLE_CMD` sequencing 在内的 Cross-Module Integration。完整 schematic PDF / BOM、ERC、PCB 与硬件验证均尚未完成。
 
 Repository Authority Cutover 已完成。今后的 Project facts、hardware work、evidence 和 Stage progression 只能在本 Standalone Repository 中进行；Legacy Project 仅保留为 Frozen Migration Source，不再继续活动开发或双写。

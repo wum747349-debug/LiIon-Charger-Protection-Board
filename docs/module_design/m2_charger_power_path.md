@@ -15,18 +15,17 @@ U1 is `BQ25185DLHR`. Current design-record pin mapping is pin 1 SYS, pin 2 BAT, 
 
 - `pin 8 ISET → R1 600Ω / 1% → GND`, targeting approximately 500mA fast charge.
 - `pin 7 ILIM/VSET → R2 13.0kΩ / 1% → junction → R3 4.99kΩ / 1% → GND`.
-- Q1 is a small N-MOS with drain at the R2/R3 junction, source at GND, gate at `ILIM_HIGH_CMD`, and a 100kΩ gate pull-down. Q1 OFF presents approximately 18kΩ for the conservative input-current state; Q1 ON bypasses R3 and presents 13kΩ for the high-current state after M1 qualifies USB source capability.
-- Q1 exact MPN remains OPEN and is deferred to M1 integration.
+- Q1 is `2N7002BK,215`, with drain at the R2/R3 junction, source at GND, gate at `ILIM_HIGH_CMD`, and a 100kΩ gate pull-down. Q1 OFF presents approximately 18kΩ for the conservative input-current state; Q1 ON bypasses R3 and presents 13kΩ for the high-current state after M1 qualifies USB source capability. Nexperia's device pin identity is pin 1 gate, pin 2 source, pin 3 drain; actual EDA symbol-pin/footprint mapping remains to be verified.
 
 ## CE# fail-safe and status access
 
-`SYS → R5 47kΩ → CE#`. Q2 is a small N-MOS with drain at CE#, source at GND, gate at `CHG_GATE`, and `R6 = 100kΩ` from gate to GND. `CHG_ENABLE_CMD → R11 ≈4.7kΩ → CHG_GATE`, while M3 TLV7041 open-drain OUT also connects to `CHG_GATE`. Q2 can pull CE# low only when the M1 command permits charging and M3 temperature qualification does not pull the gate low. Q2 exact MPN remains OPEN, deferred to M1/M4 integration.
+`SYS → R5 47kΩ → CE#`. Q2 is `2N7002BK,215`, with drain at CE#, source at GND, gate at `CHG_GATE`, and `R6 = 100kΩ` from gate to GND. `CHG_ENABLE_CMD → R11 ≈4.7kΩ → CHG_GATE`, while M3 TLV7041 open-drain OUT also connects to `CHG_GATE`. Q2 can pull CE# low only when the M1 command permits charging and M3 temperature qualification does not pull the gate low. Actual EDA symbol-pin/footprint mapping remains to be verified.
 
 `STAT1` and `STAT2` connect to physical test-point components `TP_STAT1` and `TP_STAT2`. There are no onboard pull-ups or LEDs. A net label alone is not a physical PCB test pad; the physical test-point component and footprint remain subject to later EDA/footprint verification.
 
 ## Open integration and evidence boundary
 
-- M1: `ILIM_HIGH_CMD`, `CHG_ENABLE_CMD`, source-capability qualification, attach/detach, logic levels, startup/default sequencing.
-- M4: interaction with the downstream SYS load and startup sequence.
-- Exact Q1/Q2 MPNs, thermal analysis, footprint mapping, full BOM and Cross-Module Integration remain OPEN.
+- M1 now defines `ILIM_HIGH_CMD = NOT(CC_OUT1)` and `CHG_ENABLE_CMD = NAND(CC_OUT1, CC_OUT2)`: unattached disables charge/conservatively limits input, Default Current uses the conservative approximately 500mA state, and 1.5A/3A advertisement selects the approximately 1.1A state.
+- M3/M4: TLV7041 is supplied by M4 `3V3`; its startup interaction with `CHG_ENABLE_CMD` and Q2 remains a Cross-Module Integration sequencing issue. M4 interaction with the downstream SYS load also remains open.
+- Q1/Q2 exact MPNs are now `2N7002BK,215`; thermal analysis, actual symbol-pin/footprint mapping, full BOM and Cross-Module Integration remain OPEN.
 - User-reported / screenshot-reviewed capture exists, but no complete schematic PDF/BOM/ERC evidence is present. ERC is NOT RUN / NOT CLAIMED; Stage 4 has not started.
