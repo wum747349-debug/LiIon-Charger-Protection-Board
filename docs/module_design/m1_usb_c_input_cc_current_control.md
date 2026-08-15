@@ -32,7 +32,7 @@ M1 accepts ordinary 5V USB-C input, presents the Rev.A Sink/UFP CC behavior, pro
 ## Interaction, default and fail-safe behavior
 
 - M2 Q1 uses `ILIM_HIGH_CMD` to select the approximately 18kΩ conservative or 13kΩ high-current ILIM/VSET network. M2 Q2 uses the qualified `CHG_GATE` path to pull BQ25185 CE# low.
-- M3 TLV7041 can pull `CHG_GATE` low and inhibit charging independently of M1. Its supply is M4 `3V3`, so `3V3` startup versus `CHG_ENABLE_CMD` remains a Cross-Module Integration sequencing issue.
+- M3 `TLV7041DBVR` and M4 TPS63802 PG can independently pull the shared `CHG_GATE` low. With `CHG_ENABLE_CMD` as the only HIGH authorization source, the normal startup/brownout/temperature qualification architecture is substantially resolved; only the earliest startup transient remains open because TPS63802 PG is datasheet-defined `Undefined` below its own UVLO.
 - Unattached, unpowered, unknown, invalid or unqualified states must not select high current or authorize charging. The resistor defaults in M2 keep Q1/Q2 off when their command/gate drive is absent.
 
 ## Remaining open issues
@@ -40,8 +40,8 @@ M1 accepts ordinary 5V USB-C input, presents the Rev.A Sink/UFP CC behavior, pro
 - Final USB-C connector shield / EH grounding strategy.
 - Exact manufacturer/orderable MPN and protection qualification for the current `SMF5.0A` TVS topology.
 - Actual TUSB320, PESD, connector, BAT54, SN74LVC2G132 and 2N7002BK symbol-pin and footprint mapping verification.
-- `3V3` startup / M3 TLV7041 / `CHG_ENABLE_CMD` sequencing during power-up and transitions.
-- M4/M5/M6 and the Stage 3 Cross-Module Integration Check.
+- Bring-up oscilloscope verification of the earliest startup transient across `VBUS / SYS / 3V3 / PG / CHG_ENABLE_CMD / CHG_GATE / CE#`; no absolute fail-safe or measured PASS claim is made.
+- M5/M6 and the Stage 3 Cross-Module Integration Check.
 - Complete schematic PDF, complete BOM and real ERC evidence.
 
 ## Evidence boundary

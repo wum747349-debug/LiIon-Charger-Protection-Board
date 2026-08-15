@@ -1,6 +1,6 @@
 # 设计说明
 
-状态：Stage 2 — Critical Component Selection closeout PASS；Stage 3 active，M1/M2/M3 module design synchronized
+状态：Stage 2 — Critical Component Selection closeout PASS；Stage 3 active，M1/M2/M3/M4 module design synchronized
 
 ## 整板架构意图
 
@@ -32,11 +32,11 @@ Rev.A primary 使用 BQ25185 集成 BUVLO / BATFET 行为：官方资料给出�
 
 Battery Design Basis 仍为商品规格充电温度约 0℃～45℃。Rev.A 外部 NTC baseline 为容易采购的 wired/epoxy `10kΩ @25℃`、`β≈3435K`、`±1% preferred`，贴近并电气绝缘于 pouch 代表性表面；exact MPN 与最终安装方法保持 OPEN。`NTC_TS` 经 `R8=2.7kΩ / 1%` 接外部 NTC，R8 主要缓解 NTC short 将复用的 TS/MR 直接硬拉近 GND 所带来的 push-button / long-low / factory-mode interaction，不作为精密校准声明。
 
-M3 增加 `TLV7041DBVR` open-drain comparator 作为高温 charging interlock：3V3 经 90.9kΩ/10kΩ divider 产生 nominal 约 0.327V `VHOT_REF`，与 `NTC_TS` 比较；OUT 与 `CHG_ENABLE_CMD` 经约 4.7kΩ 汇合于 `CHG_GATE`。温度合格且 command 为 HIGH 时 Q2 才能拉低 CE#；低 `NTC_TS` fault 时 comparator 拉低 `CHG_GATE`，R5 将 CE# 拉高。当前 nominal conservative hardware window 约 4℃～39℃，是工程实现而非新的 manufacturer specification，也不是 verified exact trip range；电阻/comparator/NTC 容差、pouch thermal lag 与实际 trip test 均待后续验证。温度故障只撤销 charging qualification，不关闭有效 USB-to-SYS Power Path；M1 command/default decode 已记录，但 3V3 supply/startup 依赖 M4，两者之间的 sequencing 仍待 Cross-Module Integration。
+M3 保持 `TLV7041DBVR` open-drain comparator 作为高温 charging interlock；中途讨论/临时 capture 的 `TLV7031DBVR` 不是 current design。3V3 经 90.9kΩ/10kΩ divider 产生 nominal 约 0.327V `VHOT_REF`，与 `NTC_TS` 比较。最终 shared qualification 为 `CHG_ENABLE_CMD → R11 10kΩ → CHG_GATE`，同时 `R6 100kΩ` 将 `CHG_GATE` 下拉至 GND，TLV7041 OUT 与 TPS63802 PG 均以 open-drain LOW veto 接入，且 `CHG_GATE` 驱动 charge-enable MOSFET gate。`CHG_ENABLE_CMD` 是唯一 HIGH authorization source，逻辑意图为 `CHG_ENABLE_CMD AND temperature-valid AND 3V3-power-good → charging permitted`。不增加 TPS3808G33DBVR/U6，也不为 TPS63802 PG 增加独立 3V3 pull-up。当前 nominal conservative hardware window 约 4℃～39℃，是工程实现而非新的 manufacturer specification，也不是 verified exact trip range；电阻/comparator/NTC 容差、pouch thermal lag 与实际 trip test 均待后续验证。
 
 ## 3.3V Buck-Boost 决策
 
-TPS63802DLAR（LCSC C2845237）是 primary，理由是其 1.3V～5.5V 输入范围覆盖 1S 路径，官方资料在 VIN≥2.3V、VOUT=3.3V 时给出 2A output-current capability，并提供 100mA→1A 的典型 transient examples。上述资料支持它进入 primary，但不保证本项目 1A/100ms 目标；电感、电容、FB、纹波、瞬态、电流应力、热和 Layout 全部 Deferred to Stage 3。
+TPS63802DLAR（LCSC C2845237）保持 primary。当前 Stage 3 baseline 为 EN→SYS、MODE/AGND/GND→GND、FB→FB_3V3、PG→CHG_GATE、VOUT→3V3、VIN→SYS，L2 与 L1 之间使用 0.47uH；输入 10uF、输出 2×22uF，feedback 为 `3V3 → 511kΩ / 1% → FB_3V3 → 91kΩ / 1% → GND`。官方资料中的能力与典型 transient examples 不保证本项目 1A/100ms 目标；纹波、瞬态、电流应力、热和 Layout 仍需后续验证。Normal 3V3 startup / brownout / temperature veto architecture 已形成，但 TPS63802 在输入低于自身 UVLO 的最早期区域存在 datasheet-defined PG `Undefined` 边界，因此 startup sequencing 不能声称 absolute fail-safe；Bring-up 应用示波器观察 `VBUS / SYS / 3V3 / PG / CHG_ENABLE_CMD / CHG_GATE / CE#`。
 
 TPS63070 是 higher-margin fallback。TPS63001 在 3.3V boost mode 的官方额定仅到约 800mA，因此只在 1A peak Design Target 被明确放宽后作为 conditional fallback。
 
@@ -83,4 +83,4 @@ Rev.A Battery Design Basis 已改为 1S protected Li-Polymer pouch pack、103450
 
 ## 当前证据声明
 
-Stage 2 closeout PASS 仅表示关键架构器件及方向足以进入模块级详细设计，不是 Final BOM。用户已手工 capture 当前 M1/M2/M3 schematic draft；`.SchDoc` 仍是 authoritative implementation source，且当前没有完整 schematic PDF/BOM/ERC evidence，因此不声称实际 pin mapping fully verified、schematic complete、ERC PASS、footprint/PCB/hardware verified 或 temperature trip experimentally verified。M4/M5/M6、Cross-Module Integration 以及 M3 `3V3 startup` 与 `CHG_ENABLE_CMD` sequencing 仍未完成。本文不能用于批准制造。
+Stage 2 closeout PASS 仅表示关键架构器件及方向足以进入模块级详细设计，不是 Final BOM。用户已手工 capture 当前 M1/M2/M3/M4 schematic draft；`.SchDoc` 仍是 authoritative implementation source，且当前没有完整 schematic PDF/BOM/ERC evidence，因此不声称实际 pin mapping fully verified、schematic complete、ERC PASS、footprint/PCB/hardware verified 或 temperature trip experimentally verified。M5/M6、Cross-Module Integration 与 earliest startup transient verification 仍未完成；hardware startup sequencing 未测量，500mA / 1A transient hardware verification 未运行。本文不能用于批准制造。
