@@ -41,7 +41,7 @@ M1 accepts ordinary 5V USB-C input, presents the Rev.A Sink/UFP CC behavior, pro
 - Exact manufacturer/orderable MPN and protection qualification for the current `SMF5.0A` TVS topology.
 - Actual TUSB320, PESD, connector, BAT54, SN74LVC2G132 and 2N7002BK symbol-pin and footprint mapping verification.
 - Bring-up oscilloscope verification of the earliest startup transient across `VBUS / SYS / 3V3 / PG / CHG_ENABLE_CMD / CHG_GATE / CE#`; no absolute fail-safe or measured PASS claim is made.
-- M5/M6 and the Stage 3 Cross-Module Integration Check.
+- M6 and the Stage 3 Cross-Module Integration Check.
 - Complete schematic PDF, complete BOM and real ERC evidence.
 
 ## Evidence boundary

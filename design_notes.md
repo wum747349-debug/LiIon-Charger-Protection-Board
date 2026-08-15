@@ -1,6 +1,6 @@
 # 设计说明
 
-状态：Stage 2 — Critical Component Selection closeout PASS；Stage 3 active，M1/M2/M3/M4 module design synchronized
+状态：Stage 2 — Critical Component Selection closeout PASS；Stage 3 active，M1/M2/M3/M4/M5 module design synchronized
 
 ## 整板架构意图
 
@@ -26,7 +26,9 @@ Rev.A primary 使用 BQ25185 集成 BUVLO / BATFET 行为：官方资料给出�
 
 ### 第三层：3.3V 输出保护
 
-保护架构需要独立控制外部负载资格：稳压器有效输出建立前保持负载关闭，输出欠压/过压时断开负载，持续过流时关闭，硬短路时快速限制或关闭。Fault policy 已冻结为 latch-off / controlled recovery，primary 的 orderable MPN 规范为 TPS259474LRPWR（LCSC C2864845）；这是 orderable MPN normalization，不是功能性器件替换。官方资料确认 `474L` 是 persistent over-current 后 circuit-break 并 latch-off 的变体；TPS259470LRPWR 只在外部锁断/控制得到设计和验证时作为 conditional fallback，因为 `470x` 的 persistent-over-current 行为是 active current limiting，不能视为等价 Primary / Alternate。ILIM、timer、UV/OV 和 reset Deferred to Stage 3。
+保护架构需要独立控制外部负载资格：稳压器有效输出建立前保持负载关闭，输出欠压/过压时断开负载，持续过流时关闭，硬短路时快速限制或关闭。Fault policy 已冻结为 latch-off / controlled recovery，primary 的 orderable MPN 规范为 TPS259474LRPWR（LCSC C2864845）；这是 orderable MPN normalization，不是功能性器件替换。官方资料确认 `474L` 是 persistent over-current 后 circuit-break 并 latch-off 的变体；TPS259470LRPWR 只在外部锁断/控制得到设计和验证时作为 conditional fallback，因为 `470x` 的 persistent-over-current 行为是 active current limiting，不能视为等价 Primary / Alternate。
+
+当前 M5 Stage 3 baseline 为 `M4 3V3 → TPS259474LRPWR → 3V3_PROT → future M6 / external load`，后续外部负载不得绕过 M5 使用 raw `3V3`。R4/R17/R18 network 对应 nominal UVLO rising ≈3.10V、OVLO rising ≈3.57V；`R19=3.32kΩ / 1%` 对应约 1A nominal current-limit setting，`C13=330nF` 对应约 277ms typical over-current blanking，R20/R21 PGTH divider nominal threshold ≈3.0V，`C14=2.2nF` 设定 startup dV/dt。`TP_M5_RESET` 是 EN/UVLO node 上的普通 test point，正常工作时与独立 `TP_GND` 断开；仅在 Bring-up 时可临时短接两者以拉低 EN/UVLO 并方便 latch reset。上述为 datasheet-based / calculated design basis，不保证严格 ±5% output window，也不表示 short-circuit、thermal、1A/100ms transient 或 latch/reset behavior 已实测 PASS。
 
 ## 外部 NTC 意图与限制
 
@@ -83,4 +85,4 @@ Rev.A Battery Design Basis 已改为 1S protected Li-Polymer pouch pack、103450
 
 ## 当前证据声明
 
-Stage 2 closeout PASS 仅表示关键架构器件及方向足以进入模块级详细设计，不是 Final BOM。用户已手工 capture 当前 M1/M2/M3/M4 schematic draft；`.SchDoc` 仍是 authoritative implementation source，且当前没有完整 schematic PDF/BOM/ERC evidence，因此不声称实际 pin mapping fully verified、schematic complete、ERC PASS、footprint/PCB/hardware verified 或 temperature trip experimentally verified。M5/M6、Cross-Module Integration 与 earliest startup transient verification 仍未完成；hardware startup sequencing 未测量，500mA / 1A transient hardware verification 未运行。本文不能用于批准制造。
+Stage 2 closeout PASS 仅表示关键架构器件及方向足以进入模块级详细设计，不是 Final BOM。用户已手工 capture 当前 M1/M2/M3/M4/M5 schematic draft；`.SchDoc` 仍是 authoritative implementation source，且当前没有完整 schematic PDF/BOM/ERC evidence，因此不声称实际 pin mapping fully verified、schematic complete、ERC PASS、footprint/PCB/hardware verified 或 temperature trip experimentally verified。M6、Cross-Module Integration 与 earliest startup transient verification 仍未完成；hardware startup sequencing、M5 UV/OV threshold、1A/100ms transient、hard short、thermal 与 latch/reset behavior 均未实测。本文不能用于批准制造。
