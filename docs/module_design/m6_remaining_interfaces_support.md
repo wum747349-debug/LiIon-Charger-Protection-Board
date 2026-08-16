@@ -1,6 +1,6 @@
 # M6 — Remaining Interfaces / Support
 
-Status: `SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION`
+Status: `COMPLETE FOR STAGE-3 HANDOFF`
 
 ## Responsibility and external output
 
@@ -22,14 +22,14 @@ External loads must use `3V3_PROT`; they must not bypass M5 by using raw `3V3`.
 | `TP_3V3` | `3V3` |
 | `TP_3V3_PROT` | `3V3_PROT` |
 | `TP_CHG_GATE` | `CHG_GATE` |
-| `TP_CE_N` | BQ25185 U1 pin 4 CE# = R5 / Q3 drain / CE# common node |
+| `TP_CE_N` | BQ25185 U1 pin 4 CE# = R5 / Q1 drain / CE# common node |
 | `TP_GND` | `GND` |
 | `TP_STAT1` | `STAT1` |
 | `TP_STAT2` | `STAT2` |
 | `TP_NTC_TS` | `NTC_TS` |
 | `TP_M5_RESET` | TPS259474 U3 pin 1 EN/UVLO reset node |
 
-`TP_CE_N` is on the R5 / Q3 drain / U1 CE# common node, not on Q3 gate. `TP_M5_RESET` remains normally isolated from `TP_GND`; it may be temporarily shorted to GND during Bring-up as documented in M5.
+`TP_CE_N` is on the R5 / Q1 drain / U1 CE# common node, not on Q1 gate. `TP_M5_RESET` remains normally isolated from `TP_GND`; it may be temporarily shorted to GND during Bring-up as documented in M5.
 
 No independent `TP_PG_3V3` is present. TPS63802 PG connects directly to `CHG_GATE`, so such a point would duplicate `TP_CHG_GATE` on the same electrical node.
 
@@ -39,4 +39,4 @@ No independent `TP_PG_3V3` is present. TPS63802 PG connects directly to `CHG_GAT
 
 ## Evidence boundary
 
-This record reflects the user-reported current schematic capture baseline. `.SchDoc` remains authoritative. Actual symbol-pin and footprint mapping are not fully verified; complete schematic PDF and BOM are not available; ERC is `NOT RUN / NOT CLAIMED`; PCB accessibility, silkscreen, placement, DRC and hardware behavior are not verified.
+This record reflects the latest reviewed schematic/BOM baseline. `.SchDoc` remains authoritative. ERC is `NOT YET VERIFIED`; PCB accessibility, silkscreen, placement, DRC and hardware behavior are not verified.

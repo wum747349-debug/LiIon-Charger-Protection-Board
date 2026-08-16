@@ -1,6 +1,6 @@
 # M4 — 3.3V Buck-Boost
 
-Status: `SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION`
+Status: `COMPLETE FOR STAGE-3 HANDOFF`
 
 ## Responsibility and interfaces
 
@@ -23,7 +23,7 @@ M4 converts `SYS` to the regulated `3V3` rail with the Stage 2 Primary `TPS63802
 
 The current exact inductor baseline is `L1 = Coilcraft XFL4015-471MEC`, `0.47uH`, LCSC `C18221164`, connected `TPS63802 pin 9 L1 ↔ L1 0.47uH ↔ TPS63802 pin 7 L2`. Coilcraft official data identifies the selected part as 0.47uH, and the LCSC evidence maps the orderable MPN to `C18221164`.
 
-The input capacitor is `10uF` from `SYS` to GND. The output network is `2 x 22uF` from `3V3` to GND. The feedback divider is `3V3 → 511kΩ / 1% → FB_3V3 → 91kΩ / 1% → GND`.
+The input capacitor is `C5 = 10uF / 0805` from `SYS` to GND. The output network is `C14,C15 = 22uF / 0805` from `3V3` to GND. The feedback divider is `3V3 → 511kΩ / 1% → FB_3V3 → 91kΩ / 1% → GND`.
 
 These values are the current Stage 3 schematic baseline. They do not constitute measured ripple, transient, current-stress, thermal or stability evidence.
 
@@ -53,11 +53,10 @@ Normal 3V3 startup, brownout and temperature-veto architecture is therefore subs
 
 - Schematic capture basis: user-reported / screenshot-reviewed.
 - Actual `.SchDoc` pin mapping: `NOT VERIFIED`.
-- ERC: `NOT RUN / NOT CLAIMED`.
-- Complete schematic PDF: `NOT AVAILABLE`.
-- Complete BOM: `NOT AVAILABLE`.
+- ERC: `NOT YET VERIFIED`.
+- Latest schematic/BOM review baseline: `SYNCHRONIZED`.
 - Hardware startup sequencing: `NOT MEASURED`.
 - Inductor selection: `DATASHEET-QUALIFIED DESIGN SELECTION`; thermal, transient and PCB-layout behavior are `NOT VERIFIED`.
 - 500mA continuous and 1A/100ms transient hardware verification: `NOT RUN`.
 
-M4 is ready for ongoing Stage 3 module integration at the documented design-record level, but it is not `ERC PASS`, `SCHEMATIC PASS`, hardware verified, or ready to close Stage 3.
+M4 is complete for the Stage 3 handoff at the documented design-record level. This does not claim `ERC PASS`, Stage 4 PASS, PCB/layout verification or hardware verification.

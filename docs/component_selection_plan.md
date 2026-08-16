@@ -90,7 +90,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 - **Stage 3 M1 implementation:** Current schematic-capture record uses `PORT → GND` for fixed UFP/Sink, `ADDR → NC` for GPIO mode, `EN_N → GND`, and `VBUS_PROT → 900kΩ → VBUS_DET`. CC1/CC2 connect to the receptacle CC lines. OUT1/OUT2 are open-drain and each has an approximately 100kΩ pull-up to `VDD_CC`; TUSB320 has 100nF local decoupling.
 - **GPIO decode:** TI's truth table is `OUT1/OUT2 = H/H` unattached, `H/L` attached Default Current, `L/H` attached 1.5A, and `L/L` attached 3A. `SN74LVC2G132DCUR` implements `ILIM_HIGH_CMD = NOT(CC_OUT1)` and `CHG_ENABLE_CMD = NAND(CC_OUT1, CC_OUT2)`.
 - **Fail-safe policy:** Unattached disables charging and selects conservative ILIM; attached Default Current enables charging with the conservative approximately 500mA input-current-limit state; attached 1.5A or 3A enables charging and selects the approximately 1.1A input-current-limit state. A 3A advertisement is source capability information and does not mean the Project sinks 3A. Unknown, invalid, unpowered or unqualified behavior must not be promoted to the high-current state.
-- **Status boundary:** M1 is `SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION` based on user-reported Altium capture and documented review corrections. Actual symbol-pin/footprint mapping, complete `.SchDoc` verification and ERC evidence remain open.
+- **Status boundary:** M1 is `COMPLETE FOR STAGE-3 HANDOFF`. ERC and downstream PCB/layout/hardware evidence remain open.
 
 ## 7. USB-C CC Protection
 
@@ -110,13 +110,13 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 ### USB-C receptacle
 
 - **Primary — TYPE-C-31-M-12:** Rev.A exact receptacle 已为 Stage 2 解决。正式 drawing/spec 显示 USB Type-C 16-pin receptacle，提供独立 CC1 / CC2、VBUS / GND、D+ / D−、SBU1 / SBU2、recommended PCB layout 与机械固定结构；其额定能力满足当前最大约 1.1A input-current architecture。该结论是 selection/document review，不是连接器或 PCB 实物测试结果。
-- **Stage 3 connection record:** 全部 VBUS contacts 并到 `VBUS_PROT`，全部 GND contacts 并到 GND；D+/D−/SBU 无功能需求并保持 unused / NC。EH1–EH4 并到 `USB_SHIELD`；R23 1MΩ 与 C15 1nF/1kV C0G 为到 GND 的 parallel branches，R24 0Ω 为 default-DNP tuning/direct-ground option。实验 EMI/ESD verification 仍 OPEN。
+- **Stage 3 final connection record:** 全部 VBUS contacts 并到 `VBUS_PROT`，全部 GND contacts 并到 GND；D+/D−/SBU 无功能需求并保持 unused / NC。EH1–EH4 并到 `USB_SHIELD`；R23 1MΩ 与 C13 1nF/high-voltage/1206 为到 GND 的 parallel branches。Rev.A 不增加 R24 0-ohm DNP branch。实验 EMI/ESD verification 仍 OPEN。
 - **PCB thickness baseline:** 1.6 mm FR-4 记录为 `Rev.A preliminary PCB thickness baseline`。已核对 drawing 未发现与 1.6 mm 的明确机械冲突；它不是 Final fabrication stackup，层数、铜厚、表面处理、厂家和最终机械公差仍在后续阶段确定。
 - Stage 3 仍须完成 symbol/pin mapping、recommended footprint 转录核对、板边/外壳配合和装配/返修风险审查；不得把 drawing review 写成 manufacturability verified。
 
 ### Battery connector
 
-- Current schematic value is `HX-XH2.54-2PZZ` for both J_BAT1 and J_NTC1。J_BAT1 pin 1 → BAT、pin 2 → GND；J_NTC1 pin 1 → R8/external NTC path、pin 2 → GND。
+- Current schematic value is `HX-XH2.54-2PZZ` for both J_BAT1 and J_NTC1。J_BAT1 pin 1 → BAT、pin 2 → GND；J_NTC1 pin 1 → R15/external NTC path、pin 2 → GND。
 - Mating housing/header compatibility、battery polarity/wire order、键位、线规和载流能力均为 Pending physical verification；首次电池连接前必须用万用表核对极性。同型 connector 用于 BAT/NTC 时需要明显 silkscreen/placement differentiation，但不声称 mechanical foolproof。
 - 不使用 PH2.0 作为当前 Project fact。
 
@@ -125,7 +125,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 - TYPE-C-31-M-12 exact receptacle：**Resolved for Stage 2**。
 - Battery connector exact series / polarity / wire gauge：**Physical Verification Pending**；首次连接前必须实物核对，不得推断。
 - VBUS TVS 当前 `SMF6.0A` topology/value identity 已记录；exact manufacturer/orderable MPN / LCSC C-number：**OPEN / Deferred**。
-- M1 TUSB320 / logic decode 已达到 `SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION`；symbol-pin/footprint mapping、connector shield/EH、布局与 ERC evidence 仍 OPEN。
+- M1 TUSB320 / logic decode 已达到 `COMPLETE FOR STAGE-3 HANDOFF`；connector shield/EH experimental behavior、布局与 ERC evidence 仍 OPEN。
 - BQ25185、TPS63802、TPS259474 与 NTC 的剩余外围、状态机、热、瞬态和 fail-safe integration：继续 **Deferred to Stage 3**。
 - 1A / 100ms output target 的 waveform、droop、overshoot、repetition 与 recovery definition：继续是 **Design Target**，作为 Stage 3 design/test-definition input，未验证。
 - Battery product-spec evidence、pack internal protection thresholds/recovery 与 battery connector polarity：保持 **Not Verified / Physical Verification Pending**。
@@ -141,4 +141,8 @@ Stage 2 closeout 仅表示关键架构器件及方向已经足以进入模块级
 - TPS259474L ILIM / ITIMER / UV-OV / dVdt / reset implementation。
 - TUSB320 / PESD / TYPE-C-31-M-12 / SN74LVC2G132 / BAT54 / 2N7002BK 的实际 symbol-pin 与 footprint mapping verification；M1 capture 的完整 EDA/ERC evidence。
 - USB-C shield RC baseline 的实验验证、`SMF6.0A` exact manufacturer/orderable MPN、battery connector physical verification 和 TYPE-C-31-M-12 footprint/mechanical finalization。
-- Cross-Module Integration、完整 schematic PDF / BOM、真实 ERC evidence，以及后续 DRC、simulation、manufacturing、bring-up 或 test activity。
+- ERC report，以及后续 DRC、simulation、layout verification、manufacturing、bring-up 或 test activity。Cross-Module Integration 与最新 schematic/BOM consistency review 已完成。
+
+## Stage 3 passive sourcing boundary
+
+Final reviewed passive baseline is recorded in [module_design/README.md](module_design/README.md). Ordinary commodity resistor/capacitor exact Manufacturer / Supplier / LCSC sourcing may remain deferred to Manufacturing Preparation; incomplete or garbage BOM metadata is a manufacturing cleanup item rather than a schematic electrical blocker.
