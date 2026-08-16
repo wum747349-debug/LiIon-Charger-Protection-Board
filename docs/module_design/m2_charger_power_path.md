@@ -19,7 +19,7 @@ U1 is `BQ25185DLHR`. Current design-record pin mapping is pin 1 SYS, pin 2 BAT, 
 
 ## CE# fail-safe and status access
 
-`SYS → R5 47kΩ → CE#`. Q2 is `2N7002BK,215`, with drain at CE#, source at GND, gate at `CHG_GATE`, and `R6 = 100kΩ` from gate to GND. `CHG_ENABLE_CMD → R11 10kΩ → CHG_GATE`; M3 `TLV7041DBVR` open-drain OUT and M4 TPS63802 open-drain PG also connect to `CHG_GATE`. `CHG_ENABLE_CMD` is the only HIGH authorization source, while temperature-invalid or 3V3-not-power-good can veto LOW. Q2 can pull CE# low only when all three qualifications permit charging. Actual EDA symbol-pin/footprint mapping remains to be verified.
+`SYS → R5 47kΩ → CE#`. Q3 is `2N7002BK,215`, with drain at the R5 / U1 pin 4 CE# common node, source at GND, gate at `CHG_GATE`, and `R6 = 100kΩ` from gate to GND. `CHG_ENABLE_CMD → R11 10kΩ → CHG_GATE`; M3 `TLV7041DBVR` open-drain OUT and M4 TPS63802 open-drain PG also connect to `CHG_GATE`. `CHG_ENABLE_CMD` is the only HIGH authorization source, while temperature-invalid or 3V3-not-power-good can veto LOW. Q3 can pull CE# low only when all three qualifications permit charging. `TP_CE_N` connects to the R5 / Q3 drain / U1 CE# common node, not Q3 gate. Actual EDA symbol-pin/footprint mapping remains to be verified.
 
 `STAT1` and `STAT2` connect to physical test-point components `TP_STAT1` and `TP_STAT2`. There are no onboard pull-ups or LEDs. A net label alone is not a physical PCB test pad; the physical test-point component and footprint remain subject to later EDA/footprint verification.
 
@@ -27,5 +27,5 @@ U1 is `BQ25185DLHR`. Current design-record pin mapping is pin 1 SYS, pin 2 BAT, 
 
 - M1 now defines `ILIM_HIGH_CMD = NOT(CC_OUT1)` and `CHG_ENABLE_CMD = NAND(CC_OUT1, CC_OUT2)`: unattached disables charge/conservatively limits input, Default Current uses the conservative approximately 500mA state, and 1.5A/3A advertisement selects the approximately 1.1A state.
 - M3/M4: the shared open-drain veto architecture now implements `CHG_ENABLE_CMD AND temperature-valid AND 3V3-power-good → charging permitted`. Normal startup/brownout qualification is substantially resolved, but TPS63802 PG is datasheet-defined `Undefined` while input is below its own UVLO; the earliest startup transient remains open for Bring-up oscilloscope verification rather than a verified absolute fail-safe claim.
-- Q1/Q2 exact MPNs are now `2N7002BK,215`; thermal analysis, actual symbol-pin/footprint mapping, full BOM and Cross-Module Integration remain OPEN.
+- Q1/Q3 exact MPNs are now `2N7002BK,215`; thermal analysis, actual symbol-pin/footprint mapping, full BOM and Cross-Module Integration remain OPEN.
 - User-reported / screenshot-reviewed capture exists, but no complete schematic PDF/BOM/ERC evidence is present. ERC is NOT RUN / NOT CLAIMED; Stage 4 has not started.

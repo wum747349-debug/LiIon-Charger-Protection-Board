@@ -16,10 +16,12 @@ M4 converts `SYS` to the regulated `3V3` rail with the Stage 2 Primary `TPS63802
 | 4 | FB | `FB_3V3` |
 | 5 | PG | `CHG_GATE` |
 | 6 | VOUT | `3V3` |
-| 7 | L2 | one side of the `0.47uH` inductor; the other side connects to pin 9 L1 |
+| 7 | L2 | one side of `L1 XFL4015-471MEC`, `0.47uH`; the other side connects to pin 9 L1 |
 | 8 | GND | `GND` |
-| 9 | L1 | one side of the `0.47uH` inductor; the other side connects to pin 7 L2 |
+| 9 | L1 | one side of `L1 XFL4015-471MEC`, `0.47uH`; the other side connects to pin 7 L2 |
 | 10 | VIN | `SYS` |
+
+The current exact inductor baseline is `L1 = Coilcraft XFL4015-471MEC`, `0.47uH`, LCSC `C18221164`, connected `TPS63802 pin 9 L1 ↔ L1 0.47uH ↔ TPS63802 pin 7 L2`. Coilcraft official data identifies the selected part as 0.47uH, and the LCSC evidence maps the orderable MPN to `C18221164`.
 
 The input capacitor is `10uF` from `SYS` to GND. The output network is `2 x 22uF` from `3V3` to GND. The feedback divider is `3V3 → 511kΩ / 1% → FB_3V3 → 91kΩ / 1% → GND`.
 
@@ -55,6 +57,7 @@ Normal 3V3 startup, brownout and temperature-veto architecture is therefore subs
 - Complete schematic PDF: `NOT AVAILABLE`.
 - Complete BOM: `NOT AVAILABLE`.
 - Hardware startup sequencing: `NOT MEASURED`.
+- Inductor selection: `DATASHEET-QUALIFIED DESIGN SELECTION`; thermal, transient and PCB-layout behavior are `NOT VERIFIED`.
 - 500mA continuous and 1A/100ms transient hardware verification: `NOT RUN`.
 
 M4 is ready for ongoing Stage 3 module integration at the documented design-record level, but it is not `ERC PASS`, `SCHEMATIC PASS`, hardware verified, or ready to close Stage 3.

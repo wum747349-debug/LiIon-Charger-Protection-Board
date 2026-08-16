@@ -1,6 +1,6 @@
 # 资料索引
 
-状态：Stage 2 evidence closeout PASS — 2026-08-12；Stage 3 active，M1/M2/M3 evidence index synchronized
+状态：Stage 2 evidence closeout PASS — 2026-08-12；Stage 3 active，M1–M6 design-record evidence index synchronized
 
 关键硬件参数必须依据当前型号的官方 datasheet、reference manual、application note 或可追溯的供应商正式资料核对。商品页只能作为采购证据，不能单独证明关键参数。
 
@@ -36,6 +36,7 @@
 | Charger architecture-level alternate | TI BQ24075RGTR | [BQ2407x datasheet, Rev. N](https://www.ti.com/lit/ds/symlink/bq24075.pdf) | 与 TPS3700 + external disconnect 配合；不是 BQ25185 drop-in replacement | Verified for alternate; full architecture requalification required |
 | Charger secondary fallback | Microchip MCP73871T-2CCI/ML | [MCP73871 product page and official datasheet DS20002090F](https://www.microchip.com/en-us/product/MCP73871) | Cross-vendor fallback；核对 1-cell、system load sharing / power-path 与 temperature monitoring | Verified for secondary fallback |
 | 3.3V Buck-Boost | TI TPS63802DLAR | [TPS63802 datasheet, SLVSEU9D, Rev. D](https://www.ti.com/lit/ds/symlink/tps63802.pdf) | Primary；核对输入/输出范围、3.3V current capability、typical 1A transient examples | Verified for Stage 2 selection; orderable MPN verified |
+| M4 buck-boost inductor | Coilcraft XFL4015-471MEC | [Coilcraft XFL4015-471 official product data](https://www.coilcraft.com/en-us/products/power/shielded-inductors/molded-inductor/xfl/xfl4015/xfl4015-471/) | Current exact L1 baseline；official data confirms `0.47uH` part identity and electrical ratings | Datasheet-qualified design selection; Project thermal/transient/layout/hardware not verified |
 | Buck-Boost alternate | TI TPS63070 | [TPS63070 datasheet, SLVSC58B, Rev. B](https://www.ti.com/lit/ds/symlink/tps63070.pdf) | Higher-margin fallback | Verified for Stage 2 alternate |
 | Buck-Boost conditional fallback | TI TPS63001 | [TPS6300x datasheet, SLVS520C, Rev. C](https://www.ti.com/lit/ds/symlink/tps63001.pdf) | 仅在 1A peak target 放宽后；3.3V boost-mode capability 不与 TPS63802 等价 | Verified limitation |
 | Output protection | TI TPS259474LRPWR / TPS259470LRPWR | [TPS25947 datasheet, SLVSFC9C, Rev. C](https://www.ti.com/lit/ds/symlink/tps25947.pdf) | `474L` primary circuit-break/latch-off；`470L` conditional active-current-limit fallback only with external latch/control | Primary orderable MPN verified; alternate is not equivalent |
@@ -43,7 +44,7 @@
 | CC ESD | Nexperia PESD5V0U2BT,215 | [PESD5V0U2BT product datasheet](https://assets.nexperia.com/documents/data-sheet/PESD5V0U2BT.pdf) | Current Primary；双线 bidirectional ESD device；M1 current record pin 1 → CC1、pin 2 → CC2、pin 3 → GND、no VBUS | Official device/pin identity verified; Project symbol-pin/footprint/layout not verified |
 | M1 logic decode | TI SN74LVC2G132DCUR | [SN74LVC2G132 datasheet, SCES547D, Rev. D](https://www.ti.com/lit/ds/symlink/sn74lvc2g132.pdf) | Dual 2-input NAND with Schmitt-trigger inputs；实现 `NOT(CC_OUT1)` 与 `NAND(CC_OUT1, CC_OUT2)` | Official function/orderable MPN indexed; Project mapping not verified |
 | M1 VDD_CC isolation diode | Nexperia BAT54,215 | [BAT54 product datasheet](https://assets.nexperia.com/documents/data-sheet/BAT54.pdf) | Current record pin 1/anode → VBUS_PROT、pin 2 NC、pin 3/cathode → VDD_CC | Official pin identity verified; Project symbol-pin/footprint not verified |
-| M2 small-signal MOSFET | Nexperia 2N7002BK,215 | [2N7002BK product datasheet](https://assets.nexperia.com/documents/data-sheet/2N7002BK.pdf) | Q1/Q2 exact MPN baseline；official pin identity 1 G、2 S、3 D | Official device/pin identity verified; Project symbol-pin/footprint not verified |
+| M2 small-signal MOSFET | Nexperia 2N7002BK,215 | [2N7002BK product datasheet](https://assets.nexperia.com/documents/data-sheet/2N7002BK.pdf) | Q1/Q3 exact MPN baseline；official pin identity 1 G、2 S、3 D | Official device/pin identity verified; Project symbol-pin/footprint not verified |
 | Superseded CC ESD selection | STMicroelectronics USBLC6-2SC6 | [USBLC6-2 datasheet, DS4260, Rev. 7](https://www.st.com/resource/en/datasheet/usblc6-2.pdf) | Historical former Primary only；不再描述为 current Primary | Superseded by PESD5V0U2BT,215 |
 | Robust Type-C protection | TI TPD6S300A | [TPD6S300A datasheet, SLVSEL8](https://www.ti.com/lit/ds/symlink/tpd6s300a.pdf) | Optional short-to-VBUS / multi-channel ESD robustness | Verified for optional alternate |
 
@@ -55,6 +56,7 @@
 | --- | --- | --- | --- | --- | --- |
 | Charger / Power Path | BQ25185DLHR | C19725033 | WSON-10-EP (2.2mm × 2mm) | Limited | Verified point-in-time mapping; recheck before purchase |
 | 3.3V Buck-Boost | TPS63802DLAR | C2845237 | VSON-10 (2mm × 3mm) | Available at evidence check | Verified point-in-time mapping; recheck before purchase |
+| M4 buck-boost inductor | XFL4015-471MEC | [C18221164](https://www.lcsc.com/product-detail/C18221164.html) | SMD, 4mm × 4mm listing | Available at evidence check | Verified point-in-time MPN/C-number mapping; recheck before purchase |
 | Output protection | TPS259474LRPWR | C2864845 | VQFN-10-HR (2mm × 2mm) | Available at evidence check | Verified point-in-time mapping; recheck before purchase |
 | USB-C CC controller | TUSB320LAIRWBR | C132554 | X2-QFN-12 (1.6mm × 1.6mm) | Available at evidence check | Verified point-in-time mapping; recheck before purchase |
 | USB-C CC ESD (superseded historical selection) | USBLC6-2SC6 | C7519 | SOT-23-6L | Historical point-in-time evidence only | Procurement mapping retained for history; not current Primary |
@@ -105,4 +107,4 @@ External NTC exact MPN 尚未冻结。采购前需取得匹配 orderable MPN 的
 - 当前商品规格可作为 Rev.A Design Basis，但不能独立证明容量/电流/温度测试条件、保护阈值与恢复方式、循环寿命、电芯身份、连接器载流能力或内部温度检测。
 - 商品资料、非当前型号规格书和 Framework 文档均不能证明本项目的 EDA 实现或测试状态。
 - Stage 2 已依据官方制造商资料及用户提供的 TYPE-C-31-M-12 formal drawing/spec 完成当时的 Primary / Alternate 决策；Stage 3 已将真实 selection change `USBLC6-2SC6 → PESD5V0U2BT,215` 及 M1/M2 support-device sources 同步到本索引，不回退或重新开启 Stage 2。
-- M1 当前连接与 decode 记录不等于实际 `.SchDoc`、symbol-pin、footprint 或 ERC evidence；`SMF5.0A` 只有 topology/value identity，exact manufacturer/orderable MPN 尚未冻结。
+- M1–M6 current connection records reflect user-reported / screenshot-reviewed capture and do not equal parsed `.SchDoc`, complete symbol-pin/footprint mapping or ERC evidence. `SMF6.0A` is only the current topology/value identity; exact manufacturer/orderable MPN and LCSC C-number remain OPEN. The M4 XFL4015-471MEC source qualification does not prove Project thermal, transient, PCB-layout or hardware performance.

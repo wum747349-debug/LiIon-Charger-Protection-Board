@@ -1,6 +1,6 @@
 # Stage 3 — Module Design Records
 
-Status: Stage 3 active — M1/M2/M3/M4/M5 module records synchronized; cross-module integration pending
+Status: Stage 3 active — M1–M6 module design/capture baseline substantially complete; cross-module integration pending
 
 ## Current progress
 
@@ -11,9 +11,9 @@ Status: Stage 3 active — M1/M2/M3/M4/M5 module records synchronized; cross-mod
 | M3 — Battery + External NTC | SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION | [m3_battery_external_ntc.md](m3_battery_external_ntc.md) |
 | M4 — 3.3V Buck-Boost | SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION | [m4_3v3_buck_boost.md](m4_3v3_buck_boost.md) |
 | M5 — 3.3V Output Protection | SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION | [m5_3v3_output_protection.md](m5_3v3_output_protection.md) |
-| M6 — Remaining interfaces / support | NOT STARTED | Pending |
+| M6 — Remaining interfaces / support | SUBSTANTIALLY COMPLETE FOR STAGE-3 MODULE INTEGRATION | [m6_remaining_interfaces_support.md](m6_remaining_interfaces_support.md) |
 
-用户已在 Altium Designer 中手工 capture 当前 M1/M2/M3/M4/M5 schematic draft，并已报告完成 M1 主要审查接线修正。M4 的 `TPS63802DLAR` power stage、shared open-drain `CHG_GATE` qualification，以及 M5 的 `TPS259474LRPWR` output-protection network 已形成当前 Stage 3 integration baseline；后续仍需完成 M6 和 Stage 3 Cross-Module Integration Check。
+用户已在 Altium Designer 中手工 capture 当前 M1–M6 schematic draft，并已报告完成本轮 M1 shield/TVS、M4 inductor、M5 PGTH 与 M6 interface/support 更新。M1–M6 module design/capture baseline substantially complete；后续仍需完成 Stage 3 Cross-Module Integration Check。
 
 ## Evidence boundary
 

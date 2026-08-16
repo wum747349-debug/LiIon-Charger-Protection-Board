@@ -8,9 +8,10 @@ M1 accepts ordinary 5V USB-C input, presents the Rev.A Sink/UFP CC behavior, pro
 
 ## Connector and protection topology
 
-- Receptacle: `TYPE-C-31-M-12`. All VBUS contacts join `VBUS_PROT`; all GND contacts join GND. D+/D−/SBU are unused / NC. Connector shield / EH grounding remains OPEN.
+- Receptacle: `TYPE-C-31-M-12`. All VBUS contacts join `VBUS_PROT`; all GND contacts join GND. D+/D−/SBU are unused / NC. EH1/EH2/EH3/EH4 join `USB_SHIELD`.
+- Current shield baseline uses parallel branches: `USB_SHIELD → R23 1MΩ → GND` and `USB_SHIELD → C15 1nF / 1kV C0G → GND`. The optional `USB_SHIELD → R24 0Ω DNP → GND` branch is a tuning/direct-ground provision and is default DNP. This EMI/ESD-oriented engineering baseline is not `EMC PASS`, `ESD PASS` or experimentally verified shield behavior.
 - CC ESD Primary: `PESD5V0U2BT,215`, current connection record pin 1 → CC1, pin 2 → CC2, pin 3 → GND; it is not connected to VBUS. This replaces `USBLC6-2SC6` as current Primary.
-- VBUS uses the current `SMF5.0A` TVS topology on `VBUS_PROT`. `SMF5.0A` is not promoted to an exact manufacturer/orderable procurement fact without matching evidence.
+- `D2 SMF6.0A` connects `VBUS_PROT → TVS → GND`. `SMF6.0A` is the current topology/value identity only and is not promoted to an exact manufacturer/orderable procurement fact without matching evidence.
 
 ## TUSB320 configuration and VDD_CC
 
@@ -31,17 +32,17 @@ M1 accepts ordinary 5V USB-C input, presents the Rev.A Sink/UFP CC behavior, pro
 
 ## Interaction, default and fail-safe behavior
 
-- M2 Q1 uses `ILIM_HIGH_CMD` to select the approximately 18kΩ conservative or 13kΩ high-current ILIM/VSET network. M2 Q2 uses the qualified `CHG_GATE` path to pull BQ25185 CE# low.
+- M2 Q1 uses `ILIM_HIGH_CMD` to select the approximately 18kΩ conservative or 13kΩ high-current ILIM/VSET network. M2 Q3 uses the qualified `CHG_GATE` path to pull BQ25185 CE# low.
 - M3 `TLV7041DBVR` and M4 TPS63802 PG can independently pull the shared `CHG_GATE` low. With `CHG_ENABLE_CMD` as the only HIGH authorization source, the normal startup/brownout/temperature qualification architecture is substantially resolved; only the earliest startup transient remains open because TPS63802 PG is datasheet-defined `Undefined` below its own UVLO.
-- Unattached, unpowered, unknown, invalid or unqualified states must not select high current or authorize charging. The resistor defaults in M2 keep Q1/Q2 off when their command/gate drive is absent.
+- Unattached, unpowered, unknown, invalid or unqualified states must not select high current or authorize charging. The resistor defaults in M2 keep Q1/Q3 off when their command/gate drive is absent.
 
 ## Remaining open issues
 
-- Final USB-C connector shield / EH grounding strategy.
-- Exact manufacturer/orderable MPN and protection qualification for the current `SMF5.0A` TVS topology.
+- USB shield RC/direct-ground option placement, return path and experimental EMI/ESD validation.
+- Exact manufacturer/orderable MPN and protection qualification for the current `SMF6.0A` TVS topology.
 - Actual TUSB320, PESD, connector, BAT54, SN74LVC2G132 and 2N7002BK symbol-pin and footprint mapping verification.
 - Bring-up oscilloscope verification of the earliest startup transient across `VBUS / SYS / 3V3 / PG / CHG_ENABLE_CMD / CHG_GATE / CE#`; no absolute fail-safe or measured PASS claim is made.
-- M6 and the Stage 3 Cross-Module Integration Check.
+- Stage 3 Cross-Module Integration Check.
 - Complete schematic PDF, complete BOM and real ERC evidence.
 
 ## Evidence boundary
