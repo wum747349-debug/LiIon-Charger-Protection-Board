@@ -1,6 +1,6 @@
 # 设计说明
 
-状态：Stage 2 closeout PASS；Stage 3 documentation closeout COMPLETE / `READY FOR SCHEMATIC REVIEW`；当前进入 Stage 4
+状态：Stage 2 closeout PASS；Stage 3 documentation closeout COMPLETE；Stage 4 Formal Schematic Review CLOSED；当前进入 Stage 5 — PCB Layout
 
 ## 整板架构意图
 
@@ -32,7 +32,7 @@ Rev.A primary 使用 BQ25185 集成 BUVLO / BATFET 行为：官方资料给出�
 
 ## 外部 NTC 意图与限制
 
-Battery Design Basis 仍为商品规格充电温度约 0℃～45℃。Rev.A 外部 NTC baseline 为容易采购的 wired/epoxy `10kΩ @25℃`、`β≈3435K`、`±1% preferred`，贴近并电气绝缘于 pouch 代表性表面；exact MPN 与最终安装方法保持 OPEN。`J_NTC1 → R15=2.7kΩ / 1% → NTC_TS`；R15 主要缓解 NTC short 将复用的 TS/MR 直接硬拉近 GND 所带来的 push-button / long-low / factory-mode interaction，不作为精密校准声明。
+Battery Design Basis 仍为商品规格充电温度约 0℃～45℃。Rev.A 外部 NTC 已冻结为 Nanjing Shiheng `MF52D 103F3435-100` / LCSC `C394023`：wired/epoxy、`10kΩ @25℃`、R25 `±1%`、B25/85 `3435K ±1%`、100mm insulated leads，贴近并电气绝缘于 pouch 代表性表面；最终安装方法保持 downstream mechanical input。保持 `J_NTC1 → R15=2.7kΩ / 1% → NTC_TS`；R15 主要缓解 NTC short 将复用的 TS/MR 直接硬拉近 GND 所带来的 push-button / long-low / factory-mode interaction，不作为精密校准声明。`J_NTC1 = HX-XH2.54-2PZZ`，使用 `C5221417` / HX 2.54-2P DT / 200mm / 24AWG 预压接母线束；维护线序为 red → pin 1 → R15 / `NTC_TS`，black → pin 2 → GND，NTC 本体无极性。
 
 M3 保持 `TLV7041DBVR` open-drain comparator 作为高温 charging interlock；中途讨论/临时 capture 的 `TLV7031DBVR` 不是 current design。3V3 经 90.9kΩ/10kΩ divider 产生 nominal 约 0.327V `VHOT_REF`，与 `NTC_TS` 比较。最终 shared qualification 为 `CHG_ENABLE_CMD → R11 10kΩ → CHG_GATE`，同时 `R6 100kΩ` 将 `CHG_GATE` 下拉至 GND，TLV7041 OUT 与 TPS63802 PG 均以 open-drain LOW veto 接入，且 `CHG_GATE` 驱动 charge-enable MOSFET gate。`CHG_ENABLE_CMD` 是唯一 HIGH authorization source，逻辑意图为 `CHG_ENABLE_CMD AND temperature-valid AND 3V3-power-good → charging permitted`。不增加 TPS3808G33DBVR/U6，也不为 TPS63802 PG 增加独立 3V3 pull-up。当前 nominal conservative hardware window 约 4℃～39℃，是工程实现而非新的 manufacturer specification，也不是 verified exact trip range；电阻/comparator/NTC 容差、pouch thermal lag 与实际 trip test 均待后续验证。
 
@@ -52,7 +52,7 @@ TPS63070 是 higher-margin fallback。TPS63001 在 3.3V boost mode 的官方额�
 - `VBUS_PROT → BAT54,215 → VDD_CC`，当前 symbol record 为 BAT54 pin 1/anode → `VBUS_PROT`、pin 3/cathode → `VDD_CC`、pin 2 NC；TUSB320 与 logic 各有 100nF local decoupling。
 - CC ESD current Primary 为 Nexperia `PESD5V0U2BT,215`，当前 connection record 为 pin 1 → CC1、pin 2 → CC2、pin 3 → GND，不连接 VBUS。它替换旧 `USBLC6-2SC6`；旧器件只保留为 superseded historical selection，不再是 current Primary。实际 symbol-pin/footprint mapping、ground return 与 layout 仍须依据 Nexperia 官方资料和 EDA library 核对。
 - TYPE-C-31-M-12 的全部 VBUS contacts 并到 `VBUS_PROT`，全部 GND contacts 并到 GND；D+/D−/SBU unused / NC。EH1/EH2/EH3/EH4 并到 `USB_SHIELD`；R23 1MΩ 与 `C13=1nF/high-voltage/1206` 是 `USB_SHIELD → GND` 的并联支路。Rev.A 不增加 R24 0-ohm DNP branch。该 EMI/ESD-oriented baseline 未经实验验证，不表示 EMC PASS 或 ESD PASS。
-- `VBUS_PROT` 当前有 `D2 SMF6.0A` TVS，拓扑为 `VBUS_PROT → TVS → GND`；准确 manufacturer/orderable MPN 尚未冻结，不默认叠加 input eFuse，也不把 generic symbol 升级成新的精确采购事实。
+- `VBUS_PROT` 当前有 `D2 = Littelfuse SMF6.0A` / LCSC `C207260` TVS，拓扑为 `VBUS_PROT → TVS → GND`；不默认叠加 input eFuse，布局、回流路径与实际保护表现仍待 downstream verification。
 - M1 当前状态为 `COMPLETE FOR STAGE-3 HANDOFF`；不等于 ERC PASS、PCB/layout verified 或 hardware verified。
 - 1.6 mm FR-4 是 `Rev.A preliminary PCB thickness baseline`；drawing 未显示明确冲突，但它不是 Final fabrication stackup。层数、铜厚、表面处理、厂家和最终机械公差后续确定。
 
@@ -79,7 +79,7 @@ Rev.A Battery Design Basis 已改为 1S protected Li-Polymer pouch pack、103450
 | DN-001 | 当前电池包充电/放电/温度商品规格和保护行为 | 约束充电、UVLO、热与保护协调 | Design Basis accepted；内部保护行为 Not Verified |
 | DN-002 | 4.20V、默认约 500mA、商品允许约 1.0A | 决定充电方案筛选边界 | Resolved for Stage 2；passive values Deferred to Stage 3 |
 | DN-003 | 5V 输入预算与各运行模式功率预算 | 决定负载优先、充电退让与热边界 | Architecture selected；detailed budget Deferred to Stage 3 |
-| DN-004 | 0℃～45℃、约 10kΩ / 3435K、NTC fault inhibits charge | 决定温度输入与容差要求 | Architecture selected；MPN/network Deferred to Stage 3 |
+| DN-004 | 0℃～45℃、约 10kΩ / 3435K、NTC fault inhibits charge | 决定温度输入与容差要求 | MF52D 103F3435-100 / C394023 selected；network frozen；trip/thermal-lag hardware verification downstream |
 | DN-005 | requirements OPEN-005、OPEN-010～OPEN-013 的输出波形、功耗、热与电流余量边界 | 决定稳压、储能和降额目标 | TPS63802 selected；calculations Deferred to Stage 3 |
 | DN-006 | 集成 BUVLO primary 与 output latch-off policy | 决定阈值、迟滞、延时和恢复行为 | Architecture selected；exact behavior Deferred to Stage 3 |
 | DN-007 | 关键候选官方 datasheet 集合 | Stage 2 决策必须有官方依据 | Verified sources indexed in references.md |
@@ -89,4 +89,4 @@ Rev.A Battery Design Basis 已改为 1S protected Li-Polymer pouch pack、103450
 
 ## 当前证据声明
 
-Stage 3 Final Schematic Review、Cross-Module Integration Review 与 BOM Consistency Review 已完成；最新版 schematic/BOM 已同步，技术评估为 `READY WITH MINOR NOTES`，canonical handoff 为 `READY FOR SCHEMATIC REVIEW`。普通 commodity R/C 的 exact Manufacturer / Supplier / LCSC sourcing 可延后到 Manufacturing Preparation；BOM placeholder/garbage metadata 属于 manufacturing cleanup，不是 schematic electrical blocker。`.SchDoc` 仍是 authoritative implementation source；仓库当前没有 ERC report，因此 `ERC = NOT YET VERIFIED`。不声称 ERC PASS、PCB DRC、simulation、layout verification、manufacturing、hardware measurement、bring-up、EMI/ESD 或 temperature trip experimentally verified。earliest startup transient、M5 UV/OV/PGTH threshold、1A/100ms transient、hard short、thermal 与 latch/reset behavior 均未实测。本文不能用于批准制造。
+最新版完整 Schematic PDF + BOM 的 Formal Schematic Review、Cross-Module Integration Review 与 BOM Consistency Review 已完成；未发现影响 board-level safety、schematic correctness、package/footprint decision、interface definition 或 critical PCB layout input 的未关闭 blocker。Stage 4 已关闭并显式批准进入 Layout Preflight。普通 commodity R/C 的 exact Manufacturer / Supplier / LCSC sourcing 可延后到 Manufacturing Preparation；BOM placeholder/garbage metadata 属于 manufacturing cleanup，不是 schematic electrical blocker。`.SchDoc` 仍是 authoritative implementation source；仓库当前没有 ERC report，因此 `ERC = NOT YET VERIFIED`。不声称 ERC PASS、PCB DRC、simulation、layout verification、manufacturing、hardware measurement、bring-up、EMI/ESD 或 temperature trip experimentally verified。Battery actual mating/polarity 必须在第一次实际连接前核对；earliest startup transient、M5 UV/OV/PGTH threshold、1A/100ms transient、hard short、thermal 与 latch/reset behavior 均未实测。本文不能用于批准制造。

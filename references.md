@@ -1,6 +1,6 @@
 # 资料索引
 
-状态：Stage 2 evidence closeout PASS — 2026-08-12；Stage 3 active，M1–M6 design-record evidence index synchronized
+状态：Stage 2 evidence closeout PASS — 2026-08-12；Stage 4 Formal Schematic Review closeout evidence synchronized
 
 关键硬件参数必须依据当前型号的官方 datasheet、reference manual、application note 或可追溯的供应商正式资料核对。商品页只能作为采购证据，不能单独证明关键参数。
 
@@ -60,6 +60,9 @@
 | Output protection | TPS259474LRPWR | C2864845 | VQFN-10-HR (2mm × 2mm) | Available at evidence check | Verified point-in-time mapping; recheck before purchase |
 | USB-C CC controller | TUSB320LAIRWBR | C132554 | X2-QFN-12 (1.6mm × 1.6mm) | Available at evidence check | Verified point-in-time mapping; recheck before purchase |
 | USB-C CC ESD (superseded historical selection) | USBLC6-2SC6 | C7519 | SOT-23-6L | Historical point-in-time evidence only | Procurement mapping retained for history; not current Primary |
+| External NTC | Nanjing Shiheng MF52D 103F3435-100 | C394023 | Epoxy / wired, 100mm insulated leads | User-confirmed selection and purchase | Exact procurement identity accepted; hardware trip/thermal behavior not verified |
+| USB VBUS TVS / D2 | Littelfuse SMF6.0A | C207260 | SMF | Synchronized to current BOM | Exact sourcing resolved; Project layout/hardware protection not verified |
+| External NTC harness | C5221417, HX 2.54-2P DT | C5221417 | 200mm, 24AWG, pre-crimped 2-pin female harness | User-confirmed selection and purchase | J_NTC1 interface identity accepted; assembly/hardware not verified |
 
 ## TYPE-C-31-M-12 正式 drawing/spec 证据
 
@@ -70,7 +73,7 @@
 
 商品页、分销商页、论坛、教程和开源项目未用于证明上述关键参数。官方 datasheet 中的 typical application / typical curve 也不等同于本 Project 已计算或已验证。
 
-External NTC exact MPN 尚未冻结。采购前需取得匹配 orderable MPN 的 manufacturer official evidence，确认 `10kΩ @25℃`、`B≈3435K`、目标容差、工作温度、wired/epoxy construction 与适合 pouch surface attachment 的机械/绝缘条件；LCSC/marketplace 资料只能支持采购身份与 availability，不能替代技术资格证据。
+External NTC exact selection 已冻结为 Nanjing Shiheng `MF52D 103F3435-100` / LCSC `C394023`：`10kΩ @25℃`、R25 tolerance `±1%`、B25/85 `3435K`、Beta tolerance `±1%`、epoxy/wired、100mm insulated leads。该记录支持当前已确认采购身份与 calculated design basis；不把 marketplace evidence 升级为 actual trip-temperature、pouch thermal lag、attachment 或 hardware PASS。
 
 ## Stage 2 所需官方 datasheet
 
@@ -83,7 +86,7 @@ External NTC exact MPN 尚未冻结。采购前需取得匹配 orderable MPN 的
 | 3.3V Buck-Boost | TPS63802 / TPS63070 / TPS63001 官方 datasheet | 输入范围、500mA 连续、1A/100ms 目标、纹波、瞬态、功耗、热、电感/开关电流与布局 | Primary / alternate limits verified；calculations Deferred |
 | Functional battery UVLO | BQ25185 官方 datasheet | 阈值、迟滞、延时、USB 与电池路径隔离 | Integrated primary verified；full behavior Deferred |
 | 3.3V 输出监控与保护 | TPS25947 官方 datasheet | UV/OV、启动禁止、过流/短路、锁断/复位与热行为 | `TPS259474L` primary verified；exact network Deferred |
-| External NTC network | 电池商品温度规格与 BQ25185 官方 datasheet | 允许温度窗、阻值、Beta、容差、封装、偏置及开短路行为 | Architecture verified；MPN/network Deferred |
+| External NTC network | 电池商品温度规格、BQ25185 官方 datasheet 与 MF52D 103F3435-100 selection record | 允许温度窗、阻值、Beta、容差、封装、偏置及开短路行为 | Exact NTC/network selected；actual trip/thermal-lag hardware verification deferred |
 | USB-C receptacle | TYPE-C-31-M-12 formal drawing/spec | 引脚、recommended PCB layout、机械固定、额定能力与板厚冲突检查 | Primary verified for Stage 2；footprint/mechanical finalization Deferred |
 | Battery connector 与高电流互连 | 制造商正式图纸、实物和额定规格 | 极性/键位、接触电阻、额定电流、线规与温升 | Physical Verification Pending |
 
@@ -107,4 +110,4 @@ External NTC exact MPN 尚未冻结。采购前需取得匹配 orderable MPN 的
 - 当前商品规格可作为 Rev.A Design Basis，但不能独立证明容量/电流/温度测试条件、保护阈值与恢复方式、循环寿命、电芯身份、连接器载流能力或内部温度检测。
 - 商品资料、非当前型号规格书和 Framework 文档均不能证明本项目的 EDA 实现或测试状态。
 - Stage 2 已依据官方制造商资料及用户提供的 TYPE-C-31-M-12 formal drawing/spec 完成当时的 Primary / Alternate 决策；Stage 3 已将真实 selection change `USBLC6-2SC6 → PESD5V0U2BT,215` 及 M1/M2 support-device sources 同步到本索引，不回退或重新开启 Stage 2。
-- M1–M6 current connection records reflect user-reported / screenshot-reviewed capture and do not equal parsed `.SchDoc`, complete symbol-pin/footprint mapping or ERC evidence. `SMF6.0A` is only the current topology/value identity; exact manufacturer/orderable MPN and LCSC C-number remain OPEN. The M4 XFL4015-471MEC source qualification does not prove Project thermal, transient, PCB-layout or hardware performance.
+- M1–M6 current connection records reflect user-reported / screenshot-reviewed capture and do not equal parsed `.SchDoc`, complete symbol-pin/footprint mapping or ERC evidence. D2 exact sourcing is Littelfuse `SMF6.0A` / LCSC `C207260`; this does not prove Project surge/ESD, placement, return-path or hardware performance. The M4 XFL4015-471MEC source qualification likewise does not prove Project thermal, transient, PCB-layout or hardware performance.

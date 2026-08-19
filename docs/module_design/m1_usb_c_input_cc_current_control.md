@@ -11,7 +11,7 @@ M1 accepts ordinary 5V USB-C input, presents the Rev.A Sink/UFP CC behavior, pro
 - Receptacle: `TYPE-C-31-M-12`. All VBUS contacts join `VBUS_PROT`; all GND contacts join GND. D+/D−/SBU are unused / NC. EH1/EH2/EH3/EH4 join `USB_SHIELD`.
 - Current shield baseline uses parallel branches: `USB_SHIELD → R23 1MΩ → GND` and `USB_SHIELD → C13 1nF / high-voltage / 1206 → GND`. Rev.A does not include an R24 0-ohm DNP branch. This EMI/ESD-oriented engineering baseline is not `EMC PASS`, `ESD PASS` or experimentally verified shield behavior.
 - CC ESD Primary: `PESD5V0U2BT,215`, current connection record pin 1 → CC1, pin 2 → CC2, pin 3 → GND; it is not connected to VBUS. This replaces `USBLC6-2SC6` as current Primary.
-- `D2 SMF6.0A` connects `VBUS_PROT → TVS → GND`. `SMF6.0A` is the current topology/value identity only and is not promoted to an exact manufacturer/orderable procurement fact without matching evidence.
+- `D2 = Littelfuse SMF6.0A` / LCSC `C207260` connects `VBUS_PROT → TVS → GND`. Exact sourcing is synchronized to the current BOM; placement, return path and hardware protection performance remain downstream verification.
 
 ## TUSB320 configuration and VDD_CC
 
@@ -39,7 +39,7 @@ M1 accepts ordinary 5V USB-C input, presents the Rev.A Sink/UFP CC behavior, pro
 ## Remaining open issues
 
 - USB shield RC placement, return path and experimental EMI/ESD validation.
-- Exact manufacturer/orderable MPN and protection qualification for the current `SMF6.0A` TVS topology.
+- Placement, return-path and hardware protection qualification for the selected Littelfuse `SMF6.0A` TVS.
 - Actual TUSB320, PESD, connector, BAT54, SN74LVC2G132 and 2N7002BK symbol-pin and footprint mapping verification.
 - Bring-up oscilloscope verification of the earliest startup transient across `VBUS / SYS / 3V3 / PG / CHG_ENABLE_CMD / CHG_GATE / CE#`; no absolute fail-safe or measured PASS claim is made.
 - ERC report remains unavailable; `ERC = NOT YET VERIFIED`.

@@ -6,20 +6,20 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 
 ## Selection Summary
 
-| Category | Primary / architecture | Alternate / fallback | Stage 2 status |
-| --- | --- | --- | --- |
-| Battery pack | 1S protected Li-Polymer pouch pack, 103450, 3.7V / 2000mAh | TBD only if requirements are reopened | Design Basis accepted; product-spec evidence only |
-| Charger / Power Path | TI BQ25185DLHR (LCSC C19725033) | BQ24075RGTR + external functional UVLO / battery disconnect; MCP73871T-2CCI/ML secondary fallback | Primary selected; current availability Limited |
-| Functional battery UVLO | BQ25185 integrated BUVLO / BATFET behavior | TPS3700 + external disconnect with BQ24075 architecture-level Alternate | Primary architecture selected |
-| 3.3V Buck-Boost | TI TPS63802DLAR (LCSC C2845237) | TI TPS63070; TPS63001 only if 1A peak target is relaxed | Primary selected |
-| External battery temperature | External wired/epoxy NTC near pouch surface, 10kΩ @25℃, β≈3435K, ±1% preferred; TLV7041DBVR auxiliary hot interlock | Different NTC only with network/tolerance analysis | Stage 3 network defined; exact NTC MPN and verification open |
-| Output protection | TI TPS259474LRPWR (LCSC C2864845) | TPS259470LRPWR only with external latch/control qualification; not equivalent | Primary orderable MPN normalized |
-| USB-C CC/current detection | TI TUSB320LAIRWBR (LCSC C132554) in UFP/Sink role | TBD | Exact Primary selected; implementation deferred |
-| CC ESD | Nexperia PESD5V0U2BT,215 | TI TPD6S300A only if stronger short-to-VBUS robustness is later required; USBLC6-2SC6 retained as superseded historical selection | Current Primary selected; Stage 3 connection recorded; symbol-pin/footprint/layout verification open |
-| USB VBUS protection | Current `SMF6.0A` TVS topology on `VBUS_PROT` | Exact manufacturer/orderable MPN TBD | Topology/value identity captured; procurement identity and protection qualification deferred |
-| USB-C receptacle | TYPE-C-31-M-12 | Reopen selection only if Stage 3 mechanical/footprint review finds a conflict | Primary selected; exact receptacle resolved for Stage 2 |
-| Battery / NTC connectors | Current schematic value `HX-XH2.54-2PZZ` for J_BAT1/J_NTC1 | Reopen if physical verification finds a conflict | Mating, battery polarity/wire order and mechanical differentiation require physical verification |
-| M2 small-signal MOSFETs | Nexperia 2N7002BK,215 for Q1/Q3 | Reopen only if logic-drive or procurement verification finds a conflict | Stage 3 exact MPN baseline recorded; symbol-pin/footprint mapping open |
+| Category                     | Primary / architecture                                                                                              | Alternate / fallback                                                                                                              | Stage 2 status                                                                                       |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Battery pack                 | 1S protected Li-Polymer pouch pack, 103450, 3.7V / 2000mAh                                                          | TBD only if requirements are reopened                                                                                             | Design Basis accepted; product-spec evidence only                                                    |
+| Charger / Power Path         | TI BQ25185DLHR (LCSC C19725033)                                                                                     | BQ24075RGTR + external functional UVLO / battery disconnect; MCP73871T-2CCI/ML secondary fallback                                 | Primary selected; current availability Limited                                                       |
+| Functional battery UVLO      | BQ25185 integrated BUVLO / BATFET behavior                                                                          | TPS3700 + external disconnect with BQ24075 architecture-level Alternate                                                           | Primary architecture selected                                                                        |
+| 3.3V Buck-Boost              | TI TPS63802DLAR (LCSC C2845237)                                                                                     | TI TPS63070; TPS63001 only if 1A peak target is relaxed                                                                           | Primary selected                                                                                     |
+| External battery temperature | Nanjing Shiheng MF52D 103F3435-100 / C394023; 10kΩ @25℃, B25/85 3435K, R25/Beta ±1%; TLV7041DBVR auxiliary hot interlock | Different NTC only with network/tolerance analysis                                                                                | Exact NTC selected; trip/attachment/thermal-lag hardware verification open                           |
+| Output protection            | TI TPS259474LRPWR (LCSC C2864845)                                                                                   | TPS259470LRPWR only with external latch/control qualification; not equivalent                                                     | Primary orderable MPN normalized                                                                     |
+| USB-C CC/current detection   | TI TUSB320LAIRWBR (LCSC C132554) in UFP/Sink role                                                                   | TBD                                                                                                                               | Exact Primary selected; implementation deferred                                                      |
+| CC ESD                       | Nexperia PESD5V0U2BT,215                                                                                            | TI TPD6S300A only if stronger short-to-VBUS robustness is later required; USBLC6-2SC6 retained as superseded historical selection | Current Primary selected; Stage 3 connection recorded; symbol-pin/footprint/layout verification open |
+| USB VBUS protection          | Littelfuse `SMF6.0A` / LCSC `C207260` on `VBUS_PROT`                                                                | Reopen only if layout/protection qualification finds a conflict                                                                   | Exact sourcing synchronized to current BOM; layout/hardware qualification deferred                  |
+| USB-C receptacle             | TYPE-C-31-M-12                                                                                                      | Reopen selection only if Stage 3 mechanical/footprint review finds a conflict                                                     | Primary selected; exact receptacle resolved for Stage 2                                              |
+| Battery / NTC connectors     | `HX-XH2.54-2PZZ` for J_BAT1/J_NTC1; NTC harness C5221417 / HX 2.54-2P DT / 200mm / 24AWG                            | Reopen if physical verification finds a conflict                                                                                  | NTC interface frozen; battery actual mating and polarity/wire order require pre-first-connection verification |
+| M2 small-signal MOSFETs      | Nexperia 2N7002BK,215 for Q1/Q3                                                                                     | Reopen only if logic-drive or procurement verification finds a conflict                                                           | Stage 3 exact MPN baseline recorded; symbol-pin/footprint mapping open                               |
 
 ## 1. Charger / Power Path
 
@@ -63,7 +63,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 - **Primary architecture:** 外部 NTC 紧贴 pouch 电池代表性表面位置，目标约 10kΩ @25℃、β≈3435K；充电窗口目标约 0℃～45℃。
 - **Verified fit:** BQ25185 官方 TS 功能按 10kΩ @25℃、β(25/85)=3435K 配置；TS hot/cold fault 会暂停充电与 safety timer，TS fault 时 trickle charge 也被禁止。
 - **Risk / pending:** 商品温度范围不是官方电芯 datasheet；NTC 表面温度不等于内部温度；必须确保 open/short/disconnected/abnormal 均禁止充电且不切断有效 USB 的 SYS 路径。
-- **Stage 3 status sync:** 当前 `NTC_TS` 使用 2.7kΩ series mitigation，并由 TLV7041DBVR auxiliary open-drain comparator 增加 high-temperature charge interlock；nominal conservative implementation 约 4℃～39℃，不改变 0℃～45℃ Battery Design Basis，也不表示 exact trip verified。NTC exact MPN、安装方式、容差分析与实测仍 OPEN。
+- **Stage 3 / Stage 4 status sync:** 当前 `NTC_TS` 使用 2.7kΩ series mitigation，并由 TLV7041DBVR auxiliary open-drain comparator 增加 high-temperature charge interlock；nominal conservative implementation 约 4℃～39℃，不改变 0℃～45℃ Battery Design Basis，也不表示 exact trip verified。Exact NTC 为 Nanjing Shiheng `MF52D 103F3435-100` / C394023，R25 与 Beta tolerance 均为 ±1%；最终安装、pouch thermal lag 与 actual trip test 仍 OPEN。
 
 ## 5. 3.3V Output Protection
 
@@ -103,7 +103,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 
 - **Current topology:** TYPE-C-31-M-12 的全部 VBUS contacts 并到 `VBUS_PROT`；D2 `SMF6.0A` 采用 `VBUS_PROT → TVS → GND` topology，`VBUS_PROT` 继续送往 BQ25185 IN 与 M1 的辅助供电/检测支路。
 - **Decision:** Stage 2 不增加另一颗 input eFuse；目前 BQ25185 官方资料未显示本项目必须叠加 eFuse 的明确理由。
-- **Evidence boundary:** `SMF6.0A` 当前仅是 schematic topology/value identity；在取得 manufacturer/orderable evidence 前，不升级为新的精确采购事实。准确制造商/orderable MPN、LCSC C-number、VRWM、clamping、surge/ESD target、connector-to-TVS placement 与回流路径仍 OPEN。
+- **Evidence boundary:** D2 exact sourcing 已同步为 Littelfuse `SMF6.0A` / LCSC `C207260`。该采购身份不等于 clamping、surge/ESD target、connector-to-TVS placement、回流路径或硬件保护表现已验证；这些保持 downstream verification。
 
 ## 9. Connectors
 
@@ -114,17 +114,18 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 - **PCB thickness baseline:** 1.6 mm FR-4 记录为 `Rev.A preliminary PCB thickness baseline`。已核对 drawing 未发现与 1.6 mm 的明确机械冲突；它不是 Final fabrication stackup，层数、铜厚、表面处理、厂家和最终机械公差仍在后续阶段确定。
 - Stage 3 仍须完成 symbol/pin mapping、recommended footprint 转录核对、板边/外壳配合和装配/返修风险审查；不得把 drawing review 写成 manufacturability verified。
 
-### Battery connector
+### Battery / NTC connectors
 
-- Current schematic value is `HX-XH2.54-2PZZ` for both J_BAT1 and J_NTC1。J_BAT1 pin 1 → BAT、pin 2 → GND；J_NTC1 pin 1 → R15/external NTC path、pin 2 → GND。
-- Mating housing/header compatibility、battery polarity/wire order、键位、线规和载流能力均为 Pending physical verification；首次电池连接前必须用万用表核对极性。同型 connector 用于 BAT/NTC 时需要明显 silkscreen/placement differentiation，但不声称 mechanical foolproof。
+- Current schematic value is `HX-XH2.54-2PZZ` for both J_BAT1 and J_NTC1。J_BAT1 pin 1 → BAT、pin 2 → GND；J_NTC1 pin 1 → R15/external NTC path、pin 2 → GND。Connector specification is electrically adequate at approximately 3A / 250V；PCB pitch drawing is 2.5mm。
+- J_NTC1 使用 `C5221417` / HX 2.54-2P DT / 200mm / 24AWG pre-crimped 2-pin female harness。NTC 本体无极性；维护线序固定为 red → pin 1 → R15 / `NTC_TS`，black → pin 2 → GND。
+- Battery exact mating compatibility 与 battery polarity/wire order 保持 `PHYSICAL VERIFICATION PENDING`；第一次实际连接电池前必须完成实物 mating 核对并用万用表核对极性。同型 connector 用于 BAT/NTC 时需要明显 silkscreen/placement differentiation，但不声称 mechanical foolproof。
 - 不使用 PH2.0 作为当前 Project fact。
 
 ## Stage 2 Closeout Disposition
 
 - TYPE-C-31-M-12 exact receptacle：**Resolved for Stage 2**。
 - Battery connector exact series / polarity / wire gauge：**Physical Verification Pending**；首次连接前必须实物核对，不得推断。
-- VBUS TVS 当前 `SMF6.0A` topology/value identity 已记录；exact manufacturer/orderable MPN / LCSC C-number：**OPEN / Deferred**。
+- VBUS TVS exact sourcing：Littelfuse `SMF6.0A` / LCSC `C207260`，**Resolved / synchronized to current BOM**；layout and hardware protection qualification deferred。
 - M1 TUSB320 / logic decode 已达到 `COMPLETE FOR STAGE-3 HANDOFF`；connector shield/EH experimental behavior、布局与 ERC evidence 仍 OPEN。
 - BQ25185、TPS63802、TPS259474 与 NTC 的剩余外围、状态机、热、瞬态和 fail-safe integration：继续 **Deferred to Stage 3**。
 - 1A / 100ms output target 的 waveform、droop、overshoot、repetition 与 recovery definition：继续是 **Design Target**，作为 Stage 3 design/test-definition input，未验证。
@@ -137,10 +138,10 @@ Stage 2 closeout 仅表示关键架构器件及方向已经足以进入模块级
 
 - BQ25185 ISET / ILIM-VSET / capacitors / TS / state-machine / thermal / layout calculations。
 - TPS63802 exact inductor baseline 已为 `XFL4015-471MEC / 0.47uH / C18221164`；capacitors / FB / ripple / transient / current-stress / thermal / Layout verification 仍 open。
-- NTC exact MPN、compensation network 和 tolerance analysis。
+- NTC attachment、pouch thermal lag、actual trip-temperature test 和 hardware verification；exact MPN/network 已冻结。
 - TPS259474L ILIM / ITIMER / UV-OV / dVdt / reset implementation。
 - TUSB320 / PESD / TYPE-C-31-M-12 / SN74LVC2G132 / BAT54 / 2N7002BK 的实际 symbol-pin 与 footprint mapping verification；M1 capture 的完整 EDA/ERC evidence。
-- USB-C shield RC baseline 的实验验证、`SMF6.0A` exact manufacturer/orderable MPN、battery connector physical verification 和 TYPE-C-31-M-12 footprint/mechanical finalization。
+- USB-C shield RC baseline 的实验验证、selected `SMF6.0A` placement/return-path/hardware qualification、battery connector pre-first-connection physical verification 和 TYPE-C-31-M-12 footprint/mechanical finalization。
 - ERC report，以及后续 DRC、simulation、layout verification、manufacturing、bring-up 或 test activity。Cross-Module Integration 与最新 schematic/BOM consistency review 已完成。
 
 ## Stage 3 passive sourcing boundary
