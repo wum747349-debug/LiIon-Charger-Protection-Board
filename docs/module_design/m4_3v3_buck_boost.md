@@ -8,18 +8,18 @@ M4 converts `SYS` to the regulated `3V3` rail with the Stage 2 Primary `TPS63802
 
 ## TPS63802 connection baseline
 
-| Pin | Name | Current connection |
-| --- | --- | --- |
-| 1 | EN | `SYS` |
-| 2 | MODE | `GND` |
-| 3 | AGND | `GND` |
-| 4 | FB | `FB_3V3` |
-| 5 | PG | `CHG_GATE` |
-| 6 | VOUT | `3V3` |
-| 7 | L2 | one side of `L1 DFE201612E-R47M=P2`, `470nH`; the other side connects to pin 9 L1 |
-| 8 | GND | `GND` |
-| 9 | L1 | one side of `L1 DFE201612E-R47M=P2`, `470nH`; the other side connects to pin 7 L2 |
-| 10 | VIN | `SYS` |
+| Pin | Name | Current connection                                                     |
+| --- | ---- | ---------------------------------------------------------------------- |
+| 1   | EN   | `SYS`                                                                  |
+| 2   | MODE | `GND`                                                                  |
+| 3   | AGND | `GND`                                                                  |
+| 4   | FB   | `FB_3V3`                                                               |
+| 5   | PG   | `CHG_GATE`                                                             |
+| 6   | VOUT | `3V3`                                                                  |
+| 7   | L2   | one side of `L1 DFE201612E-R47M=P2`, `470nH`; the other side connects to pin 9 L1 |
+| 8   | GND  | `GND`                                                                  |
+| 9   | L1   | one side of `L1 DFE201612E-R47M=P2`, `470nH`; the other side connects to pin 7 L2 |
+| 10  | VIN  | `SYS`                                                                  |
 
 The single current exact inductor baseline is `L1 = Murata DFE201612E-R47M=P2`, `470nH`, LCSC `C668312`, connected `TPS63802 pin 9 L1 ↔ L1 470nH ↔ TPS63802 pin 7 L2`. This replacement was accepted during the Stage 5 procurement/component delta review; the former XFL4015-471MEC baseline is historical and superseded.
 
