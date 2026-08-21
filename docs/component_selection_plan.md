@@ -50,7 +50,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 - **Selection rationale:** 对 1S 电池跨越 3.3V 的输入范围提供真正 Buck-Boost；相比 TPS63001 对当前 1A/100ms Design Target 有更明确的电流余量。
 - **Key verified parameters:** 官方 datasheet 给出 1.3V～5.5V 输入、启动需高于 1.8V、1.8V～5.2V 可调输出；在 VIN ≥2.3V、VOUT=3.3V 时标称 2A output-current capability；官方典型曲线包含 100mA→1A 的 buck、buck-boost 与 boost transient examples。
 - **Risks:** 官方额定和典型波形不等于本项目在全部输入、温度、容差和 PCB 条件下已经保证 1A/100ms；小型 DFN、0.47µH power stage 和高 di/dt 布局需要严格实现。
-- **Stage 3 exact inductor sync:** Current baseline is `L1 = Coilcraft XFL4015-471MEC`, `0.47uH`, LCSC `C18221164`; connection is `TPS63802 L1 pin ↔ L1 ↔ L2 pin`. This is a datasheet-qualified design selection, not thermal, transient, PCB-layout or hardware verification.
+- **Post-Stage-4 component delta:** Stage 5 procurement/component delta review accepted `L1 = Murata DFE201612E-R47M=P2`, `470nH`, LCSC `C668312` as the single current Primary; connection remains `TPS63802 pin 9 L1 ↔ L1 ↔ pin 7 L2`. The prior XFL4015-471MEC baseline is superseded. New footprint/pad mapping plus thermal, transient, efficiency, PCB-layout and hardware verification remain OPEN.
 - **Pending verification:** 最坏 battery/System Rail 输入范围、500mA 连续效率/热、1A pulse 波形、纹波、瞬态、饱和/RMS 电流、开关应力、footprint 与 Layout。
 
 ### Alternates
@@ -87,7 +87,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 - **Native USB-C / C-to-C policy:** `Default` advertisement 使用保守的 BQ25185 input-current setting，基线约 500mA；只有 attach 时合格检测到 `1.5A` 或 `3A` advertisement，才允许提升至 BQ25185 的约 1.05A～1.1A input-current-limit 档。3A Source 仅表示能力声明，本 Project 不吸取 3A，仍受 BQ25185 input limit 约束。
 - **Legacy USB-A / A-to-C policy:** Rev.A 不实现 BC1.2 或 proprietary charger detection，不承诺利用 legacy charger 标签标称的 1.5A / 2A / 3A capability，并按 Type-C Default / conservative input policy 处理；不增加 legacy charger-detection IC。
 - **Accepted Rev.A limitation:** TUSB320 GPIO mode 以 attach 时检测到的 Source current advertisement 为基础；当前无 firmware，不动态跟踪 Source 后续 Rp capability change。绑定 datasheet 支持在 GPIO mode 解码 attach 结果，且可用保守硬件默认实现合理 fail-safe，因此该限制不阻断 Stage 2 closeout。
-- **Stage 3 M1 implementation:** Current schematic-capture record uses `PORT → GND` for fixed UFP/Sink, `ADDR → NC` for GPIO mode, `EN_N → GND`, and `VBUS_PROT → 900kΩ → VBUS_DET`. CC1/CC2 connect to the receptacle CC lines. OUT1/OUT2 are open-drain and each has an approximately 100kΩ pull-up to `VDD_CC`; TUSB320 has 100nF local decoupling.
+- **Current M1 implementation:** Current schematic-capture record uses `PORT → GND` for fixed UFP/Sink, `ADDR → NC` for GPIO mode, `EN_N → GND`, and `VBUS_PROT → R18 910kΩ / 1% → VBUS_DET`. CC1/CC2 connect to the receptacle CC lines. OUT1/OUT2 are open-drain and each has an approximately 100kΩ pull-up to `VDD_CC`; TUSB320 has 100nF local decoupling.
 - **GPIO decode:** TI's truth table is `OUT1/OUT2 = H/H` unattached, `H/L` attached Default Current, `L/H` attached 1.5A, and `L/L` attached 3A. `SN74LVC2G132DCUR` implements `ILIM_HIGH_CMD = NOT(CC_OUT1)` and `CHG_ENABLE_CMD = NAND(CC_OUT1, CC_OUT2)`.
 - **Fail-safe policy:** Unattached disables charging and selects conservative ILIM; attached Default Current enables charging with the conservative approximately 500mA input-current-limit state; attached 1.5A or 3A enables charging and selects the approximately 1.1A input-current-limit state. A 3A advertisement is source capability information and does not mean the Project sinks 3A. Unknown, invalid, unpowered or unqualified behavior must not be promoted to the high-current state.
 - **Status boundary:** M1 is `COMPLETE FOR STAGE-3 HANDOFF`. ERC and downstream PCB/layout/hardware evidence remain open.
@@ -110,7 +110,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 ### USB-C receptacle
 
 - **Primary — TYPE-C-31-M-12:** Rev.A exact receptacle 已为 Stage 2 解决。正式 drawing/spec 显示 USB Type-C 16-pin receptacle，提供独立 CC1 / CC2、VBUS / GND、D+ / D−、SBU1 / SBU2、recommended PCB layout 与机械固定结构；其额定能力满足当前最大约 1.1A input-current architecture。该结论是 selection/document review，不是连接器或 PCB 实物测试结果。
-- **Stage 3 final connection record:** 全部 VBUS contacts 并到 `VBUS_PROT`，全部 GND contacts 并到 GND；D+/D−/SBU 无功能需求并保持 unused / NC。EH1–EH4 并到 `USB_SHIELD`；R23 1MΩ 与 C13 1nF/high-voltage/1206 为到 GND 的 parallel branches。Rev.A 不增加 R24 0-ohm DNP branch。实验 EMI/ESD verification 仍 OPEN。
+- **Current connection record:** 全部 VBUS contacts 并到 `VBUS_PROT`，全部 GND contacts 并到 GND；D+/D−/SBU 无功能需求并保持 unused / NC。EH1–EH4 并到 `USB_SHIELD`；R19 1MΩ 与 C13 1nF/high-voltage/1206 为到 GND 的 parallel branches。R23 当前为 100kΩ，不是 shield resistor。Rev.A 不增加 R24 0-ohm DNP branch。实验 EMI/ESD verification 仍 OPEN。
 - **PCB thickness baseline:** 1.6 mm FR-4 记录为 `Rev.A preliminary PCB thickness baseline`。已核对 drawing 未发现与 1.6 mm 的明确机械冲突；它不是 Final fabrication stackup，层数、铜厚、表面处理、厂家和最终机械公差仍在后续阶段确定。
 - Stage 3 仍须完成 symbol/pin mapping、recommended footprint 转录核对、板边/外壳配合和装配/返修风险审查；不得把 drawing review 写成 manufacturability verified。
 
@@ -137,7 +137,7 @@ Stage 2 closeout 仅表示关键架构器件及方向已经足以进入模块级
 ## Explicit Stage 3 Deferred Work
 
 - BQ25185 ISET / ILIM-VSET / capacitors / TS / state-machine / thermal / layout calculations。
-- TPS63802 exact inductor baseline 已为 `XFL4015-471MEC / 0.47uH / C18221164`；capacitors / FB / ripple / transient / current-stress / thermal / Layout verification 仍 open。
+- TPS63802 current exact inductor baseline 已为 `DFE201612E-R47M=P2 / 470nH / C668312`；new footprint/pad mapping、capacitors / FB / ripple / transient / current-stress / thermal / efficiency / Layout verification 仍 open。
 - NTC attachment、pouch thermal lag、actual trip-temperature test 和 hardware verification；exact MPN/network 已冻结。
 - TPS259474L ILIM / ITIMER / UV-OV / dVdt / reset implementation。
 - TUSB320 / PESD / TYPE-C-31-M-12 / SN74LVC2G132 / BAT54 / 2N7002BK 的实际 symbol-pin 与 footprint mapping verification；M1 capture 的完整 EDA/ERC evidence。

@@ -55,6 +55,13 @@ Battery exact mechanical mating and battery polarity/wire order are not claimed 
 - PCB DRC, simulation, layout verification, manufacturing, hardware measurement, actual temperature trips and bring-up: `NOT YET VERIFIED`.
 - Stage 4 closure authorizes Layout Preflight only; it does not claim manufacturing release or any downstream verification PASS.
 
+## Post-Stage-4 / Stage-5 Component Delta
+
+- `L1`: the Stage 4 reviewed historical baseline `XFL4015-471MEC / 470nH` was replaced by the current schematic/BOM baseline `DFE201612E-R47M=P2 / 470nH / LCSC C668312` during Stage 5 procurement/component delta review.
+- `R18`: the prior 900kΩ documentation baseline was synchronized to the accepted current schematic/BOM baseline `R18 = 910kΩ / 1%` for `VBUS_PROT → VBUS_DET`.
+- M1/M5 designators were aligned to the current schematic as documentation-only synchronization; M5 controller is now recorded as `U2 = TPS259474LRPWR`, while `U3 = TLV7041DBVR`.
+- This delta makes no architecture change and this documentation sync identified no new schematic blocker. It does not rerun or re-announce Stage 4 PASS. Layout, new-L1 footprint/pad mapping and other EDA verification remain pending.
+
 ## 下一步操作
 
 1. Enter Stage 5 Layout Preflight and freeze manufacturing/mechanical baseline, footprints, connector orientation/silkscreen, PCB rules and critical power/protection placement inputs.

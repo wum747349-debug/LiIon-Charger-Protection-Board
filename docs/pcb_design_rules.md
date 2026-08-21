@@ -9,6 +9,7 @@ Stage 4 Formal Schematic Review is closed and Layout Preflight is authorized. Th
 - Preliminary PCB thickness: 1.6mm FR-4; not a final fabrication stackup.
 - Target layer count, copper weight, surface finish, manufacturer capability baseline and final mechanical tolerances: `TBD during Layout Preflight`.
 - High-current paths, USB-C/TVS placement and return paths, switching power loops, connector orientation/silkscreen and battery/NTC physical differentiation require explicit Layout Preflight treatment.
+- M4 current exact L1 is `Murata DFE201612E-R47M=P2 / 470nH / LCSC C668312`. Its footprint, pad geometry and pin/pad mapping status is `REQUIRES EDA VERIFICATION`; compact switch loop, close VIN/VOUT capacitors and FB separation from switch nodes remain Layout Preflight inputs, not verified PCB implementation.
 - Battery exact mating and polarity/wire order remain `PHYSICAL VERIFICATION PENDING` and are mandatory before the first actual battery connection; they are not a PCB-rule PASS claim.
 
 ## Evidence boundary

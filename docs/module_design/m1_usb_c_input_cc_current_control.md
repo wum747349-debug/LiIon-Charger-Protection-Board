@@ -9,13 +9,13 @@ M1 accepts ordinary 5V USB-C input, presents the Rev.A Sink/UFP CC behavior, pro
 ## Connector and protection topology
 
 - Receptacle: `TYPE-C-31-M-12`. All VBUS contacts join `VBUS_PROT`; all GND contacts join GND. D+/D−/SBU are unused / NC. EH1/EH2/EH3/EH4 join `USB_SHIELD`.
-- Current shield baseline uses parallel branches: `USB_SHIELD → R23 1MΩ → GND` and `USB_SHIELD → C13 1nF / high-voltage / 1206 → GND`. Rev.A does not include an R24 0-ohm DNP branch. This EMI/ESD-oriented engineering baseline is not `EMC PASS`, `ESD PASS` or experimentally verified shield behavior.
+- Current shield baseline uses parallel branches: `USB_SHIELD → R19 1MΩ → GND` and `USB_SHIELD → C13 1nF / high-voltage / 1206 → GND`. `R23 = 100kΩ` and is not the shield resistor. Rev.A does not include an R24 0-ohm DNP branch. This EMI/ESD-oriented engineering baseline is not `EMC PASS`, `ESD PASS` or experimentally verified shield behavior.
 - CC ESD Primary: `PESD5V0U2BT,215`, current connection record pin 1 → CC1, pin 2 → CC2, pin 3 → GND; it is not connected to VBUS. This replaces `USBLC6-2SC6` as current Primary.
 - `D2 = Littelfuse SMF6.0A` / LCSC `C207260` connects `VBUS_PROT → TVS → GND`. Exact sourcing is synchronized to the current BOM; placement, return path and hardware protection performance remain downstream verification.
 
 ## TUSB320 configuration and VDD_CC
 
-`TUSB320LAIRWBR` CC1/CC2 connect to the receptacle CC lines. `PORT → GND` fixes UFP/Sink mode, `ADDR → NC` selects GPIO mode, `EN_N → GND` enables the device, and `VBUS_PROT → 900kΩ → VBUS_DET`. OUT1/OUT2 are open-drain and each uses an approximately 100kΩ pull-up to `VDD_CC`.
+`TUSB320LAIRWBR` CC1/CC2 connect to the receptacle CC lines. `PORT → GND` fixes UFP/Sink mode, `ADDR → NC` selects GPIO mode, `EN_N → GND` enables the device, and `VBUS_PROT → R18 910kΩ / 1% → VBUS_DET`. OUT1/OUT2 are open-drain and each uses an approximately 100kΩ pull-up to `VDD_CC`.
 
 `VBUS_PROT → BAT54,215 → VDD_CC`; the current BAT54 symbol connection is pin 1/anode → `VBUS_PROT`, pin 3/cathode → `VDD_CC`, pin 2 NC. TUSB320 and the logic device each have 100nF local decoupling from `VDD_CC` to GND.
 

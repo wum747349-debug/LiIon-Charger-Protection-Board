@@ -13,16 +13,17 @@ Status: Stage 3 documentation closeout complete — `READY FOR SCHEMATIC REVIEW`
 | M5 — 3.3V Output Protection | COMPLETE FOR STAGE-3 HANDOFF | [m5_3v3_output_protection.md](m5_3v3_output_protection.md) |
 | M6 — Remaining interfaces / support | COMPLETE FOR STAGE-3 HANDOFF | [m6_remaining_interfaces_support.md](m6_remaining_interfaces_support.md) |
 
-用户已在 Altium Designer 中完成当前 M1–M6 Rev.A capture。Final Schematic Review、Cross-Module Integration Review 与 BOM Consistency Review 已完成；未发现新的 substantive cross-module electrical logic issue。关键已解决项包括 TPS259474 PG/ILM 分离、M3 `J_NTC1` 注释与 M4 title 修正、L1 footprint 人工确认、删除 R24 0-ohm DNP branch，以及 `C1/C5/C11 = 10uF / 0805` 同步。Stage 3 canonical readiness 为 `READY FOR SCHEMATIC REVIEW`，技术评估为 `READY WITH MINOR NOTES`。
+用户已在 Altium Designer 中完成当前 M1–M6 Rev.A capture。Final Schematic Review、Cross-Module Integration Review 与 BOM Consistency Review 已完成；未发现新的 substantive cross-module electrical logic issue。Stage 5 documentation sync 已记录 M1/M5 current designator 与 L1 component delta；新 L1 footprint/pad mapping 仍需 EDA verification。Stage 3 canonical readiness 为 `READY FOR SCHEMATIC REVIEW`，技术评估为 `READY WITH MINOR NOTES`。
 
 ## Final passive / BOM baseline
 
-- Ordinary resistors: `0603 / 1% preferred`; `R19 = 1206`.
+- Ordinary resistors: `0603 / 1% preferred`; M5 `R14 = 3.32kΩ / 1% / 1206`.
 - Ordinary small capacitors: `0603`.
 - `C1 = 10uF / 25V / 0805`; `C2 = 2.2uF / 25V / 0603`.
-- `C5 = 10uF / 0805`; `C11 = 10uF / 0805`.
+- M4 `C11 = 10uF / 0805`; M5 `C5 = 10uF / 0805`.
 - `C14,C15 = 22uF / 0805`; `C13 = 1nF / high-voltage / 1206`.
-- `L1 = 470nH / XFL4015-471MEC`.
+- M5 `C4,C6 = 100nF`; `C7 = 330nF`; `C8 = 2.2nF`.
+- `L1 = Murata DFE201612E-R47M=P2 / 470nH / LCSC C668312`; new footprint/pad mapping requires Stage 5 EDA verification.
 
 Exact MPN / LCSC sourcing for ordinary commodity resistors and capacitors may remain deferred to Manufacturing Preparation. Placeholder or garbage BOM metadata, if present, is a manufacturing/BOM metadata cleanup item and is not a schematic electrical blocker.
 

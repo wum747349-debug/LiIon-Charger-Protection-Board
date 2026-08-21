@@ -16,14 +16,14 @@ M4 converts `SYS` to the regulated `3V3` rail with the Stage 2 Primary `TPS63802
 | 4 | FB | `FB_3V3` |
 | 5 | PG | `CHG_GATE` |
 | 6 | VOUT | `3V3` |
-| 7 | L2 | one side of `L1 XFL4015-471MEC`, `0.47uH`; the other side connects to pin 9 L1 |
+| 7 | L2 | one side of `L1 DFE201612E-R47M=P2`, `470nH`; the other side connects to pin 9 L1 |
 | 8 | GND | `GND` |
-| 9 | L1 | one side of `L1 XFL4015-471MEC`, `0.47uH`; the other side connects to pin 7 L2 |
+| 9 | L1 | one side of `L1 DFE201612E-R47M=P2`, `470nH`; the other side connects to pin 7 L2 |
 | 10 | VIN | `SYS` |
 
-The current exact inductor baseline is `L1 = Coilcraft XFL4015-471MEC`, `0.47uH`, LCSC `C18221164`, connected `TPS63802 pin 9 L1 ↔ L1 0.47uH ↔ TPS63802 pin 7 L2`. Coilcraft official data identifies the selected part as 0.47uH, and the LCSC evidence maps the orderable MPN to `C18221164`.
+The single current exact inductor baseline is `L1 = Murata DFE201612E-R47M=P2`, `470nH`, LCSC `C668312`, connected `TPS63802 pin 9 L1 ↔ L1 470nH ↔ TPS63802 pin 7 L2`. This replacement was accepted during the Stage 5 procurement/component delta review; the former XFL4015-471MEC baseline is historical and superseded.
 
-The input capacitor is `C5 = 10uF / 0805` from `SYS` to GND. The output network is `C14,C15 = 22uF / 0805` from `3V3` to GND. The feedback divider is `3V3 → 511kΩ / 1% → FB_3V3 → 91kΩ / 1% → GND`.
+The input capacitor is `C11 = 10uF / 0805` from `SYS` to GND. The output network is `C14,C15 = 22uF / 0805` from `3V3` to GND. The feedback divider is `3V3 → R20 511kΩ / 1% → FB_3V3 → R22 91kΩ / 1% → GND`.
 
 These values are the current Stage 3 schematic baseline. They do not constitute measured ripple, transient, current-stress, thermal or stability evidence.
 
@@ -43,7 +43,8 @@ Normal 3V3 startup, brownout and temperature-veto architecture is therefore subs
 
 ## Layout-sensitive notes
 
-- Keep the `0.47uH` inductor and the VIN/VOUT ceramic capacitors close to the TPS63802 power pins, with compact high-di/dt loops.
+- Verify the new L1 footprint, pad geometry and pin/pad mapping in Altium before placement; status is `REQUIRES EDA VERIFICATION`.
+- Keep the `470nH` inductor and the VIN/VOUT ceramic capacitors close to the TPS63802 power pins, with compact switch/high-di/dt loops.
 - Keep the `FB_3V3` node and 511kΩ/91kΩ divider away from the switch nodes and inductor; use a quiet ground reference for the lower divider resistor.
 - Provide a low-impedance ground implementation that respects the separation and local return needs of AGND and power GND before their intended common reference.
 - Route PG/`CHG_GATE` as a control node away from the L1/L2 switch nodes, and preserve access to the startup-observation nets for Bring-up.
@@ -56,7 +57,7 @@ Normal 3V3 startup, brownout and temperature-veto architecture is therefore subs
 - ERC: `NOT YET VERIFIED`.
 - Latest schematic/BOM review baseline: `SYNCHRONIZED`.
 - Hardware startup sequencing: `NOT MEASURED`.
-- Inductor selection: `DATASHEET-QUALIFIED DESIGN SELECTION`; thermal, transient and PCB-layout behavior are `NOT VERIFIED`.
+- Inductor selection: current device `DFE201612E-R47M=P2 / 470nH / C668312`; footprint/pad mapping, thermal, transient, efficiency and PCB-layout behavior are `NOT VERIFIED`.
 - 500mA continuous and 1A/100ms transient hardware verification: `NOT RUN`.
 
 M4 is complete for the Stage 3 handoff at the documented design-record level. This does not claim `ERC PASS`, Stage 4 PASS, PCB/layout verification or hardware verification.
