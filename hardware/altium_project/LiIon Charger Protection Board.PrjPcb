@@ -50,7 +50,7 @@ PrefsVaultGUID=
 PrefsRevisionGUID=
 
 [Document1]
-DocumentPath=C:\Users\wmx\AppData\Local\Temp\d17545d3-b6dd-4b0f-8f6f-cef9204ee09a_Altium_锂电池充电板_2026-08-21.zip.09a\锂电池充电板\Board1\Schematic1\LiIon Charger Protection Board.schdoc
+DocumentPath=LiIon Charger Protection Board.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -67,7 +67,7 @@ GenerateClassCluster=0
 DocumentUniqueId=4026BF78-A2DF-43B0-8AEB-9E65AC90B748
 
 [Document2]
-DocumentPath=C:\Users\wmx\AppData\Local\Temp\0dacc0b0-997b-498d-a472-ab20c2b9c567_Altium_锂电池充电板_2026-08-21.zip.567\锂电池充电板\Board1\PCB1.PcbLib
+DocumentPath=PCB1.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -84,7 +84,7 @@ GenerateClassCluster=0
 DocumentUniqueId=LBHEEHKE
 
 [Document3]
-DocumentPath=C:\Users\wmx\AppData\Local\Temp\d17545d3-b6dd-4b0f-8f6f-cef9204ee09a_Altium_锂电池充电板_2026-08-21.zip.09a\锂电池充电板\Board1\Schematic1\LiIon Charger Protection Board.SCHLIB
+DocumentPath=LiIon Charger Protection Board.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -99,6 +99,23 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=YSJPHUGR
+
+[Document4]
+DocumentPath=LiIon Charger Protection Board.PcbDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=TJCQQHAF
 
 [Configuration1]
 Name=Sources

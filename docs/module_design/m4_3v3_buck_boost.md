@@ -31,9 +31,9 @@ These values are the current Stage 3 schematic baseline. They do not constitute 
 
 The final simple charging qualification is:
 
-`CHG_ENABLE_CMD → R11 10kΩ → CHG_GATE`
+`CHG_ENABLE_CMD → R6 10kΩ → CHG_GATE`
 
-The same node also has `R6 100kΩ: CHG_GATE → GND`, `TLV7041DBVR OUT → CHG_GATE`, `TPS63802 PG → CHG_GATE`, and `CHG_GATE → charge-enable MOSFET gate`. `CHG_ENABLE_CMD` is the only HIGH authorization source. The ordinary `TLV7041DBVR` OUT and TPS63802 PG are open-drain LOW veto sources; neither authorizes charging HIGH. TPS63802 PG has no separate `3V3` pull-up, and this design does not add `TPS3808G33DBVR` / U6.
+The same node also has `R7 100kΩ: CHG_GATE → GND`, `TLV7041DBVR OUT → CHG_GATE`, `TPS63802 PG → CHG_GATE`, and `CHG_GATE → charge-enable MOSFET gate`. `CHG_ENABLE_CMD` is the only HIGH authorization source. The ordinary `TLV7041DBVR` OUT and TPS63802 PG are open-drain LOW veto sources; neither authorizes charging HIGH. TPS63802 PG has no separate `3V3` pull-up, and this design does not add `TPS3808G33DBVR` / U6.
 
 The intended qualification is:
 

@@ -19,7 +19,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 | USB VBUS protection          | Littelfuse `SMF6.0A` / LCSC `C207260` on `VBUS_PROT`                                                                | Reopen only if layout/protection qualification finds a conflict                                                                   | Exact sourcing synchronized to current BOM; layout/hardware qualification deferred                  |
 | USB-C receptacle             | TYPE-C-31-M-12                                                                                                      | Reopen selection only if Stage 3 mechanical/footprint review finds a conflict                                                     | Primary selected; exact receptacle resolved for Stage 2                                              |
 | Battery / NTC connectors     | `HX-XH2.54-2PZZ` for J_BAT1/J_NTC1; NTC harness C5221417 / HX 2.54-2P DT / 200mm / 24AWG                            | Reopen if physical verification finds a conflict                                                                                  | NTC interface frozen; battery actual mating and polarity/wire order require pre-first-connection verification |
-| M2 small-signal MOSFETs      | Nexperia 2N7002BK,215 for Q1/Q3                                                                                     | Reopen only if logic-drive or procurement verification finds a conflict                                                           | Stage 3 exact MPN baseline recorded; symbol-pin/footprint mapping open                               |
+| M2 small-signal MOSFETs      | Nexperia 2N7002BK,215 for Q1/Q2                                                                                     | Reopen only if logic-drive or procurement verification finds a conflict                                                           | Stage 3 exact MPN baseline recorded; symbol-pin/footprint mapping open                               |
 
 ## 1. Charger / Power Path
 
@@ -30,7 +30,7 @@ Status: Stage 2 documentation closeout PASS — 2026-08-12；Stage 3 entry autho
 - **Risks:** 线性充电器的最坏工况功耗/温升尚未预算；2mm × 2mm WSON/thermal pad 对手工焊接和散热布局有挑战；固定 BUVLO 与商品标称 2.75V cutoff 的协调、恢复状态、无电池启动负载及漏电边界仍需设计分析和实测。
 - **Procurement evidence:** LCSC 将 BQ25185DLHR 对应到 C19725033。当前 availability 仅按 point-in-time evidence 记录为 `Limited`，不把具体库存数量固化为长期 Project Fact；真正采购前必须重新检查 availability。
 - **Pending verification:** 确认封装可制造性；核对所有 TS open/short/disconnected 情形与 USB-valid SYS continuity；核对 100/500/1050mA input-limit switching 的允许实现和上电默认状态。
-- **Stage 3 status sync:** M2 已记录 ISET、ILIM/VSET、输入/输出/电池电容、CE# 与状态测试点连接；Q1/Q3 exact MPN baseline 为 `2N7002BK,215`。热预算、完整状态机/工况、实际 symbol-pin/footprint mapping、ERC 与布局核对仍 OPEN。
+- **Stage 3 status sync:** M2 已记录 ISET、ILIM/VSET、输入/输出/电池电容、CE# 与状态测试点连接；Q1/Q2 exact MPN baseline 为 `2N7002BK,215`。热预算、完整状态机/工况、实际 symbol-pin/footprint mapping、ERC 与布局核对仍 OPEN。
 
 ### Alternates
 

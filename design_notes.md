@@ -10,7 +10,7 @@
 
 ## Power Path 与无电池运行
 
-实现必须把 System Rail 与充电终止判断从外部负载隔离：USB 有效时负载优先且充电退让，无 USB 时切换到合格电池路径；普通充电器、电池与负载的简单并联不符合该意图。BQ25185DLHR（LCSC C19725033）仍是当前 primary，并承担 Charger / Power Path / BATFET / BUVLO 等职责。当前 M2 记录采用 `R1=600Ω / 1%` 设定约 500mA fast charge；IN/SYS/BAT 去耦分别为 `C1=10uF/25V/0805`、`C2=2.2uF/25V/0603`、1uF。ILIM/VSET 使用 13.0kΩ 与 4.99kΩ 两段网络及 MOSFET bypass：OFF 约 18kΩ 为 conservative state，ON 为 13kΩ high-current state，由 M1 的 `ILIM_HIGH_CMD` 控制。final charge-enable MOSFET 为 Q1，其 drain 与 R5、`CE_N / BQ25185 CE#` 是 common node，gate 接 `CHG_GATE`。热、PCB/layout 和 ERC verification 保持 OPEN。
+实现必须把 System Rail 与充电终止判断从外部负载隔离：USB 有效时负载优先且充电退让，无 USB 时切换到合格电池路径；普通充电器、电池与负载的简单并联不符合该意图。BQ25185DLHR（LCSC C19725033）仍是当前 primary，并承担 Charger / Power Path / BATFET / BUVLO 等职责。当前 M2 记录采用 `R1=600Ω / 1%` 设定约 500mA fast charge；IN/SYS/BAT 去耦分别为 `C1=10uF/25V/0805`、`C2=2.2uF/25V/0603`、`C3=1uF`。ILIM/VSET 使用 `R4=13.0kΩ` 与 `R8=4.99kΩ` 两段网络及 Q2 bypass：OFF 约 18kΩ 为 conservative state，ON 为 13kΩ high-current state，由 M1 的 `ILIM_HIGH_CMD` 控制，`R12=100kΩ` 是 Q2 gate pull-down。final charge-enable MOSFET 为 Q1，其 drain 与 R3、`CE_N / BQ25185 CE#` 是 common node，gate 接 `CHG_GATE`。热、PCB/layout 和 ERC verification 保持 OPEN。
 
 ## 三层保护意图
 
@@ -34,7 +34,7 @@ Rev.A primary 使用 BQ25185 集成 BUVLO / BATFET 行为：官方资料给出�
 
 Battery Design Basis 仍为商品规格充电温度约 0℃～45℃。Rev.A 外部 NTC 已冻结为 Nanjing Shiheng `MF52D 103F3435-100` / LCSC `C394023`：wired/epoxy、`10kΩ @25℃`、R25 `±1%`、B25/85 `3435K ±1%`、100mm insulated leads，贴近并电气绝缘于 pouch 代表性表面；最终安装方法保持 downstream mechanical input。保持 `J_NTC1 → R15=2.7kΩ / 1% → NTC_TS`；R15 主要缓解 NTC short 将复用的 TS/MR 直接硬拉近 GND 所带来的 push-button / long-low / factory-mode interaction，不作为精密校准声明。`J_NTC1 = HX-XH2.54-2PZZ`，使用 `C5221417` / HX 2.54-2P DT / 200mm / 24AWG 预压接母线束；维护线序为 red → pin 1 → R15 / `NTC_TS`，black → pin 2 → GND，NTC 本体无极性。
 
-M3 保持 `TLV7041DBVR` open-drain comparator 作为高温 charging interlock；中途讨论/临时 capture 的 `TLV7031DBVR` 不是 current design。3V3 经 90.9kΩ/10kΩ divider 产生 nominal 约 0.327V `VHOT_REF`，与 `NTC_TS` 比较。最终 shared qualification 为 `CHG_ENABLE_CMD → R11 10kΩ → CHG_GATE`，同时 `R6 100kΩ` 将 `CHG_GATE` 下拉至 GND，TLV7041 OUT 与 TPS63802 PG 均以 open-drain LOW veto 接入，且 `CHG_GATE` 驱动 charge-enable MOSFET gate。`CHG_ENABLE_CMD` 是唯一 HIGH authorization source，逻辑意图为 `CHG_ENABLE_CMD AND temperature-valid AND 3V3-power-good → charging permitted`。不增加 TPS3808G33DBVR/U6，也不为 TPS63802 PG 增加独立 3V3 pull-up。当前 nominal conservative hardware window 约 4℃～39℃，是工程实现而非新的 manufacturer specification，也不是 verified exact trip range；电阻/comparator/NTC 容差、pouch thermal lag 与实际 trip test 均待后续验证。
+M3 保持 `U3 = TLV7041DBVR` open-drain comparator 作为高温 charging interlock；中途讨论/临时 capture 的 `TLV7031DBVR` 不是 current design。`C9=100nF` 是 comparator local decoupling；3V3 经 `R16=90.9kΩ` / `R17=10kΩ` divider 产生 nominal 约 0.327V `VHOT_REF`，与 `NTC_TS` 比较。最终 shared qualification 为 `CHG_ENABLE_CMD → R6 10kΩ → CHG_GATE`，同时 `R7 100kΩ` 将 `CHG_GATE` 下拉至 GND，TLV7041 OUT 与 TPS63802 PG 均以 open-drain LOW veto 接入，且 `CHG_GATE` 驱动 charge-enable MOSFET gate。`CHG_ENABLE_CMD` 是唯一 HIGH authorization source，逻辑意图为 `CHG_ENABLE_CMD AND temperature-valid AND 3V3-power-good → charging permitted`。不增加 TPS3808G33DBVR/U6，也不为 TPS63802 PG 增加独立 3V3 pull-up。当前 nominal conservative hardware window 约 4℃～39℃，是工程实现而非新的 manufacturer specification，也不是 verified exact trip range；电阻/comparator/NTC 容差、pouch thermal lag 与实际 trip test 均待后续验证。
 
 ## 3.3V Buck-Boost 决策
 
@@ -58,7 +58,7 @@ TPS63070 是 higher-margin fallback。TPS63001 在 3.3V boost mode 的官方额�
 
 ## 外部接口与测试支持
 
-M6 current baseline 使用 `J_OUT1 = KF301-5.0-2P`，pin 1 接 `3V3_PROT`、pin 2 接 GND；外部负载必须使用 `3V3_PROT`，不得绕过 M5 使用 raw `3V3`。关键 physical test points 覆盖 `VBUS_PROT / SYS / BAT / 3V3 / 3V3_PROT / CHG_GATE / CE# / GND`，并保留 `STAT1 / STAT2 / NTC_TS / M5_RESET`。`TP_CE_N` 位于 U1 pin 4 CE#、R5 与 Q1 drain 的 common node，不是 Q1 gate。TPS63802 PG 已与 `CHG_GATE` 共网，因此不增加重复的 `TP_PG_3V3`；`TP_CHG_GATE` 只能观察 shared qualification node，不能单独识别 `CHG_ENABLE_CMD` path、TLV7041 veto 或 TPS63802 PG veto 中哪个 source 正在拉低。
+M6 current baseline 使用 `J_OUT1 = KF301-5.0-2P`，pin 1 接 `3V3_PROT`、pin 2 接 GND；外部负载必须使用 `3V3_PROT`，不得绕过 M5 使用 raw `3V3`。关键 physical test points 覆盖 `VBUS_PROT / SYS / BAT / 3V3 / 3V3_PROT / CHG_GATE / CE# / GND`，并保留 `STAT1 / STAT2 / NTC_TS / M5_RESET`。`TP_CE_N` 位于 U1 pin 4 CE#、R3 与 Q1 drain 的 common node，不是 Q1 gate。TPS63802 PG 已与 `CHG_GATE` 共网，因此不增加重复的 `TP_PG_3V3`；`TP_CHG_GATE` 只能观察 shared qualification node，不能单独识别 `CHG_ENABLE_CMD` path、TLV7041 veto 或 TPS63802 PG veto 中哪个 source 正在拉低。
 
 ## 电池包证据边界
 

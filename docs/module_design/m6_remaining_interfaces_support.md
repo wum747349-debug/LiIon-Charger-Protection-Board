@@ -22,14 +22,14 @@ External loads must use `3V3_PROT`; they must not bypass M5 by using raw `3V3`.
 | `TP_3V3` | `3V3` |
 | `TP_3V3_PROT` | `3V3_PROT` |
 | `TP_CHG_GATE` | `CHG_GATE` |
-| `TP_CE_N` | BQ25185 U1 pin 4 CE# = R5 / Q1 drain / CE# common node |
+| `TP_CE_N` | BQ25185 U1 pin 4 CE# = R3 / Q1 drain / CE# common node |
 | `TP_GND` | `GND` |
 | `TP_STAT1` | `STAT1` |
 | `TP_STAT2` | `STAT2` |
 | `TP_NTC_TS` | `NTC_TS` |
 | `TP_M5_RESET` | TPS259474 U2 pin 1 EN/UVLO reset node |
 
-`TP_CE_N` is on the R5 / Q1 drain / U1 CE# common node, not on Q1 gate. `TP_M5_RESET` remains normally isolated from `TP_GND`; it may be temporarily shorted to GND during Bring-up as documented in M5.
+`TP_CE_N` is on the R3 / Q1 drain / U1 CE# common node, not on Q1 gate. `TP_M5_RESET` remains normally isolated from `TP_GND`; it may be temporarily shorted to GND during Bring-up as documented in M5.
 
 No independent `TP_PG_3V3` is present. TPS63802 PG connects directly to `CHG_GATE`, so such a point would duplicate `TP_CHG_GATE` on the same electrical node.
 

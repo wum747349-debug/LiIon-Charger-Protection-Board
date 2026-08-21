@@ -18,14 +18,14 @@ R15 is primarily mitigation against an external NTC short pulling TS/MR directly
 
 ## High-temperature comparator interlock
 
-U5 is the ordinary `TLV7041DBVR`, whose current design-record pin mapping is pin 1 OUT, pin 2 V-, pin 3 IN+, pin 4 IN-, pin 5 V+. It must not be confused with differently pinned TLV7041S / TLV7041L variants.
+U3 is the ordinary `TLV7041DBVR`, whose current design-record pin mapping is pin 1 OUT, pin 2 V-, pin 3 IN+, pin 4 IN-, pin 5 V+. It must not be confused with differently pinned TLV7041S / TLV7041L variants. `U5 = TPS63802DLAR` belongs to M4.
 
-- Supply: `pin 5 V+ → 3V3`, `pin 2 V- → GND`; local `C3 = 100nF` from 3V3 to GND.
+- Supply: `pin 5 V+ → 3V3`, `pin 2 V- → GND`; local `C9 = 100nF` from 3V3 to GND.
 - Positive input: `pin 3 IN+ → NTC_TS`.
-- Reference: `3V3 → R9 90.9kΩ / 1% → VHOT_REF → R10 10kΩ / 1% → GND`; `VHOT_REF → pin 4 IN-`. Nominal reference is approximately 0.327V.
-- Open-drain output: `pin 1 OUT → CHG_GATE`; `CHG_ENABLE_CMD → R11 10kΩ → CHG_GATE`; `CHG_GATE → R6 100kΩ → GND`, TPS63802 open-drain PG, and Q1 gate. `CHG_ENABLE_CMD` is the only HIGH authorization source; TLV7041 OUT and TPS63802 PG are independent LOW veto sources. The required current design remains the ordinary open-drain `TLV7041DBVR`, not the push-pull `TLV7031DBVR` discussed during intermediate capture.
+- Reference: `3V3 → R16 90.9kΩ / 1% → VHOT_REF → R17 10kΩ / 1% → GND`; `VHOT_REF → pin 4 IN-`. Nominal reference is approximately 0.327V.
+- Open-drain output: `pin 1 OUT → CHG_GATE`; `CHG_ENABLE_CMD → R6 10kΩ → CHG_GATE`; `CHG_GATE → R7 100kΩ → GND`, TPS63802 open-drain PG, and Q1 gate. `CHG_ENABLE_CMD` is the only HIGH authorization source; TLV7041 OUT and TPS63802 PG are independent LOW veto sources. The required current design remains the ordinary open-drain `TLV7041DBVR`, not the push-pull `TLV7031DBVR` discussed during intermediate capture.
 
-At normal temperature, `NTC_TS > VHOT_REF`, U5 OUT is high impedance, and a HIGH `CHG_ENABLE_CMD` may turn Q1 on and pull CE# low. For over-temperature or another relevant low-NTC_TS fault, U5 pulls `CHG_GATE` low, Q1 turns off, and R5 pulls CE# high to inhibit charging.
+At normal temperature, `NTC_TS > VHOT_REF`, U3 OUT is high impedance, and a HIGH `CHG_ENABLE_CMD` may turn Q1 on and pull CE# low. For over-temperature or another relevant low-NTC_TS fault, U3 pulls `CHG_GATE` low, Q1 turns off, and R3 pulls CE# high to inhibit charging.
 
 ## Temperature interpretation and fault behavior
 

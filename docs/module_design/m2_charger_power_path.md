@@ -8,18 +8,18 @@ U1 is `BQ25185DLHR`. Current design-record pin mapping is pin 1 SYS, pin 2 BAT, 
 
 - `VBUS_PROT → pin 10 IN`; `C1 = 10uF / 25V / 0805` from IN to GND. `VBUS_PROT` is supplied by M1.
 - `pin 1 SYS → SYS`; `C2 = 2.2uF / 25V / 0603` from SYS to GND. SYS feeds M4 TPS63802.
-- `pin 2 BAT → BAT`; `C4 = 1uF` from BAT to GND. BAT also enters M3.
+- `pin 2 BAT → BAT`; `C3 = 1uF` from BAT to GND. BAT also enters M3.
 - `pin 6 TS/MR → NTC_TS`; M3 owns the complete temperature network.
 
 ## Charge and input-current programming
 
 - `pin 8 ISET → R1 600Ω / 1% → GND`, targeting approximately 500mA fast charge.
-- `pin 7 ILIM/VSET → R2 13.0kΩ / 1% → junction → R3 4.99kΩ / 1% → GND`.
-- The `2N7002BK,215` ILIM-selection switch has its drain at the R2/R3 junction, source at GND, gate at `ILIM_HIGH_CMD`, and a 100kΩ gate pull-down. Switch OFF presents approximately 18kΩ for the conservative input-current state; switch ON bypasses R3 and presents 13kΩ for the high-current state after M1 qualifies USB source capability. The latest schematic designator is authoritative; this record avoids retaining the obsolete pre-closeout designator.
+- `pin 7 ILIM/VSET → R4 13.0kΩ / 1% → junction → R8 4.99kΩ / 1% → GND`.
+- Q2 is `2N7002BK,215`, with drain at the R4/R8 junction, source at GND, gate at `ILIM_HIGH_CMD`, and `R12 = 100kΩ` from gate to GND. Switch OFF presents approximately 18kΩ for the conservative input-current state; switch ON bypasses R8 and presents 13kΩ for the high-current state after M1 qualifies USB source capability.
 
 ## CE# fail-safe and status access
 
-`SYS → R5 47kΩ → CE_N / CE#`. Q1 is `2N7002BK,215`, with drain at the R5 / U1 pin 4 CE# common node, source at GND, gate at `CHG_GATE`, and `R6 = 100kΩ` from gate to GND. `CHG_ENABLE_CMD → R11 10kΩ → CHG_GATE`; M3 `TLV7041DBVR` open-drain OUT and M4 TPS63802 open-drain PG also connect to `CHG_GATE`. `CHG_ENABLE_CMD` is the only HIGH authorization source, while temperature-invalid or 3V3-not-power-good can veto LOW. Q1 can pull CE# low only when all three qualifications permit charging. `TP_CE_N` connects to the R5 / Q1 drain / U1 CE# common node, not Q1 gate.
+`SYS → R3 47kΩ → CE_N / CE#`. Q1 is `2N7002BK,215`, with drain at the R3 / U1 pin 4 CE# common node, source at GND, and gate at `CHG_GATE`. `CHG_ENABLE_CMD → R6 10kΩ → CHG_GATE`; `R7 = 100kΩ` connects CHG_GATE to GND. M3 `TLV7041DBVR` open-drain OUT and M4 TPS63802 open-drain PG also connect to `CHG_GATE`. `CHG_ENABLE_CMD` is the only HIGH authorization source, while temperature-invalid or 3V3-not-power-good can veto LOW. Q1 can pull CE# low only when all three qualifications permit charging. `TP_CE_N` connects to the R3 / Q1 drain / U1 CE# common node, not Q1 gate.
 
 `STAT1` and `STAT2` connect to physical test-point components `TP_STAT1` and `TP_STAT2`. There are no onboard pull-ups or LEDs. A net label alone is not a physical PCB test pad; the physical test-point component and footprint remain subject to later EDA/footprint verification.
 

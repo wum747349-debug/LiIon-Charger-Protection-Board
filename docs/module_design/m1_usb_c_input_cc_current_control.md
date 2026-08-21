@@ -34,7 +34,7 @@ M1 accepts ordinary 5V USB-C input, presents the Rev.A Sink/UFP CC behavior, pro
 
 - M2 uses `ILIM_HIGH_CMD` to select the approximately 18kΩ conservative or 13kΩ high-current ILIM/VSET network. The final charge-enable MOSFET Q1 uses the qualified `CHG_GATE` path to pull `CE_N / BQ25185 CE#` low.
 - M3 `TLV7041DBVR` and M4 TPS63802 PG can independently pull the shared `CHG_GATE` low. With `CHG_ENABLE_CMD` as the only HIGH authorization source, the normal startup/brownout/temperature qualification architecture is substantially resolved; only the earliest startup transient remains open because TPS63802 PG is datasheet-defined `Undefined` below its own UVLO.
-- Unattached, unpowered, unknown, invalid or unqualified states must not select high current or authorize charging. The resistor defaults in M2 keep Q1/Q3 off when their command/gate drive is absent.
+- Unattached, unpowered, unknown, invalid or unqualified states must not select high current or authorize charging. The resistor defaults in M2 keep Q1/Q2 off when their command/gate drive is absent.
 
 ## Remaining open issues
 
