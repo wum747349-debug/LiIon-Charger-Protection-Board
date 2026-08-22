@@ -1,7 +1,7 @@
 # 单节锂电池充电与保护电源板
 
 Project Identity: LiIon Charger Protection Board
-Current Project Stage: Stage 5 — PCB Layout
+Current Project Stage: Stage 6 — Routing and Copper
 Hardware Revision: Rev.A
 
 ## 项目目的
@@ -33,6 +33,7 @@ Hardware Revision: Rev.A
 - [Stage 3 模块设计入口](docs/module_design/README.md)
 - [Stage 4 原理图审查记录](docs/schematic_review.md)
 - [Stage 5 PCB 设计规则](docs/pcb_design_rules.md)
+- [Stage 5 Layout Preflight / Placement Closeout](docs/pcb_review.md)
 
 ## 仓库导航
 
@@ -65,6 +66,6 @@ Legacy Project Status: Frozen Migration Source — Historical migration traceabi
 
 ## 下一步
 
-Stage 4 Formal Schematic Review 已关闭；当前已获准进入 Stage 5 Layout Preflight。先冻结制造/机械基线、封装/接口朝向、PCB rules 与关键电源/保护布局输入，再开始正式布局。ERC 仍为 `NOT YET VERIFIED`；NTC actual trip temperature / pouch thermal lag、battery pre-first-connection physical verification、earliest startup transient，以及 M5 的 UV/OV、PGTH、过流、短路、热和 latch/reset behavior 保留到对应 downstream verification。
+Stage 5 Layout Preflight / Placement closeout 已完成；Rev.A placement 已冻结，当前进入 Stage 6 — Routing and Copper。下一步依次为关键电源 / switching routing、普通 routing、GND / copper / Repour，以及 Stage 6 layout/routing review。ERC 仍为 `NOT YET VERIFIED`；NTC actual trip temperature / pouch thermal lag、battery pre-first-connection physical verification、earliest startup transient，以及 M5 的 UV/OV、PGTH、过流、短路、热和 latch/reset behavior 保留到对应 downstream verification。
 
 Repository Authority Cutover 已完成。今后的 Project facts、hardware work、evidence 和 Stage progression 只能在本 Standalone Repository 中进行；Legacy Project 仅保留为 Frozen Migration Source，不再继续活动开发或双写。
