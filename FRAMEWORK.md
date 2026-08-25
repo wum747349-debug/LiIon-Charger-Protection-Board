@@ -2,7 +2,7 @@
 
 Framework Repository: wum747349-debug/Hardware-Project-Framework
 Framework Release: development-v1.1.0
-Framework Commit: 8e52d9903b2fc30ac815b92723d7d80a2235785a
+Framework Commit: 353b65e1f8985ee90fb825220d22cd1f50558623
 Project Structure Version: 1
 Repository Model: Standalone Project
 Initialization Framework Release: development-v0.9
