@@ -4,7 +4,8 @@
 
 - Hardware: Rev.A
 - Stage 7 — PCB Release Review: `COMPLETE / PASS`
-- Current lifecycle state: Stage 8 — Assembly, Bring-up and Hardware Test; waiting for fabricated boards
+- Stage 7 closeout transition: manufacturing was approved, the board order was submitted, and the project entered Stage 8
+- Evidence boundary at closeout: no assembly, power-on, or bring-up evidence existed yet
 - Stage 6 B3 Layout / Routing Review: `CLOSED / PASS`
 
 ## Evidence Boundary
@@ -121,9 +122,9 @@ Height                       0
 - `Remove Dead Copper = enabled`.
 - GND stitching strategy: targeted functional / return-path / local copper stitching, not a board-wide fixed grid.
 
-## Stage 7 — PCB Release Review Status
+## Stage 7 — PCB Release Review Closeout
 
-| Release item | Current status |
+| Release item | Closeout status |
 | --- | --- |
 | PCB design frozen for manufacturing | `YES` |
 | Final Full Batch DRC reviewed | `YES` |
@@ -160,7 +161,7 @@ Completed viewer checks:
 
 ## Manufacturing Release Decision
 
-Current conclusion: `批准制造`.
+Closeout conclusion: `批准制造`.
 
 Actual manufacturing-data / submission path:
 
@@ -174,4 +175,4 @@ Actual manufacturing-data / submission path:
 - Manufacturing parameters and PCB / BOM / manufacturing-output version consistency: `CONFIRMED`.
 - Manufacturing order: `SUBMITTED`.
 - Stage 7 — PCB Release Review: `COMPLETE / PASS`.
-- Stage 8 transition: `ACTIVE — waiting for fabricated boards; no assembly, power-on, or bring-up result yet`.
+- Stage 8 transition at closeout: `ENTERED — no assembly, power-on, or bring-up evidence existed at that time`.

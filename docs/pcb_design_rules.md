@@ -1,8 +1,8 @@
 # PCB Design Rules / Rev.A Final Engineering Baseline
 
-Status: `STAGE 6 ROUTING / COPPER COMPLETE — STAGE 7 RELEASE REVIEW ACTIVE`
+Status: `REV.A FINAL PCB RULE / MANUFACTURING BASELINE`
 
-This file owns the Rev.A PCB manufacturing and Altium rule baseline. `.PcbDoc` remains the EDA implementation authority. User-confirmed Altium configuration, screenshots, and DRC evidence are recorded as implementation evidence; manufacturing release still requires Stage 7 output review.
+This file owns the Rev.A PCB manufacturing and Altium rule baseline. `.PcbDoc` remains the EDA implementation authority. User-confirmed Altium configuration, screenshots, and DRC evidence are recorded as implementation evidence. Historical Stage 7 release closeout and transition evidence remain in `docs/pcb_review.md`. This file does not own project lifecycle status; that authority remains with the root `README.md`.
 
 ## Manufacturing Baseline
 
@@ -27,14 +27,14 @@ Manufacturer capability values are not copied directly into Project default rule
 
 | Item | Rev.A baseline | Verification status |
 | --- | --- | --- |
-| Nominal board size | 55 mm × 35 mm | Frozen; final output viewer still required |
+| Nominal board size | 55 mm × 35 mm | Frozen; final manufacturing viewer reviewed |
 | Mounting-hole centers | `(4,4)`, `(51,4)`, `(4,31)`, `(51,31)` mm | Frozen nominal pattern |
-| Mounting holes | M3 mechanical NPTH, actual hole ≈ 3.20 mm / 125.984 mil, `Plated = OFF` | Confirmed by user in Altium; final Drill / NPTH viewer check required |
+| Mounting holes | M3 mechanical NPTH, actual hole ≈ 3.20 mm / 125.984 mil, `Plated = OFF` | Confirmed by user in Altium and final Drill / NPTH manufacturing interpretation |
 | USBC1 | Left board edge; insertion/removal outward | Placement complete |
 | J_NTC1 / J_BAT1 | Top-side interface region; cable access outward | Placement complete |
 | J_OUT1 | Right edge; wire-entry outward | Placement complete |
 
-The four M3 NPTH holes intentionally exceed the current global `Hole Size Max = 100 mil`. User explicitly elected not to add a separate Hole Size Rule exception. The resulting four Hole Size DRC hits are therefore known Release findings and do not imply that the M3 holes should be reduced. Final Drill output must still show these holes as NPTH.
+The four M3 NPTH holes intentionally exceed the current global `Hole Size Max = 100 mil`. User explicitly elected not to add a separate Hole Size Rule exception. The resulting four Hole Size DRC hits were accepted release findings and do not imply that the M3 holes should be reduced. Final Drill output showed these holes as NPTH during the completed manufacturing review.
 
 ## General Altium Rules
 
@@ -46,9 +46,9 @@ Primary units are mil.
 | Width_Default | Min 6 / Preferred 8 / Max 40 mil | `All` | Ordinary signals | Latest DRC: 0 violations |
 | Width_Power | **Min 8 / Preferred 20 / Max 100 mil** | `InNetClass('POWER')` | 8 mil only for short small-pad escape / neck-down; ordinary power target is 20 mil or wider copper / polygon | Latest DRC: 0 violations |
 | Routing Via Style — Standard | Diameter 24 mil / Hole 12 mil | Ordinary through vias | Does not define special exposed-pad thermal via geometry | User implementation evidence |
-| Board Outline Clearance | Copper to board edge 12 mil | Board-wide | Preserve design margin | Stage 7 viewer check pending |
+| Board Outline Clearance | Copper to board edge 12 mil | Board-wide | Preserve design margin | Final manufacturing viewer reviewed |
 | Component Clearance | 20 mil | Default component bodies | Placement design default | Placement review complete |
-| Solder Mask Expansion | 2 mil | Ordinary pads | Footprint-specific geometry may override | Stage 7 viewer check pending |
+| Solder Mask Expansion | 2 mil | Ordinary pads | Footprint-specific geometry may override | Final manufacturing viewer reviewed |
 | Minimum Solder Mask Sliver | 4 mil | Board-wide | Manufacturing rule | Latest DRC: 0 violations |
 | Silk To Silk Clearance | 6 mil | Silkscreen-to-silkscreen | Compact-board project rule | Latest DRC: 9 findings retained |
 | Silk To Solder Mask / solderable copper | 6 mil | Top Overlay relative to exposed solderable features | Compact-board project rule | Latest DRC: 200 findings retained |
@@ -102,7 +102,7 @@ One board-wide `PolygonConnect` intent is retained:
 - Through-hole pads: Relief Connect.
 - Narrow exceptions should exist only for verified component- or manufacturing-specific reasons.
 
-Actual manufacturing appearance must be checked in Gerber Viewer.
+Actual manufacturing appearance was checked through the final Gerber / Drill manufacturing-review path recorded in `docs/pcb_review.md`.
 
 ## Project-Specific Layout Inputs / Final Disposition
 
@@ -118,7 +118,7 @@ Actual manufacturing appearance must be checked in Gerber Viewer.
 
 Latest DRC contains 200 `Silk To Solder Mask` and 9 `Silk To Silk` findings. User explicitly elected not to perform broad silkscreen cleanup.
 
-These findings are not automatically treated as an unconditional manufacturing PASS. Stage 7 must inspect the actual Gerber-rendered result for at least:
+These findings were not treated as an automatic manufacturing PASS. The completed Stage 7 review inspected the actual Gerber-rendered result for at least:
 
 - `J_BAT1`, battery polarity / GND indication.
 - `J_NTC1`, NTC / GND indication.
@@ -126,7 +126,7 @@ These findings are not automatically treated as an unconditional manufacturing P
 - Critical Pin 1 / polarity markers.
 - Key power / GND and test-point labels.
 
-Ordinary footprint outlines / designators may be accepted as a silkscreen-only waiver if Gerber inspection shows no assembly, polarity, connector, service, or user-error risk.
+Ordinary footprint outlines / designators were accepted under the recorded silkscreen-only waiver after Gerber inspection found no assembly, polarity, connector, service, or user-error blocker.
 
 ## Latest DRC Evidence
 
@@ -165,6 +165,6 @@ The four Hole Size findings correspond to the intentional ≈3.20 mm M3 NPTH mou
 | GND Polygon / Repour | `COMPLETE — USER EVIDENCE REVIEWED` |
 | Bottom GND continuity | `PASS BY VISUAL REVIEW; EXACT GEOMETRY REMAINS EDA AUTHORITY` |
 | PCB Batch DRC | `RUN — ELECTRICAL / ROUTING CATEGORIES CLEAN; 4 HOLE-RULE + 209 SILK FINDINGS RETAINED` |
-| Stage 6 B3 | `PASS — APPROVED TO ENTER STAGE 7 PCB RELEASE REVIEW` |
-| Gerber / Drill output review | `PENDING` |
-| Manufacturing release | `NOT YET AUTHORIZED` |
+| Stage 6 B3 | `PASS` |
+| Gerber / Drill output review | `COMPLETE / PASS` |
+| Manufacturing release | `APPROVED — ORDER SUBMITTED` |
