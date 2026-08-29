@@ -81,12 +81,12 @@ USB-C Sink 不能只连接 VBUS 和 GND。Source 与 Sink 需要通过 CC1 / CC2
 
 TUSB320 在 GPIO mode 下通过 `CC_OUT1 / CC_OUT2` 报告 unattached、Default、1.5A 和 3A advertisement，`SN74LVC2G132DCUR` 将其译码为 `ILIM_HIGH_CMD` 与 `CHG_ENABLE_CMD`。
 
-| Source 状态 | BQ25185 输入策略 | Charging authorization |
+| Source 状态 | BQ25185 输入策略 | M1 / `CHG_ENABLE_CMD` authorization |
 | --- | --- | --- |
-| Unattached | Conservative | Disabled |
-| Default | Conservative，约 500mA input-limit state | Allowed |
-| 1.5A advertisement | High-current，约 1.1A input-limit state | Allowed |
-| 3A advertisement | High-current，约 1.1A input-limit state | Allowed |
+| Unattached | Conservative | LOW |
+| Default | Conservative，约 500mA input-limit state | HIGH |
+| 1.5A advertisement | High-current，约 1.1A input-limit state | HIGH |
+| 3A advertisement | High-current，约 1.1A input-limit state | HIGH |
 
 策略可以概括为：Default 对应 conservative input-current state；只有 1.5A / 3A advertisement 才允许进入 high-current input-limit state。**Source advertises 3A ≠ Project sinks 3A**；本板实际吸取电流仍受 BQ25185 input-current limit、系统负载和充电状态约束。
 
@@ -200,7 +200,7 @@ TPS259474 还通过 dV/dt 控制降低外部输入电容造成的 inrush；瞬�
 
 ## 10. Design for Bring-up / Debug
 
-Rev.A 为主要能量节点和控制节点预留了测试入口：`VBUS_PROT`、`SYS`、`BAT`、`3V3`、`3V3_PROT`、`CHG_GATE`、`CE#`、`STAT1/STAT2`、`NTC_TS`、`M5_RESET` 和 GND。这些测点用于沿能量链与控制链逐级缩小故障范围。
+Rev.A 为主要能量节点和控制节点预留了真实 PCB 测试点：`TP_VBUS_PROT`、`TP_SYS`、`TP_BAT`、`TP_3V3`、`TP_3V3_PROT`、`TP_CHG_GATE`、`TP_CE_N`、`TP_STAT1/TP_STAT2`、`TP_NTC_TS`、`TP_M5_RESET` 和 `TP_GND`。这些丝印名称可直接用于在 PCB 上定位测点，并沿能量链与控制链逐级缩小故障范围。
 
 ### 10.1 Power-chain diagnosis
 
@@ -237,7 +237,7 @@ VBUS_PROT、SYS 正常而 3V3 = 0V      → 优先检查 M4
 | --- | --- |
 | Requirements / architecture | Complete |
 | Component selection | Complete |
-| Schematic design / review | Complete |
+| Schematic design / formal review | Complete; ERC = NOT YET VERIFIED |
 | PCB layout / routing | Complete |
 | DRC / Gerber / manufacturing review | Complete |
 | Rev.A PCB | Submitted for fabrication |
@@ -246,6 +246,8 @@ VBUS_PROT、SYS 正常而 3V3 = 0V      → 优先检查 M4
 | Hardware validation | Not completed |
 
 Final DRC、Gerber / Drill 和 JLCPCB manufacturing viewer 已完成工程审查，Rev.A 已批准并提交制造。详细 DRC、waiver 和 release record 由 [docs/pcb_review.md](pcb_review.md) 维护，不在本文重复。
+
+Battery connector 的实际 mating、polarity 与 wire order 仍为 `PHYSICAL VERIFICATION PENDING`，必须在第一次实际连接电池前完成实物核对。
 
 当前仍不能声称已经验证以下内容：measured efficiency、1A / 100ms PASS、actual NTC trip temperatures、startup transient PASS、actual UV/OV thresholds、short-circuit behavior、over-current timing、thermal performance、latch/reset behavior，以及 whole-board Bring-up PASS。
 
