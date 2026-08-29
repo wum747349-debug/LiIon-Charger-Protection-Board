@@ -3,7 +3,8 @@
 ## Review Identity
 
 - Hardware: Rev.A
-- Current review mode: Stage 7 — PCB Release Review / Manufacturing Preparation
+- Stage 7 — PCB Release Review: `COMPLETE / PASS`
+- Current lifecycle state: Stage 8 — Assembly, Bring-up and Hardware Test; waiting for fabricated boards
 - Stage 6 B3 Layout / Routing Review: `CLOSED / PASS`
 
 ## Evidence Boundary
@@ -11,7 +12,7 @@
 - `.PcbDoc` is the EDA implementation authority.
 - User-confirmed Altium configuration and Batch DRC are implementation evidence.
 - PCB screenshots support visual assessment of placement, routing, copper continuity, and labeling but do not independently prove exact net identity or geometry.
-- Gerber / Drill manufacturing release remains pending until final output review.
+- Final Gerber / Drill manufacturing data and the JLCPCB manufacturing interpretation were reviewed before the manufacturing order was submitted.
 
 ## Stage 5 Closeout
 
@@ -27,7 +28,7 @@
 
 ## Stage 6 — Routing and Copper Closeout
 
-The final interactive review used the user's current local PCB screenshots, Top / Bottom GND Polygon views, Bottom routing view, and the current Batch DRC report. The local implementation is newer than the previously committed `.PcbDoc`; user-provided current Altium evidence controls implementation-specific review until the final EDA files are synchronized.
+The final interactive review used the user's current local PCB screenshots, Top / Bottom GND Polygon views, Bottom routing view, and the current Batch DRC report. The final Rev.A EDA source is synchronized and frozen in the Stage 7 closeout commit.
 
 | Review item | Result |
 | --- | --- |
@@ -57,9 +58,11 @@ The final interactive review used the user's current local PCB screenshots, Top 
 
 No identified electrical / routing / copper blocker requires reopening Placement or Routing. Further PCB edits should be driven only by a concrete Stage 7 manufacturing-output finding.
 
-## Latest Batch DRC Summary
+## Final Full Batch DRC Summary
 
-User-provided Altium Design Rule Verification Report:
+Status: `COMPLETE / REVIEWED`
+
+User-provided Altium Design Rule Verification Report for the final Rev.A release candidate:
 
 ```text
 Date: 2026-08-25
@@ -93,7 +96,8 @@ Height                       0
 - Cause: current global Hole Size rule has Max = 100 mil.
 - Engineering disposition: mounting-hole size is intentional; do not reduce the M3 holes merely to satisfy the electrical-hole global rule.
 - User decision: user explicitly chose not to create a dedicated Hole Size Rule exception.
-- Release status: `KNOWN FINDING / USER-ACCEPTED RULE HIT`; final NC Drill / Gerber viewer must still confirm the four mounting holes are exported as NPTH and at the intended size.
+- Final manufacturing viewer confirmed that the four M3 mounting holes are represented as intended NPTH / non-plated mechanical holes.
+- Finding disposition: `CLOSED / ACCEPTED`.
 
 #### RL-002 — Silkscreen DRC Findings
 
@@ -101,9 +105,9 @@ Height                       0
 - `Silk To Silk = 9`.
 - User decision: user explicitly chose not to perform broad silkscreen cleanup.
 - The DRC report contains ordinary component designator / footprint-outline conflicts and a limited number of meaningful labels such as `J_BAT1`, `TP_NTC_TS1`, and `TP_VBUS_PROT1`.
-- Release status: `PENDING VIEWER-BASED WAIVER REVIEW`.
-- Acceptance condition: actual Gerber rendering must preserve critical connector, polarity, Pin 1, power, GND, and user-facing test-point information sufficiently to avoid assembly or connection mistakes.
-- If Gerber Viewer shows critical text substantially clipped / removed / misleading, that individual item remains a blocker and must be fixed despite the general decision not to clean ordinary silkscreen findings.
+- Critical marking review was completed in the final manufacturing viewer. Required connector, polarity, Pin 1, power, GND, and critical TP information remained understandable.
+- Ordinary silkscreen DRC findings are accepted under the previously approved waiver.
+- Finding disposition: `CLOSED / WAIVER ACCEPTED`.
 
 ## Final Rev.A Rule Decisions Recorded for Release
 
@@ -121,24 +125,27 @@ Height                       0
 
 | Release item | Current status |
 | --- | --- |
-| PCB design frozen for release | `YES — unless viewer finds a concrete blocker` |
-| Latest Batch DRC reviewed | `YES` |
+| PCB design frozen for manufacturing | `YES` |
+| Final Full Batch DRC reviewed | `YES` |
 | Electrical / routing DRC blockers | `NONE IDENTIFIED` |
-| Four M3 NPTH Hole Size hits | `KNOWN / USER ACCEPTED; DRILL VIEWER CHECK REQUIRED` |
-| Silkscreen findings | `USER ELECTED NO BROAD CLEANUP; VIEWER CHECK REQUIRED` |
+| Four M3 NPTH Hole Size hits | `CLOSED / ACCEPTED` |
+| Silkscreen findings | `CLOSED / WAIVER ACCEPTED` |
 | PCB rule documentation synchronized | `YES` |
-| Gerber generated from final PCB | `PENDING` |
-| NC Drill generated from final PCB | `PENDING` |
-| Gerber / Drill viewer review | `PENDING` |
-| PCB / BOM / manufacturing-output version consistency | `PENDING` |
-| Final manufacturing parameters | `PENDING CONFIRMATION` |
-| Manufacturing release | `NOT YET AUTHORIZED` |
+| Gerber generated from final PCB | `GENERATED / REVIEWED` |
+| NC Drill generated from final PCB | `GENERATED / REVIEWED` |
+| Actual manufacturing-data path | `CONFIRMED` |
+| JLCPCB manufacturing interpretation | `PASS` |
+| PCB / BOM / manufacturing-output version consistency | `CONFIRMED` |
+| Final manufacturing parameters | `CONFIRMED` |
+| Manufacturing Release Decision | `批准制造` |
+| Manufacturing order | `SUBMITTED` |
+| Stage 7 | `COMPLETE` |
 
-## Minimum Gerber / Drill Release Review
+## Completed Gerber / Drill Release Review
 
-The final manufacturing package must be generated from the frozen current PCB and inspected in a Gerber-capable viewer before ordering.
+The final Gerber / Drill manufacturing data generated from the frozen Rev.A PCB was inspected through the actual JLCPCB submission and manufacturing-viewer path before ordering.
 
-Required viewer checks:
+Completed viewer checks:
 
 1. **Board outline** — one closed 55 mm × 35 mm outline with intended rounded corners; no duplicate or stray outline segments.
 2. **Top Copper** — all primary routing / copper visible; no missing polygons, accidental copper cutouts, or stray copper outside the board.
@@ -151,10 +158,20 @@ Required viewer checks:
 9. **Layer registration** — copper, mask, silk, outline, and drill are aligned to the same board origin / orientation.
 10. **Package hygiene** — manufacturing archive contains only current Gerber / Drill files; no old Gerbers, previews, logs, cache, or obsolete duplicate outputs.
 
-## Manufacturing Release Gate
+## Manufacturing Release Decision
 
-Current conclusion: `NOT YET AUTHORIZED FOR MANUFACTURING`.
+Current conclusion: `批准制造`.
 
-The remaining gate is intentionally narrow: generate Gerber + NC Drill from the current frozen `.PcbDoc`, inspect the required layers / drill data in a viewer, confirm the manufacturing package and order parameters match Rev.A, then record one explicit conclusion:
+Actual manufacturing-data / submission path:
 
-`批准制造 / 有条件批准 / 不批准制造`.
+`Final Rev.A .PcbDoc → exported Gerber / Drill manufacturing data → JLCPCB submission → JLCPCB manufacturing viewer → final interpretation review → manufacturing order`.
+
+- Exact release candidate: final Rev.A EDA source synchronized in the Stage 7 closeout commit.
+- Final release candidate: `CONFIRMED`.
+- Final Full Batch DRC: `COMPLETE / REVIEWED`.
+- Gerber / NC Drill: `GENERATED / REVIEWED`.
+- JLCPCB manufacturing interpretation: `PASS`.
+- Manufacturing parameters and PCB / BOM / manufacturing-output version consistency: `CONFIRMED`.
+- Manufacturing order: `SUBMITTED`.
+- Stage 7 — PCB Release Review: `COMPLETE / PASS`.
+- Stage 8 transition: `ACTIVE — waiting for fabricated boards; no assembly, power-on, or bring-up result yet`.

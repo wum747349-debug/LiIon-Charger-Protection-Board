@@ -1,7 +1,7 @@
 # 单节锂电池充电与保护电源板
 
 Project Identity: LiIon Charger Protection Board
-Current Project Stage: Stage 7 — PCB Release Review
+Current Project Stage: Stage 8 — Assembly, Bring-up and Hardware Test
 Hardware Revision: Rev.A
 
 ## 项目目的
@@ -16,15 +16,16 @@ Hardware Revision: Rev.A
 - Stage 4 Formal Schematic Review 已关闭并批准进入 PCB Layout；ERC 仍为 `NOT YET VERIFIED`，没有被提升为 PASS。
 - Stage 5 Layout Preflight / Placement Closeout 已完成，Rev.A placement 已冻结。
 - Stage 6 Routing and Copper 已完成 B3 Layout / Routing Review。当前用户提供的最终本地 PCB 证据显示：主要 routing 完成、Top / Bottom GND Polygon 已 Repour、Bottom GND plane 基本连续、关键 GND via / stitching 已收尾，`Un-Routed Nets = 0`，未发现需要重新 Placement 或大规模 reroute 的 blocker。
-- 2026-08-25 21:31:22 对当前本地 `.PcbDoc` 运行完整 Batch DRC：Warnings = 0，Rule Violations = 213；其中 Clearance = 0、Short Circuit = 0、Un-Routed Nets = 0、Modified Polygon = 0、Width_Power = 0、Width_Default = 0、Hole-To-Hole = 0、Minimum Solder Mask Sliver = 0、Net Antennae = 0。剩余为 4 个 M3 NPTH mounting-hole Hole Size rule hits、200 个 Silk To Solder Mask、9 个 Silk To Silk。
+- 2026-08-25 21:31:22 对最终 Rev.A `.PcbDoc` 运行的 Final Full Batch DRC 已完成并复核：Warnings = 0，Rule Violations = 213；其中 Clearance = 0、Short Circuit = 0、Un-Routed Nets = 0、Modified Polygon = 0、Width_Power = 0、Width_Default = 0、Hole-To-Hole = 0、Minimum Solder Mask Sliver = 0、Net Antennae = 0。剩余为 4 个 M3 NPTH mounting-hole Hole Size rule hits、200 个 Silk To Solder Mask、9 个 Silk To Silk。
 - Rev.A 最终 POWER width engineering baseline 为 `Min 8 mil / Preferred 20 mil / Max 100 mil`，Scope 为 `InNetClass('POWER')`。8 mil 只允许用于小封装 escape / 很短 neck-down；普通 power routing 目标仍为 20 mil 或更宽铜皮 / Polygon。
 - Top / Bottom GND Polygon 当前采用 Solid Pour；`Remove Islands Less Than = 2500 sq.mil`、`Remove Necks Less Than = 10 mil`、`Remove Dead Copper = enabled`、`Pour Over Same Net Objects`。
-- 四个安装孔为 M3 mechanical NPTH，实际孔径约 3.20 mm / 125.984 mil，`Plated = OFF`。用户明确选择不再为这四个机械孔新增 Hole Size Rule exception；当前 4 个 Hole Size DRC hits 因此作为已知 Release finding 保留，不代表安装孔尺寸错误。
-- 用户明确选择不再批量清理当前普通 silkscreen DRC hits。Silkscreen findings 仅允许在 Gerber Viewer 中确认关键接口、极性、Pin 1、测试点和用户可见文字仍清晰后作为 release-stage waiver 接受；若关键文字被裁切或不可读，则仍需修正。
+- 四个安装孔为 M3 mechanical NPTH，实际孔径约 3.20 mm / 125.984 mil，`Plated = OFF`。最终 manufacturing viewer 已确认四个 M3 安装孔按预期表示为 NPTH / non-plated mechanical holes；RL-001 已关闭并接受。
+- 最终 manufacturing viewer 已完成 critical marking review；所需 connector / polarity / Pin 1 / power / GND / critical TP 信息保持可理解。普通 silkscreen DRC findings 按此前批准的 waiver 接受；RL-002 已关闭。
 - M1 当前 TUSB320 VBUS_DET baseline 为 `VBUS_PROT → R18 910kΩ / 1% → VBUS_DET`。USB shield baseline 为 EH1–EH4 并入 `USB_SHIELD`，再由 R19 1MΩ 与 C13 1nF/high-voltage/1206 两个并联支路接 GND；Rev.A 不增加 R24 0Ω DNP branch。
 - `J_NTC1 = HX-XH2.54-2PZZ`，外接 `C5221417`；`J_BAT1` pin 1 → BAT、pin 2 → GND。实际电池 mating 与 polarity/wire order 仍为 `PHYSICAL VERIFICATION PENDING`，必须在第一次实际连接电池前完成。
 - M5 保持 `U2 = TPS259474LRPWR`，输出边界为 `M4 3V3 → U2 → 3V3_PROT → M6 / external load`。外部负载不得绕过 M5 使用 raw `3V3`。
-- 当前已进入 Stage 7 — PCB Release Review / Manufacturing Preparation。制造放行仍为 `NOT YET AUTHORIZED`，必须完成 Gerber / Drill / Board Outline / Solder Mask / Silkscreen / PTH-NPTH / manufacturing-parameter viewer review，并确认制造输出与当前 PCB / DRC / BOM 版本一致后才能批准下单。
+- Stage 7 PCB Release Review 已完成。Final Full Batch DRC、最终 Gerber / Drill 制造数据、嘉立创 manufacturing viewer、NPTH / silkscreen findings、制造参数和 PCB / BOM / manufacturing-output 版本一致性均已复核；Manufacturing Release Decision = `批准制造`，Rev.A PCB 已提交打板。
+- 当前进入 Stage 8 — Assembly, Bring-up and Hardware Test；实际状态为等待 PCB 实物，尚未开始装配、首次上电或硬件测试。
 - 本 Standalone Repository 是 Only Active Project Authority；Legacy Project 2 仅作为 Frozen Migration Source 保留。
 
 ## 项目事实
@@ -70,6 +71,6 @@ Legacy Project Status: Frozen Migration Source — Historical migration traceabi
 
 ## 下一步
 
-Stage 6 已关闭并批准进入 Stage 7。下一步只做 PCB Release / Manufacturing Preparation：冻结当前 PCB 设计、导出当前版本 Gerber + NC Drill，在 Gerber Viewer 中逐层核对铜层、阻焊、丝印、Board Outline、PTH / NPTH、安装孔和关键接口标识；确认输出包与当前 PCB / BOM / DRC 版本一致后，再给出 `批准制造 / 有条件批准 / 不批准制造` 的显式结论。
+等待 Rev.A PCB 实物到货。收到 PCB 后执行外观 / 制造质量检查、装配准备、首次电池连接前 polarity / mating verification、限流首次上电，以及关键电源轨和保护功能 Bring-up。
 
-Bring-up 仍保留 NTC actual trip temperature / pouch thermal lag、battery pre-first-connection physical verification、earliest startup transient，以及 M5 的 UV/OV、PGTH、过流、短路、热和 latch/reset behavior 等 downstream verification。
+Stage 8 仍保留 NTC actual trip temperature / pouch thermal lag、battery pre-first-connection physical verification、earliest startup transient，以及 M5 的 UV/OV、PGTH、过流、短路、热和 latch/reset behavior 等 downstream verification；这些项目尚未测试，不能视为 PASS。
