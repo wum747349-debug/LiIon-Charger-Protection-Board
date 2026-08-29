@@ -35,6 +35,7 @@ Hardware Revision: Rev.A
 - [设计说明](design_notes.md)
 - [资料索引](references.md)
 - [Stage 2 关键器件选型计划](docs/component_selection_plan.md)
+- [系统设计与器件选型说明](docs/project_design_overview.md)
 - [Stage 3 模块设计入口](docs/module_design/README.md)
 - [Stage 4 原理图审查记录](docs/schematic_review.md)
 - [PCB 设计规则与最终工程基线](docs/pcb_design_rules.md)

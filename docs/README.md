@@ -5,6 +5,7 @@
 | 路径                            | 职责                                      | 启用时机                                     |
 | ----------------------------- | --------------------------------------- | ---------------------------------------- |
 | `component_selection_plan.md` | 关键器件候选与决策                               | Stage 2 开始                               |
+| `project_design_overview.md`   | 面向工程师、项目展示和面试复习的系统架构、模块协同与关键设计决策说明 | 系统设计形成后按硬件版本维护                           |
 | `module_design/*.md`          | 模块连接、计算、依据、风险和布局要求                      | 模块进入 Stage 3 详细设计                        |
 | `schematic_review.md`         | 实际原理图审查依据、问题、状态和结论                      | Stage 4 开始                               |
 | `pcb_design_rules.md`         | 项目规则值、Scope、Priority、配置状态和豁免定义          | Stage 5 Layout Preflight 前               |
