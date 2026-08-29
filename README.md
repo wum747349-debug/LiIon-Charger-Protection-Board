@@ -1,7 +1,7 @@
 # 单节锂电池充电与保护电源板
 
 Project Identity: LiIon Charger Protection Board
-Current Project Stage: Stage 7 — PCB Release Review / Manufacturing Preparation
+Current Project Stage: Stage 7 — PCB Release Review
 Hardware Revision: Rev.A
 
 ## 项目目的
