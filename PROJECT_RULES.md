@@ -1,34 +1,46 @@
 # Project Rules
 
-Project: `LiIon-Charger-Protection-Board`
+Project: LiIon Charger Protection Board
+Repository: wum747349-debug/LiIon-Charger-Protection-Board
 
 ## Scope
 
 These rules apply only to this standalone project repository.
 
-## Project Authority
+## Authority
 
-This repository is the only active authority for this project.
+This repository is the only active project authority for the current hardware project.
 
-The legacy migration source remains frozen and must not be used as an active design or documentation authority.
+The legacy migration source is historical only. It must not be used as a live authority unless the user explicitly asks for historical comparison or recovery.
 
-## Working Rules
+## Current implementation wins
 
-- Work only inside this repository unless the user explicitly requests cross-repository work.
-- Do not modify the Framework Repository from project-only tasks.
-- Do not change `FRAMEWORK.md` binding unless the task is explicitly a Framework migration / repin.
-- Preserve current Project Stage unless the task explicitly performs a valid Stage transition.
-- Treat current authoritative EDA implementation and synchronized project documentation as the project baseline; when older handoff notes conflict with the current implementation, the current implementation wins.
-- Do not claim hardware verification, measured PASS, ERC PASS, DRC PASS, manufacturing PASS or Stage completion without matching evidence.
-- Keep design targets, datasheet capabilities, calculations, planned tests and measured hardware results clearly separated.
-- For Stage 8, do not connect a real battery until actual mating, polarity and wire order are physically verified with a multimeter.
-- Keep unrelated user work untouched.
-- Do not commit or push unless the user explicitly requests repository changes.
+When older documentation, handoff notes, archived BOM data, previous component records, or migration-era assumptions conflict with the current `.SchDoc`, `.PcbDoc`, synchronized project documents, or current manufacturing / hardware evidence, use the current authoritative implementation.
 
-## Documentation Discipline
+Do not silently reintroduce superseded component choices, pin mappings, layout assumptions, or old Stage conclusions.
 
-- Use project documents for persistent engineering facts.
-- Prefer updating an existing authoritative document over creating overlapping duplicate records.
-- Keep `README.md` as a concise current-state / navigation summary, not a full engineering notebook.
-- Record actual Bring-up measurements, failures, fixes and retest evidence in the active Stage 8 Bring-up / test record.
-- A planned test is not a test result.
+## Evidence boundary
+
+Do not claim any of the following without matching evidence:
+
+- ERC PASS;
+- DRC PASS;
+- assembly complete;
+- first power-on complete;
+- rail measured / verified;
+- charger function verified;
+- battery protection verified;
+- NTC temperature threshold verified;
+- 500mA continuous output verified;
+- 1A / 100ms target verified;
+- manufacturing or hardware PASS beyond the evidence actually recorded.
+
+Design intent, datasheet capability, calculations, simulation, planned tests and measured hardware results must remain clearly distinguished.
+
+## Change discipline
+
+- Keep changes scoped to the requested task.
+- Preserve unrelated user work.
+- Do not modify Framework binding, Stage, gate state, project structure version or repository architecture unless the task explicitly requires it.
+- Prefer updating existing authoritative records over creating duplicate documents.
+- Do not create synthetic test results to make documentation look complete.
