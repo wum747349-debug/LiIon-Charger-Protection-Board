@@ -6,17 +6,17 @@ Date initialized: 2026-09-05
 
 ## Purpose and evidence boundary
 
-This file is activated because the manufactured PCB is now available and assembly / Bring-up is about to begin.
+This file is the execution plan and evidence log for Rev.A Stage 8 assembly / Bring-up.
 
 It records:
 
 - assembly preparation and inspection;
-- first-power-up sequence;
-- available instruments and their intended use;
-- planned Bring-up / functional tests;
-- actual observations, failures, fixes and measurements once they occur.
+- first-power-up execution;
+- main power-chain / battery / charging / Power Path checks;
+- actual measurements, observations, failures, fixes and retest evidence;
+- deferred validation items that cannot yet be verified with the available equipment.
 
-A planned test is **not** a PASS. No item below may be promoted to measured / verified until an actual instrument reading, waveform, observation or other hardware evidence is recorded.
+A planned test is **not** a PASS. No item may be promoted to measured / verified until an actual instrument reading, waveform, observation or other hardware evidence is recorded.
 
 `docs/test_report.md` will be created when formal hardware testing starts and real measured results are available.
 
@@ -34,67 +34,110 @@ A planned test is **not** a PASS. No item below may be promoted to measured / ve
 
 ---
 
-## Available test instruments
+## Available instruments
 
-Confirmed available instruments:
-
-| Instrument | Primary use in this project |
+| Instrument | Primary use |
 | --- | --- |
 | Digital multimeter | continuity / resistance checks, rail DC voltage, battery polarity, NTC resistance, optional series charge-current measurement |
-| Oscilloscope | `SYS` / `3V3` / `3V3_PROT` startup waveform, USB/Battery transition, ripple/noise observation, `CHG_GATE` / `CE#` timing when required |
-| Adjustable bench DC power supply with current limit | controlled first-power stimulus where appropriate; battery-only emulation and BUVLO sweep with USB absent |
+| Oscilloscope | startup / transition waveform, ripple / obvious instability, `CHG_GATE` / `CE#` timing when required |
+| Adjustable bench DC power supply with current limit | controlled first-power stimulus; Battery-only emulation and BUVLO sweep with USB absent |
 
-### Important limits of the current instrument set
+### Global test constraints
 
-The following cannot yet be claimed as formally verified without additional load / thermal equipment or a dedicated test fixture:
-
-- 3.3V / 500mA continuous-load capability;
-- 1A / 100ms load-transient target;
-- exact TPS259474 over-current trip current and timer behavior;
-- controlled hard-short / latch-off qualification;
-- full efficiency curve;
-- accurate component temperature-rise characterization without a thermal measurement tool;
-- exact NTC trip-temperature / pouch thermal-lag characterization without controlled temperature measurement.
-
-These are deferred rather than assumed PASS.
+- Do not connect the real battery until `J_BAT1` mating, pin order and polarity are physically verified with the multimeter. Board convention: `J_BAT1 pin 1 → BAT`, `pin 2 → GND`.
+- Do not intentionally short the real Li-ion battery.
+- Bench-supply battery emulation is Battery-only unless the supply is explicitly capable of safely sinking reverse current.
+- Direct 5V injection into `VBUS_PROT` validates downstream power circuitry only; it does **not** validate TUSB320 attach / CC-current detection.
+- USB-C CC / Source-capability validation requires a compliant USB-C Source connected through `USBC1`.
+- For ripple measurements, use the shortest practical oscilloscope ground connection / ground spring near the measured rail.
+- No direct-wire short-circuit test is required during initial Bring-up.
 
 ---
 
-## Safety / test constraints
+# Approved execution sequence
 
-1. Do not connect the real battery until `J_BAT1` mating, pin order and polarity are physically checked with the multimeter. Current board convention is `J_BAT1 pin 1 → BAT`, `pin 2 → GND`.
-2. Do not intentionally short the real Li-ion battery.
-3. Bench-supply battery emulation is for **Battery-only** testing with USB absent unless the supply is explicitly capable of safely sinking reverse current. An ordinary bench supply must not be treated as a rechargeable battery during USB charging tests.
-4. USB-C CC / Source-capability validation requires an actual compliant USB-C Source through `USBC1`. Direct 5V injection into `VBUS_PROT` can validate downstream power circuitry only; it does not prove TUSB320 attach / CC-current detection behavior.
-5. For oscilloscope ripple measurements, use the shortest practical ground connection / ground spring near the measured rail to avoid probe-loop pickup being mistaken for real ripple.
-6. No direct-wire short-circuit test is required during initial Bring-up. M5 short / latch testing is deferred until a controlled load method is available.
+```text
+B0  Assembly / Visual Inspection
+        ↓
+B1  Unpowered Static Screening
+        ↓
+G1  Pre-Power Gate
+        ↓
+B2A Current-Limited First Power via VBUS_PROT
+        ↓
+B2B Native USB-C Power-Up
+        ↓
+B3  Startup / Basic Ripple Observation
+        ↓
+B4  Bench-Supply Battery Emulation + BUVLO
+        ↓
+G2  Battery Mating / Polarity + NTC Sanity Gate
+        ↓
+B5  Real Battery-Only First Connection
+        ↓
+B6  USB + Battery Charging
+        ↓
+B7  USB / Battery Power-Path Transition
+        ↓
+B8  NTC / Charging Qualification
+        ↓
+G3  Basic Rev.A Bring-up Gate
+```
+
+Each step uses the same execution pattern:
+
+`Preconditions → Stimulus → Measure / Observe → Expected behavior → STOP conditions → Evidence to record`
+
+Do not skip a Gate.
 
 ---
 
-## Bring-up execution order
-
-### B0 — Assembly and visual inspection
+## B0 — Assembly / Visual Inspection
 
 Status: `NOT YET RUN`
 
-Check before applying power:
+**Preconditions**
+
+- Board unpowered.
+- No USB connected.
+- No battery connected.
+- No external load connected.
+
+**Inspect**
 
 - component value / orientation / polarity;
-- WSON / DFN / VQFN solder bridges or insufficient wetting;
-- USB-C connector soldering and mechanical joints;
+- WSON / DFN / VQFN solder bridges, shift, insufficient wetting or suspicious exposed-pad soldering;
+- USB-C fine-pitch pins and mechanical shell joints;
 - Q1 / Q2 MOSFET orientation;
 - BQ25185, TPS63802, TPS259474, TUSB320 and TLV7041 orientation;
 - L1 placement and soldering;
 - battery / NTC / output connector orientation and silkscreen readability;
-- exposed-pad soldering quality where visually accessible.
+- solder balls, debris, damaged pads, lifted components or obvious rework defects.
 
-Record actual findings below when assembly is complete.
+**STOP conditions**
 
-### B1 — Unpowered resistance / continuity screening
+Any unresolved orientation doubt, visible bridge, badly shifted leadless IC, damaged pad / trace or connector ambiguity.
+
+**Evidence to record**
+
+- assembly photos;
+- inspection findings;
+- any rework performed.
+
+---
+
+## B1 — Unpowered Static Screening
 
 Status: `NOT YET RUN`
 
-Using the multimeter, check for obvious shorts between GND and the major rails before first power:
+**Preconditions**
+
+- B0 complete with no unresolved assembly blocker.
+- Board remains unpowered.
+
+**Measure**
+
+Using the multimeter, screen the major rails against GND:
 
 - `VBUS_PROT ↔ GND`
 - `SYS ↔ GND`
@@ -102,36 +145,143 @@ Using the multimeter, check for obvious shorts between GND and the major rails b
 - `3V3 ↔ GND`
 - `3V3_PROT ↔ GND`
 
-Do not judge capacitor-charging resistance transients as an automatic short; record stable / comparative behavior and investigate only obvious abnormal low resistance.
+Also inspect continuity around any assembly area that looked suspicious during B0.
 
-### B2 — USB-only controlled first power-up
+**Expected behavior**
+
+No obvious hard short. Capacitor charging may cause changing / transient resistance readings; do not classify every low initial reading as a fault.
+
+**STOP conditions**
+
+Stable near-zero resistance / continuity behavior that is inconsistent with the circuit, especially on a major rail, until the cause is understood.
+
+**Evidence to record**
+
+Stable / comparative readings and any suspicious node investigated.
+
+---
+
+## G1 — Pre-Power Gate
+
+Status: `NOT YET PASSED`
+
+Proceed to powered Bring-up only when:
+
+- B0 has no unresolved assembly blocker;
+- B1 has no unexplained hard-short indication;
+- battery and external load remain disconnected.
+
+Passing G1 is permission to attempt first power only. It is **not** a functional PASS.
+
+---
+
+## B2A — Current-Limited First Power via `VBUS_PROT`
 
 Status: `NOT YET RUN`
 
-Preferred stimulus: compliant 5V USB-C Source connected through `USBC1`.
+**Purpose**
 
-Initial objective: establish the main power chain with **no battery connected** and no external load.
+Perform the first energized smoke-test of the downstream power chain with a controllable current limit before relying on a normal USB-C source.
 
-Measure:
+**Preconditions**
+
+- G1 passed.
+- No battery connected.
+- No external load connected.
+- USB-C disconnected.
+
+**Stimulus**
+
+```text
+Bench PSU + → TP_VBUS_PROT / VBUS_PROT
+Bench PSU - → TP_GND / GND
+```
+
+Set approximately 5.0V and start with a conservative current limit appropriate for first power. Increase only if the board is behaving normally and the limit is clearly preventing intended startup.
+
+**Measure / observe**
 
 ```text
 TP_VBUS_PROT → TP_SYS → TP_3V3 → TP_3V3_PROT
 ```
 
-Expected engineering behavior:
+Also observe bench-supply current-limit behavior and unexpected heating.
 
-- `VBUS_PROT`: valid USB input rail;
-- `SYS`: established by BQ25185 Power Path without a battery;
-- `3V3`: regulated by TPS63802 near the 3.3V target;
-- `3V3_PROT`: available only if TPS259474 output qualification is satisfied.
+**Expected engineering behavior**
 
-Also observe abnormal supply-current limiting, unexpected heating, rail collapse or oscillation. Actual readings must be recorded before any PASS claim.
+- `VBUS_PROT` follows the applied bench supply;
+- BQ25185 establishes `SYS` without a battery if downstream circuitry is healthy;
+- TPS63802 establishes `3V3` near its design target;
+- `3V3_PROT` appears only if TPS259474 qualification is satisfied.
 
-### B3 — Startup waveform / basic ripple observation
+This step does **not** validate USB-C CC / TUSB320 operation.
+
+**STOP conditions**
+
+- immediate or persistent current limiting without an understood reason;
+- rail collapse;
+- strong oscillation;
+- rapid / abnormal component heating;
+- smoke, smell or visible damage.
+
+**Evidence to record**
+
+- current-limit setting;
+- observed supply current;
+- measured rail voltages;
+- any abnormal behavior.
+
+---
+
+## B2B — Native USB-C Power-Up
 
 Status: `NOT YET RUN`
 
-Use the oscilloscope to observe, as practical:
+**Preconditions**
+
+- B2A shows no downstream power-chain blocker.
+- Bench supply disconnected.
+- No battery connected.
+- No external load connected.
+
+**Stimulus**
+
+Connect a compliant 5V USB-C Source through `USBC1`.
+
+**Measure / observe**
+
+```text
+TP_VBUS_PROT → TP_SYS → TP_3V3 → TP_3V3_PROT
+```
+
+Observe whether native USB-C attachment establishes the same main power chain.
+
+**Expected engineering behavior**
+
+A valid USB-C attach supplies the board through the intended connector / CC path and establishes the downstream rails.
+
+**STOP conditions**
+
+Unexpected heating, rail collapse, obvious instability or a major mismatch versus B2A.
+
+**Evidence to record**
+
+Rail voltages and qualitative native USB-C startup behavior.
+
+---
+
+## B3 — Startup / Basic Ripple Observation
+
+Status: `NOT YET RUN`
+
+**Preconditions**
+
+- B2A / B2B basic DC behavior is understood.
+- No external power load required.
+
+**Measure / observe**
+
+Use the oscilloscope to inspect, as practical:
 
 - `SYS` startup;
 - `3V3` startup;
@@ -146,154 +296,280 @@ CH1 → TP_SYS
 CH2 → TP_3V3_PROT
 ```
 
-A no-load / light-load ripple result does **not** validate the 500mA loaded-ripple requirement.
+Additional captures may use `TP_3V3`, `TP_CHG_GATE` and `TP_CE_N` if startup qualification needs diagnosis.
 
-### B4 — Battery-only emulation / BUVLO behavior
+**Expected engineering behavior**
+
+Rails establish without gross instability or destructive overshoot. Exact acceptance limits require actual waveform review.
+
+**STOP conditions**
+
+Large unexplained oscillation, repeated startup collapse or abnormal overshoot that could endanger the board.
+
+**Evidence to record**
+
+Saved waveform captures and measurement settings.
+
+A no-load / light-load ripple result does **not** validate loaded ripple or the 500mA requirement.
+
+---
+
+## B4 — Bench-Supply Battery Emulation / BUVLO
 
 Status: `NOT YET RUN`
 
-Use the current-limited bench supply as a battery emulator with USB absent:
+**Preconditions**
+
+- USB absent.
+- Real battery absent.
+- Bench supply current limit enabled.
+
+**Stimulus**
 
 ```text
-Bench PSU + → J_BAT1 / BAT
-Bench PSU - → GND
+Bench PSU + → J_BAT1 pin 1 / BAT
+Bench PSU - → J_BAT1 pin 2 / GND
 ```
 
-Start from a normal 1S battery-range voltage and verify:
+Start at a normal 1S battery-range voltage.
+
+**Measure / observe**
 
 ```text
 BAT → SYS → 3V3 → 3V3_PROT
 ```
 
-Then reduce the simulated battery voltage gradually and observe:
+Then lower the simulated battery voltage gradually and observe:
 
-- `SYS`;
-- `3V3`;
-- `3V3_PROT`;
-- approximate battery-discharge cutoff / BUVLO transition;
-- recovery behavior while raising the simulated battery voltage again.
+- approximate BATFET / BUVLO transition;
+- `SYS`, `3V3`, `3V3_PROT` behavior;
+- recovery while raising the simulated battery voltage again.
 
-This test validates board-level Battery-only / BQ25185 BATFET-BUVLO behavior without requiring the real battery to be deeply discharged.
+**Expected engineering behavior**
 
-### B5 — Real battery pre-connection physical gate
+Battery-only operation should establish the main chain above the applicable battery qualification threshold and eventually lose Battery-to-SYS qualification as the simulated battery is reduced sufficiently.
 
-Status: `NOT YET RUN`
+**STOP conditions**
 
-Mandatory before first real battery connection:
+Unexpected current limiting, abnormal heating or behavior inconsistent with the expected Battery-only path.
+
+**Evidence to record**
+
+Approximate transition / recovery voltages and rail measurements. Treat these as measured board-level behavior, not a guaranteed datasheet threshold unless tolerance analysis supports that statement.
+
+---
+
+## G2 — Battery Mating / Polarity + NTC Sanity Gate
+
+Status: `NOT YET PASSED`
+
+This Gate is mandatory before the first real battery connection.
+
+### Battery physical verification
 
 - verify connector mechanical mating;
-- measure actual battery connector polarity with the multimeter;
-- confirm actual battery positive wire lands on board `BAT` / J_BAT1 pin 1;
-- confirm actual battery negative wire lands on GND / J_BAT1 pin 2;
-- verify no ambiguous reversal due to connector housing / cable orientation.
+- measure the actual battery connector polarity with the multimeter;
+- confirm battery positive lands on board `BAT` / `J_BAT1 pin 1`;
+- confirm battery negative lands on GND / `J_BAT1 pin 2`;
+- verify no housing / cable orientation ambiguity.
 
-Only after this gate passes may the real battery be connected.
+Do **not** infer polarity from wire color or product images alone.
 
-### B6 — Real battery / charging behavior
+### NTC pre-charge sanity check
+
+Before real charging:
+
+- confirm the NTC is connected to `J_NTC1`, not `J_BAT1`;
+- measure room-temperature NTC resistance and confirm it is broadly consistent with the selected nominal 10kΩ NTC;
+- check for obvious NTC open / hard short / harness fault.
+
+Passing G2 permits the real battery to be connected. It does not validate charging or NTC thresholds.
+
+---
+
+## B5 — Real Battery-Only First Connection
 
 Status: `NOT YET RUN`
 
-With real battery and compliant USB-C Source:
+**Preconditions**
 
-Observe / measure:
+- G2 passed.
+- USB disconnected.
+- External load disconnected.
+
+**Stimulus**
+
+Connect the verified real battery only.
+
+**Measure / observe**
+
+```text
+TP_BAT → TP_SYS → TP_3V3 → TP_3V3_PROT
+```
+
+Observe for abnormal current, rail collapse or heating.
+
+**Expected engineering behavior**
+
+The real battery should reproduce the basic Battery-only power path already exercised with the bench-supply emulator, subject to its actual state of charge and BQ25185 qualification.
+
+**STOP conditions**
+
+Unexpected heating, rail collapse, connector heating, smoke / odor, or behavior materially inconsistent with B4.
+
+**Evidence to record**
+
+Battery open-circuit voltage before connection and measured board rails after connection.
+
+---
+
+## B6 — USB + Battery Charging Behavior
+
+Status: `NOT YET RUN`
+
+**Preconditions**
+
+- B5 real Battery-only operation is understood.
+- NTC remains correctly connected.
+- Use a compliant USB-C Source through `USBC1`.
+
+**Stimulus**
+
+Connect USB while the verified real battery is installed.
+
+**Measure / observe**
 
 - battery voltage before charging;
+- actual battery charging current when safely measured in series with the multimeter;
 - charging authorization behavior;
 - `CHG_GATE` and `CE#` if diagnosis is needed;
-- actual battery charging current when safely measured in series with the multimeter;
-- qualitative CC → CV behavior as battery voltage rises and charge current tapers;
-- BQ25185 / board abnormal heating by safe observation; quantitative temperature-rise measurement remains deferred without a proper thermal measurement tool.
+- qualitative current taper as battery voltage rises, if the session duration allows;
+- abnormal heating by safe observation.
 
-Do not infer a verified 500mA charge current from the design resistor alone; record the actual measured value.
+**Expected engineering behavior**
 
-### B7 — Power Path operating modes / USB transition
+Charging occurs only when USB, temperature and 3V3 qualification permit it. Actual charge current must be measured; do not infer a verified 500mA result from the programming resistor alone.
+
+**STOP conditions**
+
+Unexpected battery / board heating, polarity concern, unstable rails, excessive current, or any sign of battery distress.
+
+**Evidence to record**
+
+Battery voltage, measured charge current, relevant qualification-node readings and operating condition.
+
+---
+
+## B7 — USB / Battery Power-Path Transition
 
 Status: `NOT YET RUN`
 
-Verify separately:
+**Preconditions**
 
-- USB-only operation;
-- Battery-only operation;
-- USB + Battery operation.
+- USB-only, Battery-only and USB+Battery DC operation are individually understood.
+
+**Measure / observe**
 
 With the oscilloscope on `3V3_PROT` and optionally `SYS`, capture:
 
 - USB insertion while battery-powered;
 - USB removal while battery-powered;
-- minimum observed output voltage / obvious dropout;
+- minimum observed output voltage / dropout;
 - recovery behavior / abnormal oscillation.
 
-Do not claim zero-drop / seamless transfer unless the waveform supports that statement.
+**Expected engineering behavior**
 
-### B8 — Charging qualification / NTC logic
+The board transitions between valid power sources without destructive instability. Do not claim zero-drop / seamless transfer unless the waveform supports it.
+
+**STOP conditions**
+
+Repeated restart, prolonged output collapse, oscillation or abnormal heating.
+
+**Evidence to record**
+
+Waveform captures and measured minima / recovery observations.
+
+---
+
+## B8 — NTC / Charging Qualification
 
 Status: `NOT YET RUN`
 
-Available basic checks with current instruments:
+**Available checks with current instruments**
 
 - measure room-temperature NTC resistance;
-- observe `NTC_TS` / `CHG_GATE` / `CE#` under normal conditions;
-- verify that an intentionally disconnected NTC does not silently remain interpreted as a fully valid charge condition, if this fault-injection test is performed under a safe setup.
+- observe `NTC_TS`, `CHG_GATE` and `CE#` under normal conditions;
+- if performed under a safe setup, disconnect the NTC and verify the fault is not silently treated as a fully valid charging condition;
+- later, use resistor substitution to exercise threshold logic before attempting controlled hot / cold battery testing.
 
-Exact hot / cold trip temperature, tolerance stack and pouch thermal lag remain deferred until controlled temperature stimulus and measurement are available. Resistor substitution may later be used to validate threshold logic before heating an actual battery.
+**Evidence boundary**
 
-### B9 — M5 downstream protection
+Exact hot / cold trip temperature, tolerance stack and pouch thermal lag remain deferred until controlled temperature stimulus and measurement are available.
 
-Status: `DEFERRED — CONTROLLED LOAD NOT AVAILABLE`
+**STOP conditions**
 
-Current design functions to be tested later:
+Any test method that would require unsafe battery heating / cooling, damaging the pouch, or bypassing charge-safety mechanisms without a controlled setup.
 
-- output UV / OV behavior;
-- inrush / dV/dt behavior;
-- over-current threshold;
-- over-current timer;
-- short-circuit response;
-- latch-off and reset through `TP_M5_RESET`.
+**Evidence to record**
 
-Do not use an uncontrolled direct-wire short as a substitute for a proper downstream protection test.
-
-### B10 — Output-load capability
-
-Status: `DEFERRED — ELECTRONIC LOAD / SUITABLE POWER LOAD NOT AVAILABLE`
-
-Still required for final output-performance validation:
-
-- 3.3V / 500mA continuous output;
-- loaded output voltage regulation;
-- loaded ripple;
-- 1A / 100ms design-target transient;
-- load-step droop / recovery.
-
-These are not current PASS items.
+Measured resistance / voltages / logic state and the exact fault-injection setup used.
 
 ---
 
-## Priority for the first practical Bring-up session
+## G3 — Basic Rev.A Bring-up Gate
 
-With the currently available instruments, complete these first:
+Status: `NOT YET PASSED`
 
-1. assembly / visual inspection;
-2. unpowered rail-resistance screening;
-3. USB-only controlled first power-up;
-4. measure `VBUS_PROT / SYS / 3V3 / 3V3_PROT`;
-5. capture `SYS / 3V3_PROT` startup waveform;
-6. battery-only bench-supply emulation and BUVLO sweep;
-7. physical battery mating / polarity verification;
-8. real-battery charging-current / charging-behavior check;
-9. USB-only / Battery-only / USB+Battery operation and USB insertion/removal waveform.
+Basic board-level Bring-up may be considered complete only after real evidence supports the main intended operating paths:
 
-If these are completed with real evidence, the project may legitimately claim board-level Bring-up and validation of the main power / charging / Power Path behavior, while keeping load-capability and controlled-fault items explicitly open.
+- controlled downstream first power via `VBUS_PROT`;
+- native USB-C power-up;
+- `VBUS_PROT → SYS → 3V3 → 3V3_PROT` establishment;
+- startup behavior checked for gross instability;
+- Battery-only bench emulation and approximate BUVLO behavior;
+- real battery mating / polarity verified;
+- real Battery-only operation;
+- basic real charging behavior;
+- USB-only / Battery-only / USB+Battery Power Path operation and source-transition observation;
+- no unresolved safety-critical Bring-up blocker.
+
+Passing G3 may support a claim such as:
+
+`Main Rev.A power / charging / Power Path Bring-up completed with recorded hardware evidence.`
+
+It does **not** imply the deferred performance / fault tests below are PASS.
 
 ---
 
-## Bring-up event log
+# Deferred validation
+
+The current instrument set is insufficient for formal completion of the following items. Keep them `DEFERRED / NOT YET VERIFIED` until an appropriate controlled load, fixture or thermal setup is available.
+
+| Deferred item | Reason / required capability |
+| --- | --- |
+| 3.3V / 500mA continuous-load capability | suitable controlled power load / electronic load required |
+| Loaded output regulation and loaded ripple | controlled load required |
+| 1A / 100ms design-target transient | controlled pulsed load and waveform capture required |
+| Load-step droop / recovery | controlled dynamic load required |
+| Exact TPS259474 over-current threshold | controlled current sweep / load required |
+| TPS259474 over-current timer | controlled fault stimulus + oscilloscope required |
+| Hard-short response / latch-off | controlled short / load fixture required; no direct-wire initial test |
+| M5 UV / OV qualification | controlled rail stimulus / fixture required |
+| Full efficiency curve | simultaneous calibrated input / output power measurement under controlled loads |
+| Quantitative component temperature rise | thermal measurement tool required |
+| Exact NTC trip temperatures / pouch thermal lag | controlled temperature stimulus + temperature measurement required |
+
+---
+
+# Execution log
 
 No hardware event has been executed yet.
 
-Future entries should record at minimum:
+For every actual test event, append an entry using this minimum structure:
 
 ```text
 Date / board ID:
+Step / Gate:
 Assembly state:
 Test setup / instrument:
 Stimulus / operating mode:
@@ -301,8 +577,11 @@ Measured node(s):
 Measured result / waveform:
 Expected behavior:
 PASS / FAIL / OBSERVATION:
+STOP condition encountered: YES / NO
 Issue / diagnosis:
 Change made, if any:
 Retest result:
 Evidence file / photo / oscilloscope capture:
 ```
+
+Do not rewrite the Approved execution sequence to fit a result after the fact. Record deviations, failures, fixes and retests in this Execution log.
