@@ -2,21 +2,18 @@
 
 Project: LiIon Charger Protection Board
 Repository: `wum747349-debug/LiIon-Charger-Protection-Board`
-Branch: `main`
+Default branch: `main`
 
-## Authority
+## Scope and authority
 
-This standalone repository is the only active project authority. Historical migration sources are not active design authority.
+This standalone repository is the active authority for the project. Legacy migration sources are historical only.
 
-## Evidence boundary
+## Working rules
 
-Current authoritative implementation / manufacturing / hardware evidence wins over stale notes. Do not claim measured or verified PASS from design intent, datasheet capability, calculations, planned tests or expected behavior alone.
-
-## Change discipline
-
-- Keep changes narrowly scoped to the requested task.
-- Preserve unrelated user work.
-- Do not change Framework binding, Project Stage, Gate state or repository structure unless explicitly required.
-- Prefer updating existing authoritative records over creating duplicates.
-- Record Stage 8 measurements, failures, fixes and retests in the active Bring-up / test record.
-- Real battery connection requires physical mating and polarity / wire-order verification first.
+- Current authoritative implementation and hardware evidence win over stale historical notes.
+- Do not promote a design target, datasheet capability, calculation, expected behavior or planned test to measured / verified PASS without actual evidence.
+- Keep changes scoped to the requested task and preserve unrelated user work.
+- Do not change Framework binding, Project Stage, Gate state or project structure unless explicitly required.
+- Prefer updating an existing authoritative record over creating overlapping duplicate documentation.
+- Record actual Stage 8 measurements, failures, fixes and retests in the active Bring-up / test record.
+- Real-battery connection requires physical mating and measured polarity / wire-order verification first.
