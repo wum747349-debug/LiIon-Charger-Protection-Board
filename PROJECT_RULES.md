@@ -1,46 +1,23 @@
 # Project Rules
 
 Project: LiIon Charger Protection Board
-Repository: wum747349-debug/LiIon-Charger-Protection-Board
+Repository: `wum747349-debug/LiIon-Charger-Protection-Board`
+Default branch: `main`
 
-## Scope
+## Authority and evidence
 
-These rules apply only to this standalone project repository.
+- This standalone repository is the only active authority for the project.
+- Legacy project material is frozen migration history only.
+- When current EDA / manufacturing / hardware evidence conflicts with older notes, the current implementation wins.
+- Do not promote design intent, datasheet capability, calculation, planned test or expectation into measured / verified PASS without matching evidence.
 
-## Authority
+## Working rules
 
-This repository is the only active project authority for the current hardware project.
-
-The legacy migration source is historical only. It must not be used as a live authority unless the user explicitly asks for historical comparison or recovery.
-
-## Current implementation wins
-
-When older documentation, handoff notes, archived BOM data, previous component records, or migration-era assumptions conflict with the current `.SchDoc`, `.PcbDoc`, synchronized project documents, or current manufacturing / hardware evidence, use the current authoritative implementation.
-
-Do not silently reintroduce superseded component choices, pin mappings, layout assumptions, or old Stage conclusions.
-
-## Evidence boundary
-
-Do not claim any of the following without matching evidence:
-
-- ERC PASS;
-- DRC PASS;
-- assembly complete;
-- first power-on complete;
-- rail measured / verified;
-- charger function verified;
-- battery protection verified;
-- NTC temperature threshold verified;
-- 500mA continuous output verified;
-- 1A / 100ms target verified;
-- manufacturing or hardware PASS beyond the evidence actually recorded.
-
-Design intent, datasheet capability, calculations, simulation, planned tests and measured hardware results must remain clearly distinguished.
-
-## Change discipline
-
-- Keep changes scoped to the requested task.
+- Keep work scoped to this repository unless explicitly asked otherwise.
 - Preserve unrelated user work.
-- Do not modify Framework binding, Stage, gate state, project structure version or repository architecture unless the task explicitly requires it.
-- Prefer updating existing authoritative records over creating duplicate documents.
-- Do not create synthetic test results to make documentation look complete.
+- Do not change the Framework binding, Project Stage, Gate state or project structure unless explicitly required by the task.
+- Prefer updating an existing authoritative document over creating overlapping duplicate records.
+- Keep README concise and use dedicated engineering records for detailed evidence.
+- For Stage 8, record actual assembly, Bring-up measurements, failures, fixes and retests in the active Bring-up / test record.
+- A planned test is not a test result.
+- Real-battery connection requires physical mating and polarity / wire-order verification first.
