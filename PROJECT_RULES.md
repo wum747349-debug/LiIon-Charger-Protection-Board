@@ -1,12 +1,30 @@
-# PROJECT_RULES
+# Project Rules
 
-1. Current Project facts come only from this repository.
-2. The Framework version is the Release + Commit recorded in `FRAMEWORK.md`.
-3. Do not automatically adopt or read Framework `main`.
-4. Framework binding change requires explicit user authorization: prerelease dogfooding uses Pinned Framework Evaluation, backward-compatible adoption uses Compatible Framework Sync, and breaking Runtime / Structural Contract adoption uses Framework Contract Migration; all paths require applicable validation.
-5. Verify critical hardware parameters against official datasheets, reference manuals, or application notes. For Rev.A component selection, prefer parts realistically procurable through JLCPCB/LCSC when functional, electrical, safety, thermal, and other hard requirements are satisfied. Marketplace information is procurement / availability evidence only; manufacturer official datasheets / documentation remain the technical qualification authority.
-6. `.SchDoc` and `.PcbDoc` are the authoritative EDA implementation sources.
-7. AI/Codex must not fabricate EDA, ERC, DRC, manufacturing, bring-up, or test results.
-8. Maintain the current Project stage only in the root `README.md`.
-9. Another Project cannot be used as this Project's fact source.
-10. Read only the Stage Skill and evidence required for the current task.
+Project: LiIon Charger Protection Board
+Repository: `wum747349-debug/LiIon-Charger-Protection-Board`
+Default branch: `main`
+
+## Authority
+
+This standalone repository is the only active project authority. The legacy source repository is frozen migration history and must not be used to overwrite current project facts.
+
+## Evidence hierarchy
+
+When sources conflict, use the latest current-project implementation and evidence in this order:
+
+1. current authoritative EDA implementation / manufacturing output / hardware evidence;
+2. current project documentation synchronized to that implementation;
+3. older handoff or historical records;
+4. legacy migration source.
+
+Do not promote a design target, datasheet capability, calculated value, planned test or expected behavior to measured / verified PASS without actual evidence.
+
+## Stage 8 execution
+
+For Rev.A Assembly / Bring-up, `docs/bringup_log.md` is the execution authority for the approved Gate-driven sequence and the append-only-style evidence log. Do not skip required Gates. Record deviations, failures, fixes and retests rather than rewriting the approved plan after the fact.
+
+The real battery must not be connected until physical mating, board pin order and actual battery polarity / wire order are verified with a multimeter. Deferred performance / fault items remain `DEFERRED / NOT YET VERIFIED` until suitable test equipment and hardware evidence exist.
+
+## Change discipline
+
+Keep documentation changes narrowly scoped, preserve unrelated user work, and avoid unnecessary Framework / Stage / structure changes. Repository writes must remain consistent with the current Project authority and evidence boundary.
