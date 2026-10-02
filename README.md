@@ -22,7 +22,7 @@ Hardware Revision: Rev.A
 - 四个安装孔为 M3 mechanical NPTH，实际孔径约 3.20 mm / 125.984 mil，`Plated = OFF`。最终 manufacturing viewer 已确认四个 M3 安装孔按预期表示为 NPTH / non-plated mechanical holes；RL-001 已关闭并接受。
 - 最终 manufacturing viewer 已完成 critical marking review；所需 connector / polarity / Pin 1 / power / GND / critical TP 信息保持可理解。普通 silkscreen DRC findings 按此前批准的 waiver 接受；RL-002 已关闭。
 - M1 当前 TUSB320 VBUS_DET baseline 为 `VBUS_PROT → R18 910kΩ / 1% → VBUS_DET`。USB shield baseline 为 EH1–EH4 并入 `USB_SHIELD`，再由 R19 1MΩ 与 C13 1nF/high-voltage/1206 两个并联支路接 GND；Rev.A 不增加 R24 0Ω DNP branch。
-- `J_NTC1 = HX-XH2.54-2PZZ`，外接 `C5221417`；`J_BAT1` pin 1 → BAT、pin 2 → GND。实际电池 mating 与 polarity/wire order 仍为 `PHYSICAL VERIFICATION PENDING`，必须在第一次实际连接电池前完成。
+- `J_NTC1 = HX-XH2.54-2PZZ`，外接 `C5221417`；`J_BAT1` pin 1 → BAT、pin 2 → GND。Rev.A Bring-up 已实际接入所选电池并完成 Battery-only / charging 测试，当前线序与极性在本次实板上已被实际工作结果支持；首次接入前的独立极性读数未单独留档，准确 mating series / 批次一致性仍不扩展为普遍结论。
 - M5 保持 `U2 = TPS259474LRPWR`，输出边界为 `M4 3V3 → U2 → 3V3_PROT → M6 / external load`。外部负载不得绕过 M5 使用 raw `3V3`。
 - Stage 7 PCB Release Review 已完成。Final Full Batch DRC、最终 Gerber / Drill 制造数据、嘉立创 manufacturing viewer、NPTH / silkscreen findings、制造参数和 PCB / BOM / manufacturing-output 版本一致性均已复核；Manufacturing Release Decision = `批准制造`，Rev.A PCB 已提交打板。
 - Stage 8 已完成 Rev.A 实板焊接并进入实际 Bring-up。当前已获得 USB-only、3.8V bench Battery-only、真实 Battery-only、USB + Battery 充电等实测证据；代表性实测包括 USB-only `VBUS_PROT≈5.07V / SYS≈4.67V / 3V3≈3.30V / 3V3_PROT≈3.29V`，真实 Battery-only `BAT≈SYS≈3.95V / 3V3≈3.31V / 3V3_PROT≈3.29V`。
