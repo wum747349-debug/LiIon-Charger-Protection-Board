@@ -1,6 +1,6 @@
 # Stage 8 — Assembly / Bring-up Log
 
-Status: `ASSEMBLY PREPARATION / TEST PLAN READY — NO HARDWARE TEST RESULT YET`
+Status: `REV.A ASSEMBLED — MAIN POWER / CHARGING BRING-UP PARTIALLY VERIFIED; DEFERRED TESTS REMAIN`
 
 Date initialized: 2026-09-05
 
@@ -24,13 +24,13 @@ A planned test is **not** a PASS. No item may be promoted to measured / verified
 
 ## Current hardware state
 
-- PCB fabrication: `COMPLETE — bare PCB received / available for assembly`.
-- Assembly: `NOT YET STARTED / PREPARING`.
-- First power-on: `NOT YET RUN`.
-- Bring-up: `NOT YET RUN`.
-- Formal hardware test: `NOT YET RUN`.
-- Hardware functional PASS claims: `NONE YET`.
-- Battery exact mating / polarity / wire order: `PHYSICAL VERIFICATION PENDING` before first real battery connection.
+- PCB fabrication: `COMPLETE`.
+- Assembly: `COMPLETE — Rev.A board hand-assembled`.
+- First power-on: `COMPLETE`.
+- Bring-up: `PARTIAL COMPLETE — USB-only, bench Battery-only, real Battery-only, USB+Battery charging and repeated source insertion/removal observed`.
+- Formal performance / fault validation: `NOT COMPLETE — deferred items remain`.
+- Hardware functional evidence: main power chain and approximately 500mA charging behavior have real measurements; this is not a full board qualification PASS.
+- Battery connector was successfully used on the real pack during Bring-up; the exact pre-connection polarity reading was not separately captured in the execution log.
 
 ---
 
@@ -94,7 +94,7 @@ Do not skip a Gate.
 
 ## B0 — Assembly / Visual Inspection
 
-Status: `NOT YET RUN`
+Status: `RUN — no unresolved visual assembly blocker reported`
 
 **Preconditions**
 
@@ -128,7 +128,7 @@ Any unresolved orientation doubt, visible bridge, badly shifted leadless IC, dam
 
 ## B1 — Unpowered Static Screening
 
-Status: `NOT YET RUN`
+Status: `RUN — no hard short found on screened main rails`
 
 **Preconditions**
 
@@ -163,7 +163,7 @@ Stable / comparative readings and any suspicious node investigated.
 
 ## G1 — Pre-Power Gate
 
-Status: `NOT YET PASSED`
+Status: `PASSED FOR POWERED BRING-UP`
 
 Proceed to powered Bring-up only when:
 
@@ -177,7 +177,7 @@ Passing G1 is permission to attempt first power only. It is **not** a functional
 
 ## B2A — Current-Limited First Power via `VBUS_PROT`
 
-Status: `NOT YET RUN`
+Status: `DEFERRED — TP_VBUS_PROT was not practical for bench-lead attachment; downstream chain was instead first exercised from the BAT connector with current-limited bench supply`
 
 **Purpose**
 
@@ -235,7 +235,7 @@ This step does **not** validate USB-C CC / TUSB320 operation.
 
 ## B2B — Native USB-C Power-Up
 
-Status: `NOT YET RUN`
+Status: `RUN — basic USB-only DC path verified`
 
 **Preconditions**
 
@@ -272,7 +272,7 @@ Rail voltages and qualitative native USB-C startup behavior.
 
 ## B3 — Startup / Basic Ripple Observation
 
-Status: `NOT YET RUN`
+Status: `DEFERRED — no formal oscilloscope startup / ripple capture recorded`
 
 **Preconditions**
 
@@ -316,7 +316,7 @@ A no-load / light-load ripple result does **not** validate loaded ripple or the 
 
 ## B4 — Bench-Supply Battery Emulation / BUVLO
 
-Status: `NOT YET RUN`
+Status: `PARTIAL — nominal 3.8V Battery-only emulation verified; BUVLO sweep deferred`
 
 **Preconditions**
 
@@ -361,7 +361,7 @@ Approximate transition / recovery voltages and rail measurements. Treat these as
 
 ## G2 — Battery Mating / Polarity + NTC Sanity Gate
 
-Status: `NOT YET PASSED`
+Status: `PARTIAL EVIDENCE — real battery and NTC were successfully connected; room-temperature NTC measured about 9kΩ; separate pre-connection polarity reading was not recorded`
 
 This Gate is mandatory before the first real battery connection.
 
@@ -389,7 +389,7 @@ Passing G2 permits the real battery to be connected. It does not validate chargi
 
 ## B5 — Real Battery-Only First Connection
 
-Status: `NOT YET RUN`
+Status: `RUN — basic real Battery-only DC path verified`
 
 **Preconditions**
 
@@ -425,7 +425,7 @@ Battery open-circuit voltage before connection and measured board rails after co
 
 ## B6 — USB + Battery Charging Behavior
 
-Status: `NOT YET RUN`
+Status: `RUN — charging established after NTC connector fault was repaired; battery charge current measured about 0.49A`
 
 **Preconditions**
 
@@ -462,7 +462,7 @@ Battery voltage, measured charge current, relevant qualification-node readings a
 
 ## B7 — USB / Battery Power-Path Transition
 
-Status: `NOT YET RUN`
+Status: `PARTIAL — repeated USB insertion/removal showed stable DMM reading at 3V3_PROT; oscilloscope transition capture deferred`
 
 **Preconditions**
 
@@ -493,7 +493,7 @@ Waveform captures and measured minima / recovery observations.
 
 ## B8 — NTC / Charging Qualification
 
-Status: `NOT YET RUN`
+Status: `PARTIAL — room-temperature NTC path and open-NTC behavior observed; exact thermal thresholds deferred`
 
 **Available checks with current instruments**
 
@@ -563,9 +563,146 @@ The current instrument set is insufficient for formal completion of the followin
 
 # Execution log
 
-No hardware event has been executed yet.
+## 2026-09-29 to 2026-10-02 — Rev.A first main Bring-up session
 
-For every actual test event, append an entry using this minimum structure:
+### Assembly / unpowered screening
+
+- Rev.A was assembled and visually screened before powered tests.
+- Main power rails were checked for an obvious hard short; none was found.
+- No claim is made that every assembly defect mode was formally inspected or that resistance values were fully characterized.
+
+### Bench Battery-only emulation
+
+**Setup**
+
+- USB absent.
+- Real battery absent.
+- Bench supply connected to the battery connector as a simulated 1S battery.
+- Bench supply set to approximately 3.8V with current limiting.
+
+**Measured**
+
+| Node | Measured |
+| --- | ---: |
+| BAT | 3.79V |
+| SYS | 3.79V |
+| 3V3 | 3.31V |
+| 3V3_PROT | 3.30V |
+
+**Observation**
+
+Nominal Battery-only power chain established:
+
+`BAT → SYS → TPS63802 3V3 → TPS259474 3V3_PROT`.
+
+This does not verify BUVLO threshold, loaded regulation or output current capability.
+
+### Native USB-only
+
+**Setup**
+
+- Real battery absent.
+- Bench supply removed.
+- Compliant 5V USB-C source connected through USBC1.
+
+**Measured**
+
+| Node | Measured |
+| --- | ---: |
+| VBUS_PROT | 5.07V |
+| SYS | 4.67V |
+| 3V3 | 3.30V |
+| 3V3_PROT | 3.29V |
+
+**Observation**
+
+Native USB-C attachment established the downstream power chain. This is a no-load / light-load DC observation, not a 3.3V/500mA output validation.
+
+### Real Battery-only
+
+**Measured**
+
+| Node | Measured |
+| --- | ---: |
+| BAT | 3.95V |
+| SYS | 3.95V |
+| 3V3 | 3.31V |
+| 3V3_PROT | 3.29V |
+
+**Observation**
+
+Real Battery-only operation reproduced the expected main DC power path.
+
+### USB + Battery / Power Path observation
+
+With the real battery connected, USB insertion produced approximately:
+
+| Node | Measured / observed |
+| --- | ---: |
+| BAT | about 3.95V before charge observation |
+| SYS | 4.56V |
+| 3V3 | 3.31V |
+| 3V3_PROT | 3.29V steady-state |
+
+One early USB insertion produced a transient DMM reading of approximately 0.4V at `3V3_PROT`, followed by recovery to 3.29V. Repeated later USB insertions/removals did not reproduce the low reading and `3V3_PROT` remained about 3.29V. No oscilloscope waveform was captured, so zero-drop / seamless source transfer is **not** claimed.
+
+### NTC / charging fault found during Bring-up
+
+**Observed fault**
+
+- Selected external NTC: `MF52D 103F3435-100` / LCSC `C394023`.
+- Detached NTC resistance measured approximately 9kΩ at room conditions.
+- R15 measured approximately 2.7kΩ.
+- Unpowered `TP_NTC_TS → GND` with the NTC connected measured about 12kΩ.
+- During the fault, `TP_NTC_TS` intermittently fell to approximately 0V / 0.01V and `TP_CHG_GATE` was observed around 0.2V; charging stopped.
+- With NTC disconnected and USB present, `TP_NTC_TS` was observed at approximately 2.9V.
+- During a normal interval, `TP_NTC_TS` measured approximately 0.46V and charging was active.
+- In one fault event BAT was observed around 4.06V while charging and then about 3.98V after charging stopped.
+
+**Diagnosis and correction**
+
+The intermittent failure was localized to the external NTC connector / terminal contact rather than the NTC element or R15. The faulty NTC terminal was replaced.
+
+**Retest**
+
+After terminal replacement the NTC path became stable and normal charging resumed. The successful approximately 0.46V `NTC_TS` observation is consistent with the expected room-temperature 10k-class NTC network. Exact temperature thresholds were not tested.
+
+### Battery current measurement
+
+The multimeter was inserted in series with the battery positive lead using the high-current DC range.
+
+- USB absent: battery current magnitude approximately **0.01A**, corresponding to Battery-only board consumption; current direction is battery → board.
+- USB present and charging: battery current approximately **0.49A**, direction board / charger → battery.
+
+The approximately 0.49A measured charging current is consistent with the Rev.A approximately 500mA fast-charge design target. This is a Bring-up measurement at the observed battery state, not a full charge-profile or thermal qualification.
+
+### Session conclusion
+
+Real evidence now supports:
+
+- nominal bench-supply Battery-only operation;
+- native USB-only operation;
+- real Battery-only operation;
+- USB + Battery operation;
+- actual battery charging at approximately 0.49A after the NTC terminal fault was corrected;
+- repeated USB insertion/removal with stable steady-state `3V3_PROT` by DMM.
+
+Still deferred / not verified in this session:
+
+- direct bench first-power injection through `VBUS_PROT`;
+- formal oscilloscope startup / ripple / source-transition waveforms;
+- BUVLO threshold sweep and recovery;
+- 3.3V / 500mA continuous-load test;
+- 1A / 100ms transient;
+- controlled over-current / short-circuit / UV / OV protection tests;
+- efficiency and quantitative thermal testing;
+- exact NTC hot / cold trip temperatures and thermal lag.
+
+G3 remains **NOT YET PASSED** because the complete approved Bring-up sequence and deferred performance / fault evidence are not complete. The correct current claim is:
+
+`Rev.A main USB / Battery power paths and basic approximately 500mA charging behavior have been demonstrated with hardware measurements; full performance and fault validation remains deferred.`
+
+For every additional actual test event, append an entry using this minimum structure:
 
 ```text
 Date / board ID:
