@@ -27,8 +27,9 @@ Hardware Revision: Rev.A
 - Stage 7 PCB Release Review 已完成。Final Full Batch DRC、最终 Gerber / Drill 制造数据、嘉立创 manufacturing viewer、NPTH / silkscreen findings、制造参数和 PCB / BOM / manufacturing-output 版本一致性均已复核；Manufacturing Release Decision = `批准制造`，Rev.A PCB 已提交打板。
 - Stage 8 已完成 Rev.A 实板焊接并进入实际 Bring-up。当前已获得 USB-only、3.8V bench Battery-only、真实 Battery-only、USB + Battery 充电等实测证据；代表性实测包括 USB-only `VBUS_PROT≈5.07V / SYS≈4.67V / 3V3≈3.30V / 3V3_PROT≈3.29V`，真实 Battery-only `BAT≈SYS≈3.95V / 3V3≈3.31V / 3V3_PROT≈3.29V`。
 - 充电 Bring-up 中曾出现 `NTC_TS` 间歇性掉到约 0V、充电被禁止的问题。排查确认外部 NTC 本体约 9kΩ、R15约2.7kΩ，最终定位为 NTC 端子 / 接触不良；更换端子后恢复稳定。正常时 `NTC_TS≈0.46V`，真实电池串联测得充电电流约 `0.49A`，与 Rev.A 约500mA快充设计目标一致。
-- 重复 USB 插入 / 拔出后 `3V3_PROT` 稳态保持约3.29V；一次早期插入曾出现万用表约0.4V的瞬时读数，但未用示波器复现或定量，因此不宣称 zero-drop / seamless transfer。
-- Stage 8 仍未完成完整 G3：`VBUS_PROT` bench first-power injection、示波器启动/纹波/切换波形、BUVLO扫阈值、3.3V/500mA连续负载、1A瞬态、过流/短路/UV/OV、效率、定量热测试及NTC精确温度阈值均保持 Deferred / Not Yet Verified。当前可声明的是主电源路径和基本约500mA充电功能已由实板测量支持，而不是整板性能验证全部通过。
+- 重复 USB 插入 / 拔出后 `3V3_PROT` 稳态保持约3.29V；一次早期插入曾出现万用表约0.4V的瞬时读数，但后续多次操作未复现，因此记录为一次未复现的首次上电 / 切换观察，不作为当前未解决故障，也不宣称 zero-drop / seamless transfer。
+- 已完成一次代表性的 3.3V 输出示波器观察：`10mV/div`、`10ms/div` 条件下测得 `Vpp≈12.4mV`、`Vrms≈3.53mV`，显示主周期约20ms / 50Hz；该结果记录为当前探测条件下的低频 ripple/noise 观察，不把50Hz解释为TPS63802开关频率。其它实测纹波约为10mV量级，未观察到明显的大幅低频振荡。
+- Rev.A **primary-function Basic Bring-up 已完成**：USB-only、Battery-only、USB+Battery、约500mA充电、NTC资格链故障定位与修复、以及基础3.3V输出稳定性均有实板证据。后续 3.3V/500mA连续带载、1A瞬态、BUVLO精确阈值、过流/短路/UV/OV、效率、定量温升、NTC精确温度阈值以及更严格的高频/带载纹波验证保持 Deferred；这些属于 Extended Performance / Protection Validation，不代表当前仍有未解决功能故障。
 - 本 Standalone Repository 是 Only Active Project Authority；Legacy Project 2 仅作为 Frozen Migration Source 保留。
 
 ## 项目事实
@@ -76,8 +77,18 @@ Legacy Project Status: Frozen Migration Source — Historical migration traceabi
 
 ## 下一步
 
-完成 Rev.A 手工焊接后，按 `docs/bringup_log.md` 的 Gate-driven 执行计划开始 Stage 8 Bring-up：先完成 B0 目视检查和 B1 不上电静态筛查，通过 G1 后，以限流可调电源注入 `VBUS_PROT` 完成 B2A 受控首次上电，再用正常 USB-C Source 通过 `USBC1` 完成 B2B native USB-C 上电验证，并沿 `VBUS_PROT → SYS → 3V3 → 3V3_PROT` 逐级测量。
+当前 Rev.A 不再需要继续机械执行首次 Bring-up 清单。现阶段可以冻结为：
 
-随后执行 B3 启动 / 基础纹波观察和 B4 Battery-only bench-supply emulation / BUVLO sweep；真实电池首次连接前必须通过 G2，完成 battery mating / polarity / wire-order 与 NTC sanity check。真实电池首次接入采用 USB absent 的 B5 Battery-only 模式；确认正常后再进行 B6 充电行为、B7 USB / Battery Power Path 切换和 B8 NTC / charging qualification。只有这些基础路径取得真实证据且无未解决的 safety-critical blocker 时，才可通过 G3 Basic Rev.A Bring-up Gate。
+`Primary-function Basic Bring-up Complete / Extended Performance & Protection Validation Deferred`
 
-3.3V / 500mA 连续负载、1A / 100ms 瞬态、M5 精确过流 / 短路 / latch 行为、精确温升和 NTC actual trip temperature 等项目仍保持 `DEFERRED / NOT YET VERIFIED`，不得因 G3 通过而自动视为 PASS。
+后续只有在项目时间、设备和求职展示价值值得时，再选择性补充：
+
+- 3.3V / 500mA 连续负载与带载纹波；
+- USB / Battery source-transition 示波器波形；
+- BUVLO 关闭 / 恢复阈值；
+- 1A / 100ms 瞬态；
+- TPS259474 受控过流 / 短路 / UV / OV；
+- 效率与定量温升；
+- NTC 精确 hot / cold trip 与热滞后。
+
+在这些测试完成前，不把对应性能或保护项目写成 PASS；但当前主电源路径、基本充电和基础输出稳定性已经有真实硬件证据支持。
