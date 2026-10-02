@@ -1,6 +1,6 @@
 # Stage 8 — Assembly / Bring-up Log
 
-Status: `REV.A ASSEMBLED — MAIN POWER / CHARGING BRING-UP PARTIALLY VERIFIED; DEFERRED TESTS REMAIN`
+Status: `REV.A ASSEMBLED — PRIMARY-FUNCTION BASIC BRING-UP COMPLETE; EXTENDED PERFORMANCE / PROTECTION VALIDATION DEFERRED`
 
 Date initialized: 2026-09-05
 
@@ -27,9 +27,9 @@ A planned test is **not** a PASS. No item may be promoted to measured / verified
 - PCB fabrication: `COMPLETE`.
 - Assembly: `COMPLETE — Rev.A board hand-assembled`.
 - First power-on: `COMPLETE`.
-- Bring-up: `PARTIAL COMPLETE — USB-only, bench Battery-only, real Battery-only, USB+Battery charging and repeated source insertion/removal observed`.
-- Formal performance / fault validation: `NOT COMPLETE — deferred items remain`.
-- Hardware functional evidence: main power chain and approximately 500mA charging behavior have real measurements; this is not a full board qualification PASS.
+- Bring-up: `PRIMARY-FUNCTION BASIC BRING-UP COMPLETE — USB-only, bench Battery-only, real Battery-only, USB+Battery charging, repeated source insertion/removal and a basic 3.3V ripple/noise observation have real evidence`.
+- Extended performance / protection validation: `DEFERRED — controlled load, transient, exact threshold, thermal and fault-injection items remain`.
+- Hardware functional evidence: main power chain, approximately 500mA charging behavior and basic output stability have real measurements; this is not a full performance / protection qualification PASS.
 - Battery connector was successfully used on the real pack during Bring-up; the exact pre-connection polarity reading was not separately captured in the execution log.
 
 ---
@@ -272,7 +272,7 @@ Rail voltages and qualitative native USB-C startup behavior.
 
 ## B3 — Startup / Basic Ripple Observation
 
-Status: `DEFERRED — no formal oscilloscope startup / ripple capture recorded`
+Status: `PARTIAL / BASIC OBSERVATION COMPLETE — representative 3.3V output ripple/noise capture recorded; formal startup and loaded/high-bandwidth ripple characterization deferred`
 
 **Preconditions**
 
@@ -311,6 +311,23 @@ Large unexplained oscillation, repeated startup collapse or abnormal overshoot t
 Saved waveform captures and measurement settings.
 
 A no-load / light-load ripple result does **not** validate loaded ripple or the 500mA requirement.
+
+**Recorded basic ripple/noise observation**
+
+One representative oscilloscope capture of the 3.3V output showed approximately:
+
+- vertical scale: `10mV/div`;
+- time base: `10ms/div`;
+- `Vpp ≈ 12.4mV`;
+- `Vrms ≈ 3.53mV`;
+- dominant displayed period `≈20ms`;
+- displayed frequency `≈50Hz`.
+
+Other observed output-ripple readings were reported to be approximately the 10mV range.
+
+This is recorded as a **low-frequency output ripple/noise observation under the actual Bring-up probing setup**, not as the TPS63802 switching-ripple frequency. The visible approximately 50Hz component may include environmental / mains-coupled pickup or probe-loop noise; TPS63802 switching behavior is in the MHz range and requires a much shorter time base and controlled probing method for dedicated switching-ripple characterization.
+
+The capture supports the limited Bring-up conclusion that no large low-frequency oscillation was observed at the measured output. It does not replace loaded, bandwidth-controlled ripple qualification.
 
 ---
 
@@ -518,7 +535,7 @@ Measured resistance / voltages / logic state and the exact fault-injection setup
 
 ## G3 — Basic Rev.A Bring-up Gate
 
-Status: `NOT YET PASSED`
+Status: `FORMAL GATE NOT CLOSED — primary-function practical Bring-up complete, but the originally approved sequence still contains deferred / deviated items`
 
 Basic board-level Bring-up may be considered complete only after real evidence supports the main intended operating paths:
 
@@ -667,6 +684,27 @@ The intermittent failure was localized to the external NTC connector / terminal 
 
 After terminal replacement the NTC path became stable and normal charging resumed. The successful approximately 0.46V `NTC_TS` observation is consistent with the expected room-temperature 10k-class NTC network. Exact temperature thresholds were not tested.
 
+### 3.3V output ripple / noise observation
+
+A representative oscilloscope capture was recorded during the Bring-up session. The displayed measurements were approximately:
+
+| Item | Observed |
+| --- | ---: |
+| Vertical scale | 10mV/div |
+| Time base | 10ms/div |
+| Vpp | 12.4mV |
+| Vrms | 3.53mV |
+| Vmax | +6.8mV |
+| Vmin | -5.6mV |
+| Displayed period | 20.00ms |
+| Displayed frequency | 50.00Hz |
+
+Other measurements of the 3.3V output were reported to be around the 10mV ripple/noise range.
+
+The approximately 50Hz visible component is treated as low-frequency ripple/noise under the actual probe setup and may include environmental / mains pickup. It is **not** interpreted as the TPS63802 switching frequency. No large low-frequency instability was evident in this representative capture.
+
+Formal loaded ripple, probe-loop-controlled high-frequency ripple and switching-frequency-domain characterization remain deferred.
+
 ### Battery current measurement
 
 The multimeter was inserted in series with the battery positive lead using the high-current DC range.
@@ -690,7 +728,7 @@ Real evidence now supports:
 Still deferred / not verified in this session:
 
 - direct bench first-power injection through `VBUS_PROT`;
-- formal oscilloscope startup / ripple / source-transition waveforms;
+- formal startup and source-transition waveforms; dedicated loaded / high-bandwidth switching-ripple characterization;
 - BUVLO threshold sweep and recovery;
 - 3.3V / 500mA continuous-load test;
 - 1A / 100ms transient;
@@ -698,9 +736,13 @@ Still deferred / not verified in this session:
 - efficiency and quantitative thermal testing;
 - exact NTC hot / cold trip temperatures and thermal lag.
 
-G3 remains **NOT YET PASSED** because the complete approved Bring-up sequence and deferred performance / fault evidence are not complete. The correct current claim is:
+The first practical Rev.A Bring-up session is considered **complete for the primary intended functions**. Real evidence supports USB-only, Battery-only, USB+Battery, approximately 500mA charging, NTC qualification behavior after connector repair, repeated source insertion/removal at steady state, and basic 3.3V output ripple/noise observation.
 
-`Rev.A main USB / Battery power paths and basic approximately 500mA charging behavior have been demonstrated with hardware measurements; full performance and fault validation remains deferred.`
+The formal G3 gate is not closed only because the originally approved execution sequence included items that were intentionally deferred or deviated from, notably direct `VBUS_PROT` bench injection, BUVLO sweep and formal startup/source-transition waveform capture. This is a documentation / evidence-boundary distinction, not an unresolved functional fault.
+
+The correct current claim is:
+
+`Rev.A primary-function Basic Bring-up is complete with hardware evidence for the main USB / Battery power paths, approximately 500mA charging and basic 3.3V output stability. Extended performance, threshold and protection validation remains deferred.`
 
 For every additional actual test event, append an entry using this minimum structure:
 
