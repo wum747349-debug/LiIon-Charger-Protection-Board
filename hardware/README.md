@@ -1,11 +1,23 @@
 # 硬件源文件与证据
 
-只有实际工作或证据产生后，才创建对应的硬件子目录：
+本目录保存项目的硬件实现源文件与可直接查看的导出结果。
 
-- `altium_project/`：权威 `.PrjPcb`、`.SchDoc`、`.PcbDoc` 和必要的项目库；
-- `outputs/`：可追溯的原理图 PDF、BOM、报告和制造输出；
-- `images/`：审查、装配、上电调试、测试和展示图片。
+- `altium_project/`：最新维护的 `.PrjPcb`、`.SchDoc`、`.PcbDoc` 以及当前项目需要保留的工程库文件；
+- `outputs/`：方便直接查看的原理图 PDF、BOM 等人类可读输出；
+- 项目照片、PCB 3D、Bring-up 和示波器截图可在公开整理时放入仓库的展示图片目录，并由根 `README.md` 引用。
 
-`.SchDoc` 和 `.PcbDoc` 是权威 EDA 实现源。目录、PDF、图片或文字设计意图不能证明 ERC、DRC、规则命中、铺铜状态或制造放行。用户负责实际 Altium 操作和导出；AI/Codex 只在明确限制下分析用户提供的证据。
+## Source / Hardware Revision Boundary
 
-不得仅为目录完整而创建空输出分类或低信息量占位文件。
+物理硬件版本为 `Rev.A`，已经完成制造、装配与 primary-function basic Bring-up。
+
+仓库中的 Altium 文件是当前最新维护版本。`.SchDoc` 与 Rev.A 设计基线一致；`.PcbDoc` 在实际 Rev.A 制造后经历过少量 layout / copper / via / solder-mask refinement，因此不声明它与当时下单制造数据 byte-equivalent。
+
+仓库内所有实测电压、充电电流、ripple / noise 和 Debug 结果均指向实际 Rev.A 实板，而不是后续维护过的 PCB 文件。
+
+## Evidence Rule
+
+`.SchDoc` 和 `.PcbDoc` 是当前 EDA 实现源，但目录、PDF、图片或文字设计意图本身不能证明 ERC、DRC、规则命中、铺铜状态或制造放行。
+
+实际 EDA 操作、制造与测试证据仍以对应工程记录为准。AI / Codex 可以辅助分析、Review、测试规划与文档整理，但不能把未执行的检查或未测量的结果写成 PASS。
+
+本公开项目不以制造 release archive 为目标，因此不要求保留 Gerber、Drill、Pick & Place 或 Assembly package。需要制造时，可由当前维护的 Altium 工程重新生成相应输出，并重新执行必要的 release checks。
