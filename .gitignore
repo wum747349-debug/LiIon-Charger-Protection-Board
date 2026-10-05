@@ -1,3 +1,18 @@
+# Altium-generated working data
 hardware/**/History/
+hardware/**/Previews/
 hardware/**/Project Logs for */
+hardware/**/Project Outputs for */
 hardware/**/*.PrjPcbStructure
+hardware/**/*.PrjPcbVariants
+
+# Local third-party reference documents are not redistributed in the public repository.
+references/**/*.pdf
+references/**/*.PDF
+
+# Temporary archives / backups
+*.zip
+*.7z
+*.rar
+*.bak
+*.tmp

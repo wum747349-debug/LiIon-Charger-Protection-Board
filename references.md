@@ -4,6 +4,8 @@
 
 关键硬件参数必须依据当前型号的官方 datasheet、reference manual、application note 或可追溯的供应商正式资料核对。商品页只能作为采购证据，不能单独证明关键参数。
 
+公开 Repository 不以重新分发第三方 PDF 为目标。官方资料优先保留 manufacturer / part number / official link；用户或供应商提供的本地资料可以作为开发和审查输入，但公开版本只保留与项目有关的事实摘要、用途和 evidence boundary。
+
 ## 商品宣传与采购证据
 
 | Evidence item | 商品标称内容 | Allowed use | Evidence limit | Status |
@@ -68,7 +70,7 @@
 
 | Evidence item | Verified project-relevant facts | Allowed use | Evidence boundary | Status |
 | --- | --- | --- | --- | --- |
-| User-provided [TYPE-C-31-M-12 formal drawing/spec](references/C165948_USB连接器_TYPE-C-31-M-12_规格书_WJ310728%20%281%29.PDF)；HRO Electronics Co., Ltd.，Part No. TYPE-C-31-M-12，drawing date 2020-12-08 | USB Type-C 16-pin receptacle；独立 CC1 / CC2；VBUS / GND；D+ / D−；SBU1 / SBU2；recommended PCB layout；机械固定结构；drawing 标称 5A current rating | Rev.A receptacle Stage 2 Primary selection；确认当前最大约 1.1A input-current architecture 的 connector capability；Stage 3 footprint/mechanical input | Repository 已归档用户提供的 PDF；drawing review 不证明采购批次、焊接、PCB、机械配合或硬件测试通过 | Verified for Stage 2 selection / Locally archived |
+| User-provided TYPE-C-31-M-12 formal drawing/spec；HRO Electronics Co., Ltd.，Part No. TYPE-C-31-M-12，drawing date 2020-12-08 | USB Type-C 16-pin receptacle；独立 CC1 / CC2；VBUS / GND；D+ / D−；SBU1 / SBU2；recommended PCB layout；机械固定结构；drawing 标称 5A current rating | Rev.A receptacle Stage 2 Primary selection；确认当前最大约 1.1A input-current architecture 的 connector capability；Stage 3 footprint/mechanical input | Original vendor drawing was reviewed during development but is not redistributed in the public repository；drawing review 不证明采购批次、焊接、PCB、机械配合或硬件测试通过 | Verified for Stage 2 selection / Source not redistributed |
 | 同一 TYPE-C-31-M-12 formal drawing/spec | drawing 未规定强制 PCB thickness，未发现与 1.6 mm FR-4 的明确机械冲突 | 允许将 1.6 mm FR-4 记录为 Rev.A preliminary PCB thickness baseline | 不是 Final fabrication stackup；层数、铜厚、表面处理、厂家与最终公差未定 | No explicit conflict found / Stage 3 finalization required |
 
 商品页、分销商页、论坛、教程和开源项目未用于证明上述关键参数。官方 datasheet 中的 typical application / typical curve 也不等同于本 Project 已计算或已验证。
