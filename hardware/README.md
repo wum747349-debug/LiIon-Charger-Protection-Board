@@ -20,4 +20,4 @@
 
 实际 EDA 操作、制造与测试证据仍以对应工程记录为准。AI / Codex 可以辅助分析、Review、测试规划与文档整理，但不能把未执行的检查或未测量的结果写成 PASS。
 
-本公开项目不以制造 release archive 为目标，因此不要求保留 Gerber、Drill、Pick & Place 或 Assembly package。需要制造时，可由当前维护的 Altium 工程重新生成相应输出，并重新执行必要的 release checks。
+本公开项目不以制造 release archive 为目标，因此不要求保留 Gerber、Drill、Pick & Place 或 Assembly package。需要新的 manufacturing outputs 时，可以由当前维护的 Altium 工程重新生成，并重新执行必要的 release checks；这些新输出只对应当前维护设计版本，不用于声明可精确复现历史 Rev.A manufacturing package。
