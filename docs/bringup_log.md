@@ -756,6 +756,19 @@ The correct current claim is:
 | Battery-only, no external load | `TP_3V3` vs C15 GND | ≈42–43 mVpp | ≈0.77 kHz (≈1.30 ms period) | Similar periodic ripple; repeated captures were broadly consistent |
 | Initial USB-only exploratory capture | `3V3_PROT` external output connector | ≈31.6 mVpp | ≈806.5 Hz | Different node and probe geometry; **not a like-for-like amplitude comparison** |
 
+**Capture-to-observation index (photo watermark, 2026-10-30):** The following identifies the user's oscilloscope photos **within the test conversation only**, not committed artifacts or durable image paths. Times are camera-watermark times, not verified instrument timestamps.
+
+| Photo watermark | Supply / probe node | View / reading identified in that photo |
+| --- | --- | --- |
+| 16:55 | USB-only; external `3V3_PROT` output connector | Initial exploratory ≈31.6 mVpp / ≈806.5 Hz, 500 µs/div |
+| 18:16 | Battery-only; `TP_3V3` vs C15 GND | ≈42 mVpp / ≈775 Hz, 500 µs/div |
+| 19:27 | Battery-only; `TP_3V3` vs C15 GND | ≈42–43 mVpp / ≈769 Hz, 500 µs/div |
+| 20:01 | Battery-only; same `3V3` probe area | Rising-edge-triggered ≈10 µs/div recovery-edge observation |
+| 20:14 | USB-only; `TP_3V3` vs C15 GND | ≈39 mVpp / ≈0.8 kHz, 500 µs/div |
+| 20:19 | USB-only; same `3V3` probe area | Rising-edge-triggered ≈10 µs/div recovery-edge observation |
+
+No photo binaries were added to this repository, so this table is a **conversation-level lookup aid**, not an assertion that an image archive or file paths exist. The two `3V3` low-frequency captures (20:14 and 19:27) are the like-for-like comparison; the earlier `3V3_PROT` reading is not.
+
 **Waveform / controls:** The 500 µs/div captures show roughly three to four repeated sawtooth-like cycles, with fast voltage recovery followed by a slower decline. A 10 µs/div rising-edge-triggered capture stably positioned one recovery event around the trigger marker; it **did not resolve or quantify the inductor/MOSFET MHz-scale switching pulses**. Triggering aligned repeated events and did not alter the regulator output.
 
 **Engineering interpretation (not a verified operating-mode measurement):**
