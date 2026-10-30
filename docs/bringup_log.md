@@ -744,6 +744,31 @@ The correct current claim is:
 
 `Rev.A primary-function Basic Bring-up is complete with hardware evidence for the main USB / Battery power paths, approximately 500mA charging and basic 3.3V output stability. Extended performance, threshold and protection validation remains deferred.`
 
+## 2026-10-30 — TPS63802 3.3 V light-load ripple / suspected PFM observation
+
+**Scope / evidence:** Rev.A; RIGOL DS1102E oscilloscope photos provided by the user in the test conversation. This is a follow-up observation, separate from the 2026-09/10 approximately 12.4 mVpp / 50 Hz capture. Raw photographs are not committed in this repository. No external output load was connected; on-board quiescent / divider / protection loads still exist. The supply modes were exercised separately, **not** as a live USB-to-battery transition capture.
+
+**Power and probe setup:** Native USB-C supply with battery disconnected (USB-only), or real battery with USB disconnected (Battery-only). Dedicated regulator-output readings were taken at the `TP_3V3` node with ground at C15 GND, upstream of TPS259474 (`3V3_PROT`). Scope setup reported/seen across captures: CH1, 1× probe, AC coupling, 20 MHz bandwidth limit, approximately 10 mV/div, 500 µs/div for repeated low-frequency waveform; 10 µs/div with CH1 rising-edge Normal trigger to examine the fast recovery edge. Exact probe-loop geometry, actual in-session SYS voltage, sampling mode/rate and a calibrated measurement noise floor were not independently documented.
+
+| Operating condition | Measurement node | Displayed low-frequency Vpp | Displayed waveform repetition | Evidence interpretation |
+| --- | --- | ---: | ---: | --- |
+| USB-only, no external load | `TP_3V3` vs C15 GND | ≈39 mVpp | ≈0.8 kHz (≈1.25 ms period) | Periodic fast-rise / slow-decay output-voltage ripple |
+| Battery-only, no external load | `TP_3V3` vs C15 GND | ≈42–43 mVpp | ≈0.77 kHz (≈1.30 ms period) | Similar periodic ripple; repeated captures were broadly consistent |
+| Initial USB-only exploratory capture | `3V3_PROT` external output connector | ≈31.6 mVpp | ≈806.5 Hz | Different node and probe geometry; **not a like-for-like amplitude comparison** |
+
+**Waveform / controls:** The 500 µs/div captures show roughly three to four repeated sawtooth-like cycles, with fast voltage recovery followed by a slower decline. A 10 µs/div rising-edge-triggered capture stably positioned one recovery event around the trigger marker; it **did not resolve or quantify the inductor/MOSFET MHz-scale switching pulses**. Triggering aligned repeated events and did not alter the regulator output.
+
+**Engineering interpretation (not a verified operating-mode measurement):**
+- This behavior is **consistent with** TPS63802 light-load power-save / PFM control at `MODE = GND`: pause switching while the output supplies small loads, then restore charge in a switching burst. TI TPS63802 Datasheet Rev.D §9.4.2 explains skip-comparator-controlled switching pauses; Figure 10-4 illustrates burst-frequency dependence on output current.
+- The displayed ≈0.77–0.8 kHz is a **suspected ripple / burst repetition frequency**, **not** the IC's inductor switching frequency. Datasheet typical MHz switching values under `MODE = HIGH` / forced PWM are not measurements of this Rev.A board.
+- Both source conditions produced similar low-frequency shapes and amplitude order. This supports a repeatable **light-load waveform observation**, but does not prove PFM mode exclusively, prove output ripple compliance, or eliminate measurement pickup / aliasing.
+
+**Status:** `OBSERVATION COMPLETE — USB-only and Battery-only light-load 3V3 ripple`. No formal loaded-ripple PASS. Still `DEFERRED / NOT YET VERIFIED`: controlled-load ripple, no-probe-influence / noise-floor cross-check, sustained 100 ms-scale low-frequency scan under the same two setups, internal switching frequency / current waveform, load-step response, precise ripple-limit compliance, and source-transition waveform.
+
+Datasheet: https://www.ti.com/lit/ds/symlink/tps63802.pdf
+
+---
+
 For every additional actual test event, append an entry using this minimum structure:
 
 ```text
